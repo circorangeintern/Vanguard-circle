@@ -1,0 +1,135 @@
+// StudyCircle — Core Data Model
+// Reflects agreed implementation clarifications:
+// - Streaks & CheckIns are scoped per (User, Group), not per User overall
+// - Tasks are assignable to a specific member (ownership)
+// - Notifications support bundling across groups
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  ORGANIZER
+  MEMBER
+}
+
+enum TaskStatus {
+  TODO
+  DOING
+  DONE
+}
+
+enum CheckInStatus {
+  DONE
+  IN_PROGRESS
+  SKIPPED
+}
+
+enum NotificationChannel {
+  WEB_PUSH
+  WHATSAPP
+  EMAIL
+}
+
+model User {
+  id         String   @id @default(uuid())
+  firebaseUid String  @unique
+  name       String
+  email      String   @unique
+  phone      String?
+  createdAt  DateTime @default(now())
+
+  memberships   Membership[]
+  tasksOwned    Task[]        @relation("TaskOwner")
+  checkIns      CheckIn[]
+  streaks       Streak[]
+  notifications Notification[]
+}
+
+model Group {
+  id          String   @id @default(uuid())
+  name        String
+  courseName  String
+  inviteCode  String   @unique
+  createdBy   String
+  createdAt   DateTime @default(now())
+
+  memberships Membership[]
+  tasks       Task[]
+  checkIns    CheckIn[]
+  streaks     Streak[]
+}
+
+// Join table — a User can belong to many Groups (supports the cross-circle dashboard)
+model Membership {
+  id       String   @id @default(uuid())
+  userId   String
+  groupId  String
+  role     Role     @default(MEMBER)
+  joinedAt DateTime @default(now())
+
+  user  User  @relation(fields: [userId], references: [id])
+  group Group @relation(fields: [groupId], references: [id])
+
+  @@unique([userId, groupId])
+}
+
+model Task {
+  id         String     @id @default(uuid())
+  groupId    String
+  title      String
+  dueDate    DateTime
+  status     TaskStatus @default(TODO)
+  assignedTo String?    // ownership field — nullable until assigned
+  createdAt  DateTime   @default(now())
+
+  group Group @relation(fields: [groupId], references: [id])
+  owner User? @relation("TaskOwner", fields: [assignedTo], references: [id])
+}
+
+// Scoped per (User, Group) — a user checks in separately for each circle
+model CheckIn {
+  id        String        @id @default(uuid())
+  userId    String
+  groupId   String
+  date      DateTime      @default(now())
+  status    CheckInStatus
+  createdAt DateTime      @default(now())
+
+  user  User  @relation(fields: [userId], references: [id])
+  group Group @relation(fields: [groupId], references: [id])
+
+  @@unique([userId, groupId, date])
+}
+
+// Scoped per (User, Group) — matches the "streaks per circle, not per user" clarification
+model Streak {
+  id               String   @id @default(uuid())
+  userId           String
+  groupId          String
+  currentStreak    Int      @default(0)
+  lastCheckInDate  DateTime?
+  updatedAt        DateTime @updatedAt
+
+  user  User  @relation(fields: [userId], references: [id])
+  group Group @relation(fields: [groupId], references: [id])
+
+  @@unique([userId, groupId])
+}
+
+model Notification {
+  id        String              @id @default(uuid())
+  userId    String
+  channel   NotificationChannel
+  payload   Json
+  bundled   Boolean             @default(false) // true if this combines multiple groups' reminders
+  sentAt    DateTime?
+  createdAt DateTime            @default(now())
+
+  user User @relation(fields: [userId], references: [id])
+}

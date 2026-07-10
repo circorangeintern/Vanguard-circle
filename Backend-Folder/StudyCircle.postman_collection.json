@@ -1,0 +1,90 @@
+{
+  "info": {
+    "name": "StudyCircle Backend",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:4000" },
+    { "key": "token", "value": "PASTE_FIREBASE_ID_TOKEN_HERE" },
+    { "key": "inviteCode", "value": "" },
+    { "key": "groupId", "value": "" }
+  ],
+  "item": [
+    {
+      "name": "Health Check",
+      "request": {
+        "method": "GET",
+        "url": "{{baseUrl}}/health"
+      }
+    },
+    {
+      "name": "Create Group",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{token}}" },
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "url": "{{baseUrl}}/groups",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"CS301 Study Group\",\n  \"courseName\": \"Data Structures\"\n}"
+        }
+      }
+    },
+    {
+      "name": "Join Group",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+        "url": "{{baseUrl}}/groups/{{inviteCode}}/join"
+      }
+    },
+    {
+      "name": "Get Group Workspace",
+      "request": {
+        "method": "GET",
+        "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+        "url": "{{baseUrl}}/groups/{{groupId}}"
+      }
+    },
+    {
+      "name": "Add Task",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{token}}" },
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "url": "{{baseUrl}}/groups/{{groupId}}/tasks",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"title\": \"Finish Chapter 4 exercises\",\n  \"dueDate\": \"2026-07-15T00:00:00.000Z\"\n}"
+        }
+      }
+    },
+    {
+      "name": "Daily Check-in",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{token}}" },
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "url": "{{baseUrl}}/groups/{{groupId}}/checkins",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"status\": \"DONE\"\n}"
+        }
+      }
+    },
+    {
+      "name": "Cross-Circle Dashboard",
+      "request": {
+        "method": "GET",
+        "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+        "url": "{{baseUrl}}/users/me/dashboard"
+      }
+    }
+  ]
+}
