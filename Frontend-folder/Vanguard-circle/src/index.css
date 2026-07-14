@@ -6,4 +6,23 @@
 
 :root {
   font-family: "DM Sans", sans-serif;
+
+  /* Brand */
+  --color-primary: #2563eb;
+  --color-primary-dark: #1d4ed8;
+
+  --color-secondary: #0f2a6b;
+
+  --color-accent: #22c7e6;
+
+  --color-warning: #fbbf24;
+
+  /* Neutrals */
+  --color-white: #ffffff;
+  --color-background: #f8fafc;
+
+  --color-text-primary: #0f172a;
+  --color-text-secondary: #475569;
+
+  --color-border: #e2e8f0;
 }
