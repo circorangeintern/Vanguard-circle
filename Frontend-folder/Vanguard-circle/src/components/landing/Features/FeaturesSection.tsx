@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
 
-import { Container } from "../ui";
+import { Container } from "../../ui";
 
 import FeatureCard from "./FeatureCard";
 import { features } from "./FeatureData";

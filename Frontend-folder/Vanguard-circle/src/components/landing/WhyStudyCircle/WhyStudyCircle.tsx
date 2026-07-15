@@ -1,11 +1,11 @@
 import { motion } from "framer-motion";
 
-import { Container } from "../ui";
+import { Container } from "../../ui";
 
 import WhyStudyCard from "./WhyStudyCard";
 import { whyStudyItems } from "./WhyStudyData";
 
-import whyStudyCircle from "../../images/whyStudyCircle.webp";
+import whyStudyCircle from "../../../images/whyStudyCircle.webp";
 
 const WhyStudyCircle = () => {
   return (

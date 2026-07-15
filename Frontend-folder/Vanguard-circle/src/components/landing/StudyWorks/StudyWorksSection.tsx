@@ -1,11 +1,11 @@
 import { motion } from "framer-motion";
 
-import { Container } from "../ui";
+import { Container } from "../../ui";
 
 import StudyStepCard from "./StudyStepCard";
 import { studySteps } from "./StudyWorksData";
 
-import studyImage from "../../images/studyworks.webp";
+import studyImage from "../../../images/studyworks.webp";
 
 const StudyWorksSection = () => {
   return (

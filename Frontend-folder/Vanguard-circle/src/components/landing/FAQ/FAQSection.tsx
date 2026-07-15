@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 
-import { Container } from "../ui";
+import { Container } from "../../ui";
 
 import FAQCard from "./FAQCard";
 import { faqs } from "./FAQData";

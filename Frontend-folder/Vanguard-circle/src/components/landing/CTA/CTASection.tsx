@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
 
-import { Button, Container } from "../ui";
+import { Button, Container } from "../../ui";
 
 const CTASection = () => {
   return (

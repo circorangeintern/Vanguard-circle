@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
-import { Button, Container } from "../ui";
-import hero from "../../images/hero.webp";
+import { Button, Container } from "../../ui";
+import hero from "../../../images/hero.webp";
 
 const Hero = () => {
   return (

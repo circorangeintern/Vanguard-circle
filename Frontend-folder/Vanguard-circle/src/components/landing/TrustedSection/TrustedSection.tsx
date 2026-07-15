@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
 
-import { Container } from "../ui";
+import { Container } from "../../ui";
 import { universityLogos } from "./UniversityLogos";
 
 const TrustedSection = () => {
