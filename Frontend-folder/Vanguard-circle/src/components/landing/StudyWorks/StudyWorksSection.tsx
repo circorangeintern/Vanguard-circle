@@ -1,4 +1,4 @@
-import { motion } from "framer-motion";
+// import { motion } from "framer-motion";
 
 import { Container } from "../../ui";
 
@@ -30,7 +30,7 @@ const StudyWorksSection = () => {
             <div className="absolute left-[9px] top-5 h-[calc(100%-48px)] w-[2px] rounded-full bg-slate-300" />
 
             <div className="space-y-4">
-              {studySteps.map((item, index) => (
+              {studySteps.map((item) => (
                 <div key={item.step} className="relative flex gap-5">
                   {/* Animated Dot */}
 
