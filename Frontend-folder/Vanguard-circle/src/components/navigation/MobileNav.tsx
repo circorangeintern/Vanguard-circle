@@ -1,5 +1,5 @@
 import { AnimatePresence, motion } from "framer-motion";
-import { Link, NavLink } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { navLinks } from "./navLinks";
 
 interface MobileNavProps {
@@ -8,6 +8,16 @@ interface MobileNavProps {
 }
 
 const MobileNav = ({ isOpen, onClose }: MobileNavProps) => {
+  const scrollToSection = (id: string) => {
+    const section = document.getElementById(id);
+
+    if (section) {
+      section.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+      });
+    }
+  };
   return (
     <AnimatePresence>
       {isOpen && (
@@ -22,19 +32,22 @@ const MobileNav = ({ isOpen, onClose }: MobileNavProps) => {
             <ul className="flex flex-col gap-6">
               {navLinks.map((link) => (
                 <li key={link.label}>
-                  <NavLink
-                    to={link.path}
-                    onClick={onClose}
-                    className={({ isActive }) =>
-                      `font-body text-base font-medium transition-colors duration-200 ${
-                        isActive
-                          ? "text-[var(--color-primary)]"
-                          : "text-[var(--color-text-secondary)] hover:text-[var(--color-primary)]"
-                      }`
-                    }
+                  <button
+                    onClick={() => scrollToSection(link.sectionId)}
+                    className="
+                  font-body
+                  text-[20px]
+                  font-medium
+                  uppercase
+                  text-[var(--color-primary)]
+                  transition-colors
+                  duration-200
+                  hover:text-[var(--color-secondary)]
+                  tracking-wider
+                "
                   >
                     {link.label}
-                  </NavLink>
+                  </button>
                 </li>
               ))}
             </ul>

@@ -14,7 +14,7 @@ const FAQSection = () => {
   };
 
   return (
-    <section className="bg-[var(--color-background)] py-24 lg:py-32">
+    <section id="faq" className="bg-[var(--color-background)] py-24 lg:py-32">
       <Container>
         {/* Section Heading */}
 
