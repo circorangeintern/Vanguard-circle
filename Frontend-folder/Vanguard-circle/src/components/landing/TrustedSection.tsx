@@ -14,9 +14,11 @@ const TrustedSection = () => {
           transition={{ duration: 0.6 }}
         >
           <div className="mb-10 flex items-center gap-3">
-            <h2 className="font-heading text-[12px] font-semibold text-[var(--color-primary)] md:text-sm">
-              Trusted by Student Communities
-            </h2>
+            <span className="h-px w-10 bg-[var(--color-primary)]" />
+
+            <span className="font-heading text-[12px] md:text-sm font-semibold uppercase tracking-wider text-[var(--color-primary)]">
+              Trusted by
+            </span>
           </div>
 
           <div className="relative overflow-hidden">
