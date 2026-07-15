@@ -1,11 +1,23 @@
 export interface NavLinkItem {
   label: string;
-  path: string;
+  sectionId: string;
 }
 
-export const navLinks: NavLinkItem[] = [
-  { label: "Home", path: "/" },
-  { label: "Features", path: "/#features" },
-  { label: "How it Works", path: "/#how-it-works" },
-  { label: "About", path: "/#about" },
+export const navLinks = [
+  {
+    label: "Features",
+    sectionId: "features",
+  },
+  {
+    label: "How it Works",
+    sectionId: "how-it-works",
+  },
+  {
+    label: "Why Us",
+    sectionId: "why-us",
+  },
+  {
+    label: "Faq",
+    sectionId: "faq",
+  },
 ];

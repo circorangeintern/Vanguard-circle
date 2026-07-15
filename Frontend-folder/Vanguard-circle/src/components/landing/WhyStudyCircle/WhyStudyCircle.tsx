@@ -9,7 +9,10 @@ import whyStudyCircle from "../../../images/whyStudyCircle.webp";
 
 const WhyStudyCircle = () => {
   return (
-    <section className="bg-[var(--color-background)] py-24 lg:py-32">
+    <section
+      id="why-us"
+      className="bg-[var(--color-background)] py-24 lg:py-32"
+    >
       <Container>
         <div className="mb-14 flex items-center gap-3">
           <span className="h-px w-10 bg-[var(--color-primary)]" />

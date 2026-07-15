@@ -9,7 +9,7 @@ import studyImage from "../../../images/studyworks.webp";
 
 const StudyWorksSection = () => {
   return (
-    <section className="bg-white py-24 lg:py-32">
+    <section id="how-it-works" className="bg-white py-24 lg:py-32">
       <Container>
         {/* Heading */}
 

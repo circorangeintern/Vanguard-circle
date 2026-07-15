@@ -1,26 +1,41 @@
-import { NavLink, Link } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { navLinks } from "./navLinks";
 
 const DesktopNav = () => {
+  const scrollToSection = (id: string) => {
+    const section = document.getElementById(id);
+
+    if (section) {
+      section.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+      });
+    }
+  };
+
   return (
     <div className="hidden lg:flex items-center justify-between flex-1">
       {/* Navigation Links */}
       <nav className="mx-auto">
-        <ul className="flex items-center gap-10">
+        <ul className="flex items-center gap-10 uppercase">
           {navLinks.map((link) => (
             <li key={link.label}>
-              <NavLink
-                to={link.path}
-                className={({ isActive }) =>
-                  `font-body text-[15px] font-medium transition-colors duration-200 ${
-                    isActive
-                      ? "text-[var(--color-primary)]"
-                      : "text-[var(--color-text-secondary)] hover:text-[var(--color-primary)]"
-                  }`
-                }
+              <button
+                onClick={() => scrollToSection(link.sectionId)}
+                className="
+                  font-body
+                  text-[14px]
+                  font-medium
+                  uppercase
+                  text-[var(--color-primary)]
+                  transition-colors
+                  duration-200
+                  hover:text-[var(--color-secondary)]
+                  tracking-wider
+                "
               >
                 {link.label}
-              </NavLink>
+              </button>
             </li>
           ))}
         </ul>

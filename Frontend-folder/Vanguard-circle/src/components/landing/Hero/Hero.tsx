@@ -4,7 +4,10 @@ import hero from "../../../images/hero.webp";
 
 const Hero = () => {
   return (
-    <section className="relative min-h-[calc(100vh-80px)] overflow-hidden">
+    <section
+      id="home"
+      className="relative min-h-[calc(100vh-80px)] overflow-hidden"
+    >
       {/* Background */}
       <motion.img
         initial={{ scale: 1.1 }}

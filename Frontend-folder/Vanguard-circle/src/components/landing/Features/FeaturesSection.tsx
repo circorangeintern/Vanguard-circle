@@ -7,7 +7,10 @@ import { features } from "./FeatureData";
 
 const FeaturesSection = () => {
   return (
-    <section className="bg-[var(--color-background)] py-24 lg:py-32">
+    <section
+      id="features"
+      className="bg-[var(--color-background)] py-24 lg:py-32"
+    >
       <Container>
         <motion.div
           initial={{ opacity: 0, y: 30 }}
