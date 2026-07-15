@@ -34,3 +34,9 @@ html {
 section[id] {
   scroll-margin-top: 90px;
 }
+
+/* html,
+body,
+#root {
+  overflow-x: hidden;
+} */

@@ -31,10 +31,39 @@ const StudyWorksSection = () => {
 
             <div className="space-y-4">
               {studySteps.map((item, index) => (
-                <div key={item.step} className="relative flex gap-5">
+                <motion.div
+                  key={item.step}
+                  initial={{
+                    opacity: 0,
+                    x: -30,
+                  }}
+                  whileInView={{
+                    opacity: 1,
+                    x: 0,
+                  }}
+                  viewport={{ once: true }}
+                  transition={{
+                    delay: index * 0.15,
+                    duration: 0.5,
+                  }}
+                  className="relative flex gap-5"
+                >
                   {/* Animated Dot */}
 
-                  <div
+                  <motion.div
+                    animate={{
+                      scale: [1, 1.25, 1],
+                      boxShadow: [
+                        "0 0 0 0 rgba(37,99,235,.45)",
+                        "0 0 0 12px rgba(37,99,235,0)",
+                        "0 0 0 0 rgba(37,99,235,0)",
+                      ],
+                    }}
+                    transition={{
+                      duration: 2,
+                      repeat: Infinity,
+                      delay: index * 0.5,
+                    }}
                     className="
                       relative
                       z-10
@@ -52,30 +81,34 @@ const StudyWorksSection = () => {
                   <div className="flex-1">
                     <StudyStepCard {...item} />
                   </div>
-                </div>
+                </motion.div>
               ))}
             </div>
           </div>
 
           {/* Image */}
 
-          <div
+          <motion.div
+            initial={{ opacity: 0, x: 50 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.7 }}
             className="
-              overflow-hidden
-              rounded-3xl
-              shadow-xl
-            aspect-[4/5]
-          lg:aspect-auto
-          lg:h-[620px]
-          xl:h-[650px]
-            "
+    overflow-hidden
+    rounded-3xl
+    shadow-xl
+    lg:h-[620px]
+    xl:h-[650px]
+  "
           >
-            <img
+            <motion.img
+              whileHover={{ scale: 1.05 }}
+              transition={{ duration: 0.5 }}
               src={studyImage}
               alt="StudyCircle"
               className="h-full w-full object-cover"
             />
-          </div>
+          </motion.div>
         </div>
       </Container>
     </section>

@@ -8,12 +8,7 @@ interface StudyStepCardProps {
 
 const StudyStepCard = ({ step, title, description }: StudyStepCardProps) => {
   return (
-    <motion.div
-      whileHover={{
-        y: -6,
-        scale: 1.02,
-      }}
-      transition={{ duration: 0.25 }}
+    <div
       className="
         rounded-2xl
         border
@@ -34,7 +29,7 @@ const StudyStepCard = ({ step, title, description }: StudyStepCardProps) => {
       <p className="mt-4 leading-7 text-[var(--color-text-secondary)]">
         {description}
       </p>
-    </motion.div>
+    </div>
   );
 };
 
