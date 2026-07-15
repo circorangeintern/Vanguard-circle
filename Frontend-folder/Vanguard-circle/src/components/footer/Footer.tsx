@@ -30,12 +30,16 @@ const socials = [
 const Footer = () => {
   return (
     <footer className="border-t border-[var(--color-border)] bg-white">
-      <Container className="py-16">
+      <Container className="pt-16 pb-8">
         <div className="grid gap-14 lg:grid-cols-[1.6fr_1fr_1fr_1fr]">
           {/* Brand */}
 
           <div className="max-w-sm">
-            <img src="/logo.png" alt="StudyCircle" className="h-14 w-auto" />
+            <img
+              src="/logo.png"
+              alt="StudyCircle"
+              className="h-20 w-auto cursor-pointer"
+            />
 
             <p className="mt-6 leading-8 text-[var(--color-text-secondary)]">
               Helping university students stay organized through smarter study
