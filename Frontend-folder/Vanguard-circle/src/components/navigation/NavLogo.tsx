@@ -10,7 +10,7 @@ const NavLogo = () => {
       <img
         src="/logo.png"
         alt="StudyCircle Logo"
-        className="h-10 w-auto object-contain"
+        className="h-[60px] w-auto object-contain"
       />
     </Link>
   );

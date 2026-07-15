@@ -37,7 +37,7 @@ const Button = ({
 
           "px-8 py-4 text-lg": size === "lg",
 
-          "w-full": fullWidth,
+          "w-full sm:w-auto": fullWidth,
         },
 
         className,
