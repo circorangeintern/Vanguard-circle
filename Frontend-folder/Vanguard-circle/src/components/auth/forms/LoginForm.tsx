@@ -38,7 +38,7 @@ const LoginForm = () => {
         />
       </div>
 
-      <div className="mt-4 flex items-center justify-between">
+      <div className="mt-8 flex items-center justify-between">
         <label className="flex cursor-pointer items-center gap-2.5">
           <input
             type="checkbox"

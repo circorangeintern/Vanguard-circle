@@ -10,33 +10,34 @@ const AuthLayout = ({ image, children, reverse = false }: AuthLayoutProps) => {
   return (
     <main
       className={`
-        min-h-screen
-        xl:h-screen
-        xl:grid
-        xl:grid-cols-2
+    min-h-screen
+    xl:min-h-screen
+    xl:grid
+    xl:grid-cols-2
+    xl:items-stretch
 
-        ${reverse ? "xl:[&>*:first-child]:order-2" : ""}
-      `}
+    ${reverse ? "xl:[&>*:first-child]:order-2" : ""}
+  `}
     >
       {image}
 
       <section
         className="
-          flex
-          items-center
-          justify-center
+    flex
+    items-center
+    justify-center
 
-          px-6
-          py-8
+    px-6
+    py-8
 
-          sm:px-8
+    sm:px-8
 
-          lg:px-12
-          lg:py-8
+    lg:px-12
+    lg:py-10
 
-          xl:px-16
-          bg-[#f8fafc]
-        "
+    xl:min-h-screen
+    xl:px-16
+  "
       >
         <div className="w-full max-w-[420px]">{children}</div>
       </section>

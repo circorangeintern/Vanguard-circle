@@ -14,7 +14,7 @@ const LoginPage = () => {
         <img
           src={logo}
           alt="StudyCircle"
-          className="w-20 transition-transform duration-300 hover:scale-105"
+          className="w-20  transition-transform duration-300 hover:scale-105"
         />
       </Link>
       <AuthHeader
