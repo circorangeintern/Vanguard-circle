@@ -32,43 +32,43 @@ const ResetPasswordForm = () => {
     }
 
     setShowSuccess(true);
+  };
 
-    return (
-      <>
-        <form onSubmit={handleSubmit} className="mt-7 flex w-full flex-col">
+  return (
+    <>
+      <form onSubmit={handleSubmit} className="mt-7 flex w-full flex-col">
+        <PasswordInput
+          label="New Password"
+          placeholder="Password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          autoComplete="new-password"
+        />
+
+        <div className="mt-4">
           <PasswordInput
-            label="New Password"
+            label="Confirm Password"
             placeholder="Password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
+            value={confirmPassword}
+            onChange={(e) => setConfirmPassword(e.target.value)}
             autoComplete="new-password"
           />
+        </div>
 
-          <div className="mt-4">
-            <PasswordInput
-              label="Confirm Password"
-              placeholder="Password"
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
-              autoComplete="new-password"
-            />
-          </div>
+        <div className="mt-7">
+          <AuthButton type="submit">Reset Password</AuthButton>
+        </div>
+      </form>
 
-          <div className="mt-7">
-            <AuthButton type="submit">Reset Password</AuthButton>
-          </div>
-        </form>
-
-        <SuccessModal
-          isOpen={showSuccess}
-          title="Password Updated"
-          message="Your password has been updated successfully."
-          buttonText="Go to Login"
-          onClose={() => navigate("/login")}
-        />
-      </>
-    );
-  };
+      <SuccessModal
+        isOpen={showSuccess}
+        title="Password Updated"
+        message="Your password has been updated successfully."
+        buttonText="Go to Login"
+        onClose={() => navigate("/login")}
+      />
+    </>
+  );
 };
 
 export default ResetPasswordForm;
