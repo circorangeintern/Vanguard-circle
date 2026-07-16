@@ -6,14 +6,13 @@ import AuthHeader from "../../components/auth/common/AuthHeader";
 import SignupForm from "../../components/auth/forms/SignupForm";
 
 import signupImage from "../../images/auth/signup.webp";
-import logo from "../../../public/favicon.png";
 
 const SignupPage = () => {
   return (
     <AuthLayout image={<AuthImage src={signupImage} alt="Sign Up" />}>
       <Link to="/" className="mb-6 flex justify-center">
         <img
-          src={logo}
+          src="/favicon.png"
           alt="StudyCircle"
           className="w-20 transition-transform duration-300 hover:scale-105"
         />
