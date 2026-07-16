@@ -9,14 +9,18 @@ interface MobileNavProps {
 
 const MobileNav = ({ isOpen, onClose }: MobileNavProps) => {
   const scrollToSection = (id: string) => {
-    const section = document.getElementById(id);
+    onClose();
 
-    if (section) {
-      section.scrollIntoView({
-        behavior: "smooth",
-        block: "start",
-      });
-    }
+    requestAnimationFrame(() => {
+      const section = document.getElementById(id);
+
+      if (section) {
+        section.scrollIntoView({
+          behavior: "smooth",
+          block: "start",
+        });
+      }
+    });
   };
   return (
     <AnimatePresence>
@@ -35,16 +39,16 @@ const MobileNav = ({ isOpen, onClose }: MobileNavProps) => {
                   <button
                     onClick={() => scrollToSection(link.sectionId)}
                     className="
-                  font-body
-                  text-[20px]
-                  font-medium
-                  uppercase
-                  text-[var(--color-primary)]
-                  transition-colors
-                  duration-200
-                  hover:text-[var(--color-secondary)]
-                  tracking-wider
-                "
+                      font-body
+                      text-[20px]
+                      font-medium
+                      uppercase
+                      tracking-wider
+                      text-[var(--color-primary)]
+                      transition-colors
+                      duration-200
+                      hover:text-[var(--color-secondary)]
+                    "
                   >
                     {link.label}
                   </button>

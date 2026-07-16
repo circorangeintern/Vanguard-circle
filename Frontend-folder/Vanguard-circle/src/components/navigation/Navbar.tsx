@@ -35,7 +35,7 @@ const Navbar = () => {
           : "border-b border-transparent"
       }`}
     >
-      <div className="mx-auto flex h-20 w-full max-w-7xl items-center justify-between px-6 lg:px-8">
+      <div className="mx-auto flex h-20 w-full max-w-7xl items-center justify-between px-4 lg:px-6 xl:px-0">
         <NavLogo />
 
         <DesktopNav />
@@ -49,9 +49,9 @@ const Navbar = () => {
           className="flex h-11 w-11 items-center justify-center rounded-lg text-[var(--color-text-primary)] transition-colors duration-200 hover:bg-[var(--color-background)] lg:hidden"
         >
           {isOpen ? (
-            <HiOutlineX className="h-7 w-7" />
+            <HiOutlineX className="h-8 md:h-10 w-8 md:w-10" />
           ) : (
-            <HiOutlineMenuAlt3 className="h-7 w-7" />
+            <HiOutlineMenuAlt3 className="h-8 md:h-10 w-8 md:w-10" />
           )}
         </button>
       </div>

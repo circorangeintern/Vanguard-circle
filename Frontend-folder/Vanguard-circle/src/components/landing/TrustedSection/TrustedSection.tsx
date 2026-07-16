@@ -68,6 +68,7 @@ hover:scale-105
 hover:grayscale-0
 hover:opacity-100
 lg:max-h-[64px]
+cursor-pointer
 "
                   />
                 </div>
