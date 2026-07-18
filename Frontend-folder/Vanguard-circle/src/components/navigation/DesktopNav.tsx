@@ -27,10 +27,10 @@ const DesktopNav = () => {
                   text-[14px]
                   font-medium
                   uppercase
-                  text-[var(--color-primary)]
+                  text-slate-800
                   transition-colors
-                  duration-200
-                  hover:text-[var(--color-secondary)]
+                  duration-300
+                  hover:text-[var(--color-primary)]
                   tracking-wider
                 "
               >

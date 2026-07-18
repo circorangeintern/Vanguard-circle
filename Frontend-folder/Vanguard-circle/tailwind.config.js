@@ -4,8 +4,8 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        heading: ["Manrope", "sans-serif"],
-        body: ["DM Sans", "sans-serif"],
+        heading: ["Outfit", "sans-serif"],
+        body: ["Outfit", "sans-serif"],
       },
     },
   },

@@ -14,7 +14,7 @@ const FAQSection = () => {
   };
 
   return (
-    <section id="faq" className="bg-[var(--color-background)] py-24 lg:py-32">
+    <section id="faq" className="bg-[var(--color-background)] py-20 lg:py-24">
       <Container>
         {/* Section Heading */}
 
@@ -32,9 +32,7 @@ const FAQSection = () => {
             duration: 0.6,
           }}
         >
-          <div className="mb-6 flex items-center gap-3">
-            <span className="h-px w-10 bg-[var(--color-primary)]" />
-
+          <div className="mb-5 flex items-center gap-3">
             <span
               className="
               font-heading
@@ -51,26 +49,39 @@ const FAQSection = () => {
 
           <h2
             className="
-            max-w-3xl
-            font-heading
-            text-4xl
-            font-extrabold
-            leading-tight
-            text-[var(--color-text-primary)]
-            md:text-5xl
-          "
+              max-w-[620px]
+
+              font-heading
+
+              text-[2.3rem]
+              font-bold
+
+              leading-[1.1]
+
+              tracking-[-0.02em]
+
+              text-slate-900
+
+              md:text-5xl
+              lg:text-[3.1rem]
+              "
           >
             Everything you need to know about StudyCircle
           </h2>
 
           <p
             className="
-            mt-6
-            max-w-2xl
-            text-lg
-            leading-8
-            text-[var(--color-text-secondary)]
-          "
+              mt-5
+
+              max-w-[520px]
+
+              text-base
+              leading-8
+
+              text-slate-500
+
+              md:text-lg
+              "
           >
             Here are answers to the questions students ask most before joining
             StudyCircle.
@@ -79,7 +90,18 @@ const FAQSection = () => {
 
         {/* FAQ Grid */}
 
-        <div className="mt-16 grid gap-6 lg:grid-cols-2">
+        <div
+          className="
+            mt-14
+
+            grid
+
+            gap-5
+
+            lg:grid-cols-2
+            lg:gap-6
+          "
+        >
           {faqs.map((faq, index) => (
             <FAQCard
               key={faq.question}

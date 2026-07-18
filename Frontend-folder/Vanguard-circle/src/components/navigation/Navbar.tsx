@@ -29,13 +29,13 @@ const Navbar = () => {
 
   return (
     <header
-      className={`sticky top-0 z-50 bg-white transition-all duration-300 ${
+      className={`fixed inset-x-0 top-0 pt-1 z-50 transition-all duration-300 ${
         isScrolled
-          ? "border-b border-[var(--color-border)] shadow-sm"
-          : "border-b border-transparent"
+          ? "border-b border-slate-200 bg-white/90 shadow-lg backdrop-blur-xl"
+          : "bg-transparent"
       }`}
     >
-      <div className="mx-auto flex h-20 w-full max-w-7xl items-center justify-between px-4 lg:px-6 xl:px-0">
+      <div className="mx-auto flex h-20 w-full max-w-[1400px] items-center justify-between px-6 sm:px-8 lg:px-12">
         <NavLogo />
 
         <DesktopNav />

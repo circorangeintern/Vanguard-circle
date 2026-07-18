@@ -1,5 +1,6 @@
 import { motion } from "framer-motion";
 import clsx from "clsx";
+import { HiArrowRight } from "react-icons/hi2";
 
 interface FeatureCardProps {
   feature: {
@@ -12,15 +13,15 @@ interface FeatureCardProps {
 
 const colors = {
   blue: {
-    bg: "bg-blue-100",
+    bg: "bg-blue-50",
     text: "text-[var(--color-primary)]",
   },
   indigo: {
-    bg: "bg-indigo-100",
-    text: "text-indigo-600",
+    bg: "bg-violet-50",
+    text: "text-violet-600",
   },
   amber: {
-    bg: "bg-amber-100",
+    bg: "bg-amber-50",
     text: "text-amber-500",
   },
 };
@@ -30,7 +31,7 @@ const FeatureCard = ({ feature }: FeatureCardProps) => {
   const style = colors[feature.color as keyof typeof colors];
 
   return (
-    <motion.div
+    <motion.article
       whileHover={{ y: -8 }}
       transition={{ duration: 0.25 }}
       className="
@@ -38,35 +39,94 @@ const FeatureCard = ({ feature }: FeatureCardProps) => {
         flex
         h-full
         flex-col
-        rounded-3xl
+
+        rounded-[24px]
+
         border
-        border-[var(--color-border)]
+        border-slate-200
+
         bg-white
-        p-7
-        shadow-sm
+
+        p-8
+
         transition-all
         duration-300
-        hover:border-[var(--color-primary)]
-        hover:shadow-xl
-    "
+
+        hover:-translate-y-1
+        hover:border-blue-200
+        hover:shadow-[0_20px_50px_rgba(15,23,42,0.08)]
+      "
     >
+      {/* Icon */}
+
       <div
         className={clsx(
-          "mb-6 flex h-14 w-14 items-center justify-center rounded-2xl",
+          "mb-8 flex h-12 w-12 items-center justify-center rounded-xl ring-1 ring-black/5",
           style.bg,
         )}
       >
-        <Icon className={clsx("text-2xl", style.text)} />
+        <Icon className={clsx("text-xl", style.text)} />
       </div>
 
-      <h3 className="min-h-[64px] font-heading text-xl font-bold leading-tight text-[var(--color-text-primary)]">
+      {/* Title */}
+
+      <h3
+        className="
+          font-heading
+          text-[1.45rem]
+          font-semibold
+          leading-tight
+          tracking-[-0.02em]
+          text-slate-900
+        "
+      >
         {feature.title}
       </h3>
 
-      <p className="mt-2 flex-1 leading-7 text-[var(--color-text-secondary)]">
+      {/* Description */}
+
+      <p
+        className="
+          mt-4
+          flex-1
+
+          text-[15px]
+          leading-7
+          text-slate-500
+        "
+      >
         {feature.description}
       </p>
-    </motion.div>
+
+      {/* Bottom Arrow */}
+
+      <div className="mt-8">
+        <span
+          className="
+            inline-flex
+            h-10
+            w-10
+            items-center
+            justify-center
+
+            rounded-full
+
+            bg-blue-50
+
+            text-[var(--color-primary)]
+
+            transition-all
+            duration-300
+
+            group-hover:translate-x-1
+            group-hover:bg-[var(--color-primary)]
+            group-hover:text-white
+          "
+        >
+          <HiArrowRight className="text-lg" />
+        </span>
+      </div>
+    </motion.article>
   );
 };
 

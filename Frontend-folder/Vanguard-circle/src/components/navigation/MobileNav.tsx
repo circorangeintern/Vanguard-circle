@@ -44,10 +44,10 @@ const MobileNav = ({ isOpen, onClose }: MobileNavProps) => {
                       font-medium
                       uppercase
                       tracking-wider
-                      text-[var(--color-primary)]
+                      text-slate-900
                       transition-colors
-                      duration-200
-                      hover:text-[var(--color-secondary)]
+                      duration-300
+                      hover:text-[var(--color-primary)]
                     "
                   >
                     {link.label}
