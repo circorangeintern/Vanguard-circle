@@ -10,29 +10,40 @@ import SignupPage from "./pages/auth/SignupPage";
 import ForgotPasswordPage from "./pages/auth/ForgotPasswordPage";
 import VerifyOtpPage from "./pages/auth/VerifyOtpPage";
 import ResetPasswordPage from "./pages/auth/ResetPasswordPage";
+import DashboardLayout from "./layout/DashboardLayout";
+import DashboardPage from "./pages/dashboard/DashboardPage";
 
 const App = () => {
   const { pathname } = useLocation();
 
-  const hideLayout = [
-    "/login",
-    "/signup",
-    "/forgot-password",
-    "/verify-email",
-    "/reset-password",
-  ].includes(pathname);
+  const hideLayout =
+    [
+      "/login",
+      "/signup",
+      "/forgot-password",
+      "/verify-email",
+      "/reset-password",
+    ].includes(pathname) || pathname.startsWith("/dashboard");
 
   return (
     <>
       {!hideLayout && <Navbar />}
 
       <Routes>
+        {/* Landing */}
         <Route path="/" element={<LandingPage />} />
+
+        {/* Auth */}
         <Route path="/login" element={<LoginPage />} />
         <Route path="/signup" element={<SignupPage />} />
         <Route path="/forgot-password" element={<ForgotPasswordPage />} />
         <Route path="/verify-email" element={<VerifyOtpPage />} />
         <Route path="/reset-password" element={<ResetPasswordPage />} />
+
+        {/* Dashboard */}
+        <Route element={<DashboardLayout />}>
+          <Route path="/dashboard" element={<DashboardPage />} />
+        </Route>
       </Routes>
 
       <Toaster position="top-right" richColors closeButton duration={3000} />

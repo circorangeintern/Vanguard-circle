@@ -133,7 +133,7 @@ const Hero = () => {
                 tracking-tight
                 text-slate-900
 
-                text-[2.7rem]
+                text-[2.5rem]
                 leading-[1.08]
 
                 sm:text-6xl
