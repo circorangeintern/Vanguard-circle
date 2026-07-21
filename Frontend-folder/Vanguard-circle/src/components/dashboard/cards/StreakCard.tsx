@@ -55,7 +55,7 @@ const StreakCard = ({ streak, subtitle }: StreakCardProps) => {
 
           <div>
             <h3 className="flex items-center gap-2 font-heading text-xl font-semibold text-slate-900">
-              Keep your streak going!
+              {streak}-Day Streak
             </h3>
 
             <p className="mt-2 text-sm leading-6 text-slate-500">{subtitle}</p>
