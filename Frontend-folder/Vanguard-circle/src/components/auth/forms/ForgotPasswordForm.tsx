@@ -1,27 +1,40 @@
 import { Link } from "react-router-dom";
 import { useState } from "react";
+import { sendPasswordResetEmail } from "firebase/auth";
 import { HiOutlineMail } from "react-icons/hi";
+import { toast } from "sonner";
 
+import { auth } from "../../../lib/firebase";
 import AuthButton from "../common/AuthButton";
 import AuthInput from "../inputs/AuthInput";
 
 const ForgotPasswordForm = () => {
   const [email, setEmail] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    console.log({
-      email,
-    });
+    if (!email) {
+      toast.error("Please enter your email.");
+      return;
+    }
 
-    // Backend integration comes later
+    setLoading(true);
+    try {
+      await sendPasswordResetEmail(auth, email);
+      toast.success("Password reset link sent — check your email.");
+    } catch (err) {
+      // Firebase intentionally doesn't reveal whether an email exists,
+      // to avoid leaking which addresses are registered.
+      toast.success("If that email is registered, a reset link has been sent.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
     <form onSubmit={handleSubmit} className="mt-7 flex flex-col">
-      {/* Email */}
-
       <AuthInput
         type="email"
         placeholder="Email"
@@ -30,13 +43,11 @@ const ForgotPasswordForm = () => {
         leftIcon={<HiOutlineMail className="h-5 w-5" />}
       />
 
-      {/* Button */}
-
       <div className="mt-6">
-        <AuthButton type="submit">Send Code</AuthButton>
+        <AuthButton type="submit" disabled={loading}>
+          {loading ? "Sending..." : "Send Reset Link"}
+        </AuthButton>
       </div>
-
-      {/* Back to Login */}
 
       <div className="mt-7 text-center">
         <span className="text-sm text-[var(--color-text-secondary)]">

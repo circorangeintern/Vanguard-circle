@@ -1,8 +1,11 @@
 import { motion } from "framer-motion";
 import { HiPlus } from "react-icons/hi2";
 
+import { auth } from "../../../lib/firebase";
+
 const DashboardHero = () => {
-  const userName = "Simon"; // Replace with Firebase user later
+  const user = auth.currentUser;
+  const userName = user?.displayName || user?.email?.split("@")[0] || "there";
 
   return (
     <motion.section

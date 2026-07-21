@@ -1,24 +1,39 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
+import { signInWithEmailAndPassword } from "firebase/auth";
+import { toast } from "sonner";
 
+import { auth } from "../../../lib/firebase";
 import AuthButton from "../common/AuthButton";
 import AuthInput from "../inputs/AuthInput";
 import PasswordInput from "../inputs/PasswordInput";
 import SocialLogin from "../social/SocialLogin";
 
 const LoginForm = () => {
+  const navigate = useNavigate();
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [rememberMe, setRememberMe] = useState(false);
+  const [loading, setLoading] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    console.log({
-      email,
-      password,
-      rememberMe,
-    });
+    if (!email || !password) {
+      toast.error("Please fill in all fields.");
+      return;
+    }
+
+    setLoading(true);
+    try {
+      await signInWithEmailAndPassword(auth, email, password);
+      navigate("/dashboard");
+    } catch (err) {
+      toast.error("Incorrect email or password.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -73,7 +88,9 @@ const LoginForm = () => {
       </div>
 
       <div className="mt-6">
-        <AuthButton type="submit">Log In</AuthButton>
+        <AuthButton type="submit" disabled={loading}>
+          {loading ? "Logging in..." : "Log In"}
+        </AuthButton>
       </div>
 
       <div className="mt-4">

@@ -1,39 +1,58 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
+import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
 import { HiOutlineMail, HiOutlineUser } from "react-icons/hi";
+import { toast } from "sonner";
 
+import { auth } from "../../../lib/firebase";
 import AuthButton from "../common/AuthButton";
 import AuthInput from "../inputs/AuthInput";
 import PasswordInput from "../inputs/PasswordInput";
 import SocialLogin from "../social/SocialLogin";
 
 const SignupForm = () => {
+  const navigate = useNavigate();
+
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
-
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-
   const [agree, setAgree] = useState(false);
+  const [loading, setLoading] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    console.log({
-      fullName,
-      email,
-      password,
-      confirmPassword,
-      agree,
-    });
+    if (!fullName || !email || !password || !confirmPassword) {
+      toast.error("Please fill in all fields.");
+      return;
+    }
+    if (password !== confirmPassword) {
+      toast.error("Passwords do not match.");
+      return;
+    }
+    if (!agree) {
+      toast.error("Please agree to the Terms and Privacy Policy.");
+      return;
+    }
 
-    // Supabase signup comes later
+    setLoading(true);
+    try {
+      const credential = await createUserWithEmailAndPassword(auth, email, password);
+      await updateProfile(credential.user, { displayName: fullName });
+
+      // First authenticated request auto-creates the matching backend User row
+      // (handled by the backend's auth middleware) — no extra call needed here.
+      navigate("/dashboard");
+    } catch (err) {
+      toast.error("Could not create account. That email may already be in use.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
     <form onSubmit={handleSubmit} className="mt-7 flex flex-col">
-      {/* Full Name */}
-
       <AuthInput
         type="text"
         placeholder="Full Name"
@@ -41,8 +60,6 @@ const SignupForm = () => {
         onChange={(e) => setFullName(e.target.value)}
         leftIcon={<HiOutlineUser className="h-5 w-5" />}
       />
-
-      {/* Email */}
 
       <div className="mt-4">
         <AuthInput
@@ -54,8 +71,6 @@ const SignupForm = () => {
         />
       </div>
 
-      {/* Password */}
-
       <div className="mt-4">
         <PasswordInput
           placeholder="Password"
@@ -64,8 +79,6 @@ const SignupForm = () => {
         />
       </div>
 
-      {/* Confirm Password */}
-
       <div className="mt-4">
         <PasswordInput
           placeholder="Confirm Password"
@@ -73,8 +86,6 @@ const SignupForm = () => {
           onChange={(e) => setConfirmPassword(e.target.value)}
         />
       </div>
-
-      {/* Terms */}
 
       <div className="mt-7 flex items-start gap-3">
         <input
@@ -110,19 +121,15 @@ const SignupForm = () => {
         </p>
       </div>
 
-      {/* Button */}
-
       <div className="mt-6">
-        <AuthButton type="submit">Create Account</AuthButton>
+        <AuthButton type="submit" disabled={loading}>
+          {loading ? "Creating account..." : "Create Account"}
+        </AuthButton>
       </div>
-
-      {/* Social */}
 
       <div className="mt-5">
         <SocialLogin />
       </div>
-
-      {/* Footer */}
 
       <div className="mt-7 text-center">
         <span className="text-sm text-[var(--color-text-secondary)]">

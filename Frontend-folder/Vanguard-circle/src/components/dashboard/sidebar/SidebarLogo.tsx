@@ -1,7 +1,7 @@
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 
-import logo from "../../../../public/favicon.png";
+// import logo from "../../../../public/favicon.png";
 
 const SidebarLogo = () => {
   return (
@@ -22,7 +22,7 @@ const SidebarLogo = () => {
         transition={{
           duration: 0.2,
         }}
-        src={logo}
+        src="/favicon.png"
         alt="StudyCircle"
         className="
           h-12

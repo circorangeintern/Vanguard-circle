@@ -1,43 +1,55 @@
 import {
   HiOutlineUserGroup,
-  HiOutlineCalendarDays,
+  HiOutlineCheckCircle,
   HiOutlineDocumentText,
   HiOutlineFire,
 } from "react-icons/hi2";
 
 import StatCard from "../cards/StatCard";
 
-const StatsGrid = () => {
+interface StatsGridProps {
+  totalCircles: number;
+  totalUpcomingTasks: number;
+  circlesActiveToday: number;
+  highestStreak: number;
+}
+
+const StatsGrid = ({
+  totalCircles,
+  totalUpcomingTasks,
+  circlesActiveToday,
+  highestStreak,
+}: StatsGridProps) => {
   return (
     <section className="grid gap-6 md:grid-cols-2 xl:grid-cols-4">
       <StatCard
         title="Study Circles"
-        value={8}
-        subtitle="2 active today"
+        value={totalCircles}
+        subtitle={`${circlesActiveToday} active today`}
         icon={HiOutlineUserGroup}
         color="#2563EB"
       />
 
       <StatCard
         title="Assignments"
-        value={12}
-        subtitle="3 due this week"
+        value={totalUpcomingTasks}
+        subtitle="Across all circles"
         icon={HiOutlineDocumentText}
         color="#2563EB"
       />
 
       <StatCard
-        title="Study Sessions"
-        value={5}
-        subtitle="Next at 4:00 PM"
-        icon={HiOutlineCalendarDays}
+        title="Checked In Today"
+        value={circlesActiveToday}
+        subtitle={`out of ${totalCircles} circles`}
+        icon={HiOutlineCheckCircle}
         color="#10B981"
       />
 
       <StatCard
-        title="Study Streak"
-        value={18}
-        subtitle="Keep it going!"
+        title="Best Streak"
+        value={highestStreak}
+        subtitle={highestStreak > 0 ? "Keep it going!" : "Start today"}
         icon={HiOutlineFire}
         color="#F59E0B"
       />
