@@ -4,7 +4,7 @@ import { HiPlus } from "react-icons/hi2";
 import { auth } from "../../../lib/firebase";
 
 const DashboardHero = () => {
-  const user = auth.currentUser;
+  const user = auth!.currentUser;
   const userName = user?.displayName || user?.email?.split("@")[0] || "there";
 
   return (

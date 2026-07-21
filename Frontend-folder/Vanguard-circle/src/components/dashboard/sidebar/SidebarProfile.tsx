@@ -15,18 +15,18 @@ const SidebarProfile = ({ expanded }: SidebarProfileProps) => {
   const navigate = useNavigate();
   const [menuOpen, setMenuOpen] = useState(false);
 
-  const user = auth.currentUser;
+  const user = auth!.currentUser;
   const displayName = user?.displayName || user?.email?.split("@")[0] || "User";
   const initials = displayName
     .split(" ")
-    .map((part) => part[0])
+    .map((part: string) => part[0])
     .join("")
     .slice(0, 2)
     .toUpperCase();
 
   const handleLogout = async () => {
     try {
-      await signOut(auth);
+      await signOut(auth!);
       navigate("/login");
     } catch (err) {
       toast.error("Couldn't log out. Please try again.");

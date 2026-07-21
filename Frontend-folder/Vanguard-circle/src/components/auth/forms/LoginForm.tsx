@@ -27,7 +27,7 @@ const LoginForm = () => {
 
     setLoading(true);
     try {
-      await signInWithEmailAndPassword(auth, email, password);
+      await signInWithEmailAndPassword(auth!, email, password);
       navigate("/dashboard");
     } catch (err) {
       toast.error("Incorrect email or password.");

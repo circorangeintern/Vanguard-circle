@@ -14,9 +14,9 @@ async function request<T>(
 ): Promise<T> {
   // Wait for Firebase to finish restoring the login session before
   // checking who's logged in — fixes 401s caused by reading auth state too early.
-  await auth.authStateReady();
+  await auth!.authStateReady();
 
-  const user = auth.currentUser;
+  const user = auth!.currentUser;
   const token = user ? await user.getIdToken() : null;
 
   const res = await fetch(`${BASE_URL}${path}`, {

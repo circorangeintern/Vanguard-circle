@@ -1,5 +1,5 @@
-import { initializeApp } from "firebase/app";
-import { getAuth } from "firebase/auth";
+import { initializeApp, type FirebaseApp } from "firebase/app";
+import { getAuth, type Auth } from "firebase/auth";
 
 // These values are safe to expose client-side — Firebase's Web API key
 // is designed to be public; real security comes from Firebase's own rules.
@@ -13,8 +13,8 @@ const firebaseConfig = {
   appId: import.meta.env.VITE_FIREBASE_APP_ID,
 };
 
-let app = null;
-let auth = null;
+let app: FirebaseApp | null = null;
+export let auth: Auth | null = null;
 if (!apiKey) {
   // Avoid throwing during module import so the app can render a helpful error
   // instead of a white screen. The real fix is to set the VITE_FIREBASE_API_KEY
@@ -33,4 +33,4 @@ if (!apiKey) {
   }
 }
 
-export { auth };
+// `auth` is exported above; it may be `null` if initialization was skipped or failed.

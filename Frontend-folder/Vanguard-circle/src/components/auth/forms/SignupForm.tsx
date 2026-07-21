@@ -38,7 +38,7 @@ const SignupForm = () => {
 
     setLoading(true);
     try {
-      const credential = await createUserWithEmailAndPassword(auth, email, password);
+      const credential = await createUserWithEmailAndPassword(auth!, email, password);
       await updateProfile(credential.user, { displayName: fullName });
 
       // First authenticated request auto-creates the matching backend User row

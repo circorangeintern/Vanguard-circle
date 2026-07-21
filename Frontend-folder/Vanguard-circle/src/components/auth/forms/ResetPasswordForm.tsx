@@ -41,7 +41,7 @@ const ResetPasswordForm = () => {
 
     setLoading(true);
     try {
-      await confirmPasswordReset(auth, oobCode, password);
+      await confirmPasswordReset(auth!, oobCode, password);
       setShowSuccess(true);
     } catch (err) {
       toast.error("This reset link is invalid or has expired.");
