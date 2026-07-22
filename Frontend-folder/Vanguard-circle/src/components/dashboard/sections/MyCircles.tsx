@@ -1,8 +1,4 @@
-import { useState } from "react";
 import { HiOutlineArrowRight, HiOutlinePlus } from "react-icons/hi2";
-import { toast } from "sonner";
-
-import { api } from "../../../lib/api";
 import CircleCard from "../cards/CircleCard";
 import CircleListItem from "../cards/CircleListItem";
 import CreateCircleCard from "../cards/CreateCircleCard";
@@ -18,32 +14,16 @@ interface Circle {
 
 interface MyCirclesProps {
   circles: Circle[];
-  onCircleCreated: () => void;
+  onCreateCircle: () => void;
 }
 
-const colorCycle: Array<"blue" | "purple" | "green"> = ["blue", "purple", "green"];
+const colorCycle: Array<"blue" | "purple" | "green"> = [
+  "blue",
+  "purple",
+  "green",
+];
 
-const MyCircles = ({ circles, onCircleCreated }: MyCirclesProps) => {
-  const [creating, setCreating] = useState(false);
-
-  const handleCreateCircle = async () => {
-    const name = window.prompt("Circle name (e.g. CS301 Study Group):");
-    if (!name) return;
-    const courseName = window.prompt("Course name (e.g. Data Structures):");
-    if (!courseName) return;
-
-    setCreating(true);
-    try {
-      await api.post("/groups", { name, courseName });
-      toast.success("Circle created!");
-      onCircleCreated();
-    } catch (err) {
-      toast.error("Couldn't create circle. Please try again.");
-    } finally {
-      setCreating(false);
-    }
-  };
-
+const MyCircles = ({ circles, onCreateCircle }: MyCirclesProps) => {
   return (
     <section className="space-y-6">
       <div className="flex items-center justify-between gap-4">
@@ -58,8 +38,7 @@ const MyCircles = ({ circles, onCircleCreated }: MyCirclesProps) => {
 
         <div className="hidden items-center gap-3 md:flex">
           <button
-            onClick={handleCreateCircle}
-            disabled={creating}
+            onClick={onCreateCircle}
             className="
               flex items-center gap-2 rounded-xl bg-[var(--color-primary)]
               px-5 py-3 text-sm font-medium text-white transition-all
@@ -67,7 +46,7 @@ const MyCircles = ({ circles, onCircleCreated }: MyCirclesProps) => {
             "
           >
             <HiOutlinePlus className="text-lg" />
-            {creating ? "Creating..." : "New Circle"}
+            New Circle
           </button>
 
           <button className="flex items-center gap-2 text-sm font-medium text-[var(--color-primary)]">
@@ -89,7 +68,7 @@ const MyCircles = ({ circles, onCircleCreated }: MyCirclesProps) => {
             color={colorCycle[index % colorCycle.length]}
           />
         ))}
-        <CreateCircleCard onClick={handleCreateCircle} loading={creating} />
+        <CreateCircleCard onClick={onCreateCircle} />
       </div>
 
       {/* Mobile & Tablet */}
@@ -109,8 +88,7 @@ const MyCircles = ({ circles, onCircleCreated }: MyCirclesProps) => {
 
         <div className="border-t border-slate-200 p-4">
           <button
-            onClick={handleCreateCircle}
-            disabled={creating}
+            onClick={onCreateCircle}
             className="
               flex w-full items-center justify-center gap-2 rounded-xl
               border-2 border-dashed border-slate-300 py-3 text-sm font-medium
@@ -119,7 +97,7 @@ const MyCircles = ({ circles, onCircleCreated }: MyCirclesProps) => {
             "
           >
             <HiOutlinePlus className="text-lg" />
-            {creating ? "Creating..." : "Create New Circle"}
+            Create New Circle
           </button>
         </div>
       </div>

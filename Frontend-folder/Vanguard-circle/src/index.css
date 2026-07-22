@@ -60,3 +60,29 @@ body,
 
     scroll-behavior: smooth;
 }
+
+/* Chrome, Edge & Safari */
+.modal-scrollbar::-webkit-scrollbar {
+  width: 8px;
+}
+
+.modal-scrollbar::-webkit-scrollbar-track {
+  background: #f1f5f9;
+  border-radius: 999px;
+}
+
+.modal-scrollbar::-webkit-scrollbar-thumb {
+  background: var(--color-primary);
+  border-radius: 999px;
+  border: 2px solid #f1f5f9;
+}
+
+.modal-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: var(--color-primary-dark);
+}
+
+/* Firefox */
+.modal-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-primary) #f1f5f9;
+}

@@ -7,6 +7,7 @@ import MyCircles from "../../components/dashboard/sections/MyCircles";
 import StatsGrid from "../../components/dashboard/sections/StatsGrid";
 import TodayAgenda from "../../components/dashboard/sections/TodayAgenda";
 import UpcomingAssignments from "../../components/dashboard/sections/UpcomingAssignments";
+import CreateCircleModal from "../../components/dashboard/modals/CreateCircleModal";
 
 interface Task {
   id: string;
@@ -29,6 +30,7 @@ interface DashboardData {
 }
 
 const DashboardPage = () => {
+  const [openCreateModal, setOpenCreateModal] = useState(false);
   const [data, setData] = useState<DashboardData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -51,7 +53,11 @@ const DashboardPage = () => {
   }, []);
 
   if (loading) {
-    return <div className="py-20 text-center text-slate-500">Loading your dashboard...</div>;
+    return (
+      <div className="py-20 text-center text-slate-500">
+        Loading your dashboard...
+      </div>
+    );
   }
 
   if (error || !data) {
@@ -64,14 +70,14 @@ const DashboardPage = () => {
 
   const circles = data.circles;
   const allUpcomingTasks = circles.flatMap((c) =>
-    c.upcomingTasks.map((t) => ({ ...t, circleName: c.name }))
+    c.upcomingTasks.map((t) => ({ ...t, circleName: c.name })),
   );
   const highestStreak = circles.reduce((max, c) => Math.max(max, c.streak), 0);
   const circlesActiveToday = circles.filter((c) => c.checkedInToday).length;
 
   return (
     <div className="space-y-8 lg:space-y-10">
-      <DashboardHero />
+      <DashboardHero onCreateCircle={() => setOpenCreateModal(true)} />
 
       <StatsGrid
         totalCircles={circles.length}
@@ -88,9 +94,17 @@ const DashboardPage = () => {
         <TodayAgenda />
       </section>
 
-      <MyCircles circles={circles} onCircleCreated={loadDashboard} />
+      <MyCircles
+        circles={circles}
+        onCreateCircle={() => setOpenCreateModal(true)}
+      />
 
       <KeepStreak streak={highestStreak} />
+      <CreateCircleModal
+        open={openCreateModal}
+        onClose={() => setOpenCreateModal(false)}
+        onSuccess={loadDashboard}
+      />
     </div>
   );
 };

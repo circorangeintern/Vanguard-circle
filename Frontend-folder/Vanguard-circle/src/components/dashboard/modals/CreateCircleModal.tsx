@@ -1,0 +1,459 @@
+import { AnimatePresence, motion } from "framer-motion";
+import { HiOutlineXMark } from "react-icons/hi2";
+import { useEffect, useState } from "react";
+
+import CircleProgress from "../create-circle/CircleProgress";
+import CircleDetailsStep from "../create-circle/CircleDetailsStep";
+import CircleInviteStep from "../create-circle/CircleInviteStep";
+import CircleSettingsStep from "../create-circle/CircleSettingsStep";
+import { createPortal } from "react-dom";
+
+interface CreateCircleModalProps {
+  open: boolean;
+  onClose: () => void;
+  onSuccess?: () => void;
+}
+interface CircleFormData {
+  name: string;
+  description: string;
+  category: string;
+  icon: string;
+
+  visibility: "public" | "private";
+
+  approval: boolean;
+
+  maxMembers: number;
+
+  allowMemberInvites: boolean;
+  requireAdminApproval: boolean;
+
+  studyReminders: boolean;
+
+  reminderFrequency: "Every day" | "Weekdays" | "Weekends";
+
+  reminderTime: string;
+}
+
+interface CircleMember {
+  id: number;
+  email: string;
+  avatar: string;
+  color: string;
+}
+
+interface PendingInvite {
+  id: number;
+  email: string;
+  sentAt: string;
+}
+
+interface NotificationSettings {
+  newMemberJoins: boolean;
+  newAssignments: boolean;
+  mentions: boolean;
+  dueDateReminders: boolean;
+  weeklySummary: boolean;
+  marketingEmails: boolean;
+}
+
+const CreateCircleModal = ({
+  open,
+  onClose,
+  onSuccess,
+}: CreateCircleModalProps) => {
+  const [step, setStep] = useState(1);
+
+  const [formData, setFormData] = useState<CircleFormData>({
+    name: "",
+    description: "",
+    category: "",
+    icon: "",
+
+    visibility: "private",
+
+    approval: false,
+
+    maxMembers: 50,
+
+    allowMemberInvites: true,
+    requireAdminApproval: true,
+
+    studyReminders: true,
+    reminderFrequency: "Every day",
+    reminderTime: "09:00 AM",
+  });
+
+  const [members, setMembers] = useState<CircleMember[]>([]);
+
+  const [pendingInvites] = useState<PendingInvite[]>([
+    {
+      id: 1,
+      email: "sarahcole@example.com",
+      sentAt: "2 mins ago",
+    },
+    {
+      id: 2,
+      email: "davidteo@example.com",
+      sentAt: "10 mins ago",
+    },
+  ]);
+
+  const [notificationSettings, setNotificationSettings] =
+    useState<NotificationSettings>({
+      newMemberJoins: true,
+      newAssignments: true,
+      mentions: true,
+      dueDateReminders: true,
+      weeklySummary: false,
+      marketingEmails: false,
+    });
+
+  const [submitting, setSubmitting] = useState(false);
+
+  const updateForm = <K extends keyof CircleFormData>(
+    key: K,
+    value: CircleFormData[K],
+  ) => {
+    setFormData((prev) => ({
+      ...prev,
+      [key]: value,
+    }));
+  };
+
+  useEffect(() => {
+    if (!open) {
+      setStep(1);
+    }
+  }, [open]);
+
+  const renderStep = () => {
+    switch (step) {
+      case 1:
+        return (
+          <CircleDetailsStep formData={formData} updateForm={updateForm} />
+        );
+
+      case 2:
+        return (
+          <CircleInviteStep
+            members={members}
+            setMembers={setMembers}
+            pendingInvites={pendingInvites}
+          />
+        );
+      case 3:
+        return (
+          <CircleSettingsStep
+            formData={formData}
+            updateForm={updateForm}
+            notificationSettings={notificationSettings}
+            setNotificationSettings={setNotificationSettings}
+          />
+        );
+
+      default:
+        return null;
+    }
+  };
+  const handleSubmit = async () => {
+    try {
+      setSubmitting(true);
+
+      const payload = {
+        ...formData,
+        members,
+      };
+      console.log(payload);
+
+      // await api.post("/groups", payload);
+
+      // Reset everything
+      setFormData({
+        name: "",
+        description: "",
+        category: "",
+        icon: "",
+        visibility: "public",
+        approval: false,
+        maxMembers: 50,
+        allowMemberInvites: true,
+        requireAdminApproval: true,
+
+        studyReminders: true,
+        reminderFrequency: "Every day",
+        reminderTime: "09:00 AM",
+      });
+
+      setMembers([]);
+      setNotificationSettings({
+        newMemberJoins: true,
+        newAssignments: true,
+        mentions: true,
+        dueDateReminders: true,
+        weeklySummary: false,
+        marketingEmails: false,
+      });
+      onSuccess?.();
+      setStep(1);
+
+      onClose();
+    } finally {
+      setSubmitting(false);
+    }
+  };
+  return createPortal(
+    <AnimatePresence>
+      {open && (
+        <>
+          {/* Backdrop */}
+
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={onClose}
+            className="
+              fixed
+              inset-0
+              z-[9998]
+              bg-slate-900/40
+              backdrop-blur-md
+            "
+          />
+
+          {/* Modal */}
+
+          <motion.div
+            className="
+             fixed
+              inset-0
+              z-[9999]
+              flex
+              justify-center
+              items-start
+              overflow-hidden
+              px-6
+              pt-4
+              pb-6
+            "
+            onClick={onClose}
+          >
+            <div
+              className="
+              flex
+              min-h-full
+              items-start
+              justify-center
+              py-6
+            "
+            >
+              <motion.div
+                onClick={(e) => e.stopPropagation()}
+                initial={{
+                  opacity: 0,
+                  scale: 0.95,
+                  y: 40,
+                }}
+                animate={{
+                  opacity: 1,
+                  scale: 1,
+                  y: 0,
+                }}
+                exit={{
+                  opacity: 0,
+                  scale: 0.95,
+                  y: 30,
+                }}
+                transition={{ duration: 0.28 }}
+                className="
+                  w-full
+                  max-w-[22rem]
+                  h-[92dvh]
+                  md:h-[90vh]
+                  md:max-w-5xl
+                "
+              >
+                <div
+                  className="
+                    flex
+                    h-full
+                    flex-col
+
+                    rounded-[32px]
+                    border
+                    border-white/70
+                    bg-white
+
+                    shadow-[0_35px_100px_rgba(15,23,42,0.20)]
+                "
+                >
+                  {/* Header */}
+
+                  <div
+                    className="
+                    shrink-0
+                  flex
+                  items-center
+                  justify-between
+
+                  border-b
+                  border-slate-100
+
+                  px-8
+                  py-6
+                "
+                  >
+                    <h2 className="font-heading text-2xl font-bold text-slate-900">
+                      Create New Circle
+                    </h2>
+
+                    <button
+                      onClick={onClose}
+                      className="
+                    flex
+                    h-10
+                    w-10
+                    items-center
+                    justify-center
+
+                    rounded-full
+
+                    text-slate-500
+                    transition-all
+
+                    hover:bg-slate-100
+                    hover:text-slate-900
+                  "
+                    >
+                      <HiOutlineXMark className="text-2xl" />
+                    </button>
+                  </div>
+
+                  {/* Progress */}
+
+                  <div className=" shrink-0 px-8 pt-8">
+                    <CircleProgress currentStep={step} />
+                  </div>
+
+                  {/* Body */}
+
+                  <div
+                    className="
+                      flex-1
+                      overflow-y-auto
+                      modal-scrollbar
+                      px-3
+                      md:px-8
+                      py-8
+                    "
+                  >
+                    <AnimatePresence mode="wait">
+                      <motion.div
+                        key={step}
+                        initial={{
+                          opacity: 0,
+                          x: 20,
+                        }}
+                        animate={{
+                          opacity: 1,
+                          x: 0,
+                        }}
+                        exit={{
+                          opacity: 0,
+                          x: -20,
+                        }}
+                        transition={{
+                          duration: 0.25,
+                        }}
+                      >
+                        {renderStep()}
+                      </motion.div>
+                    </AnimatePresence>
+                  </div>
+
+                  {/* Footer */}
+
+                  <div
+                    className="
+                    shrink-0
+                  flex
+                  items-center
+                  justify-between
+
+                  border-t
+                  border-slate-100
+
+                  px-8
+                  py-6
+                "
+                  >
+                    <button
+                      onClick={() => {
+                        if (step === 1) {
+                          onClose();
+                        } else {
+                          setStep(step - 1);
+                        }
+                      }}
+                      className="
+                    rounded-xl
+                    border
+                    border-slate-200
+
+                    px-6
+                    py-3
+
+                    font-medium
+                    text-slate-700
+
+                    transition-all
+
+                    hover:bg-slate-50
+                  "
+                    >
+                      {step === 1 ? "Cancel" : "Back"}
+                    </button>
+
+                    <button
+                      disabled={submitting}
+                      onClick={() => {
+                        if (step < 3) {
+                          setStep((prev) => prev + 1);
+                        } else {
+                          handleSubmit();
+                        }
+                      }}
+                      className="
+                    rounded-xl
+                    bg-[var(--color-primary)]
+                    px-8
+                    py-3
+                    font-medium
+                    text-white
+                    transition-all
+                    hover:-translate-y-0.5
+                    hover:shadow-lg
+                    disabled:cursor-not-allowed
+                    disabled:opacity-60
+                "
+                    >
+                      {submitting
+                        ? "Creating..."
+                        : step === 3
+                          ? "Create Circle"
+                          : "Next"}
+                    </button>
+                  </div>
+                </div>
+              </motion.div>
+            </div>
+          </motion.div>
+        </>
+      )}
+    </AnimatePresence>,
+    document.body,
+  );
+};
+
+export default CreateCircleModal;
