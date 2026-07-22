@@ -7,54 +7,17 @@ import CircleDetailsStep from "../create-circle/CircleDetailsStep";
 import CircleInviteStep from "../create-circle/CircleInviteStep";
 import CircleSettingsStep from "../create-circle/CircleSettingsStep";
 import { createPortal } from "react-dom";
+import type {
+  CircleFormData,
+  Member,
+  NotificationSettings,
+  PendingInvite,
+} from "../create-circle/types";
 
 interface CreateCircleModalProps {
   open: boolean;
   onClose: () => void;
   onSuccess?: () => void;
-}
-interface CircleFormData {
-  name: string;
-  description: string;
-  category: string;
-  icon: string;
-
-  visibility: "public" | "private";
-
-  approval: boolean;
-
-  maxMembers: number;
-
-  allowMemberInvites: boolean;
-  requireAdminApproval: boolean;
-
-  studyReminders: boolean;
-
-  reminderFrequency: "Every day" | "Weekdays" | "Weekends";
-
-  reminderTime: string;
-}
-
-interface CircleMember {
-  id: number;
-  email: string;
-  avatar: string;
-  color: string;
-}
-
-interface PendingInvite {
-  id: number;
-  email: string;
-  sentAt: string;
-}
-
-interface NotificationSettings {
-  newMemberJoins: boolean;
-  newAssignments: boolean;
-  mentions: boolean;
-  dueDateReminders: boolean;
-  weeklySummary: boolean;
-  marketingEmails: boolean;
 }
 
 const CreateCircleModal = ({
@@ -84,7 +47,7 @@ const CreateCircleModal = ({
     reminderTime: "09:00 AM",
   });
 
-  const [members, setMembers] = useState<CircleMember[]>([]);
+  const [members, setMembers] = useState<Member[]>([]);
 
   const [pendingInvites] = useState<PendingInvite[]>([
     {

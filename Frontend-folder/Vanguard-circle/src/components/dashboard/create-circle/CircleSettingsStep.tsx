@@ -2,35 +2,10 @@ import MemberPermissionsCard from "./settings/MemberPermissionsCard";
 import NotificationsCard from "./settings/NotificationsCard";
 import PrivacyCard from "./settings/PrivacyCard";
 import StudyRemindersCard from "./settings/StudyRemindersCard";
-
-interface CircleFormData {
-  name: string;
-  description: string;
-  category: string;
-  icon: string;
-
-  visibility: "public" | "private";
-
-  approval: boolean;
-
-  maxMembers: number;
-
-  allowMemberInvites: boolean;
-  requireAdminApproval: boolean;
-
-  studyReminders: boolean;
-  reminderFrequency: "Every day" | "Weekdays" | "Weekends";
-  reminderTime: string;
-}
-
-interface NotificationSettings {
-  newMemberJoins: boolean;
-  newAssignments: boolean;
-  mentions: boolean;
-  dueDateReminders: boolean;
-  weeklySummary: boolean;
-  marketingEmails: boolean;
-}
+import type {
+  CircleFormData,
+  NotificationSettings,
+} from "./types";
 
 interface CircleSettingsStepProps {
   formData: CircleFormData;

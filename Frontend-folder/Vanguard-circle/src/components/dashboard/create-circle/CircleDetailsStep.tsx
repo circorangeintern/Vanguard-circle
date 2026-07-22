@@ -1,18 +1,9 @@
 import CircleCategorySelect from "./CircleCategorySelect";
 import CircleIconPicker from "./CircleIconPicker";
+import type { CircleFormData } from "./types";
 
 const MAX_NAME_LENGTH = 50;
 const MAX_DESCRIPTION_LENGTH = 150;
-
-interface CircleFormData {
-  name: string;
-  description: string;
-  category: string;
-  icon: string;
-  visibility: "public" | "private";
-  approval: boolean;
-  maxMembers: number;
-}
 
 interface CircleDetailsStepProps {
   formData: CircleFormData;

@@ -1,14 +1,16 @@
 import { HiOutlineClock } from "react-icons/hi2";
 import SettingsToggle from "./SettingsToggle";
 
+import type { CircleFormData } from "../types";
+
 interface StudyRemindersCardProps {
   studyReminders: boolean;
-  reminderFrequency: "Every day" | "Weekdays" | "Weekends";
+  reminderFrequency: CircleFormData["reminderFrequency"];
   reminderTime: string;
 
-  onChange: <K extends "studyReminders" | "reminderFrequency" | "reminderTime">(
-    key: K,
-    value: boolean | "Every day" | "Weekdays" | "Weekends" | string,
+  onChange: (
+    key: "studyReminders" | "reminderFrequency" | "reminderTime",
+    value: CircleFormData["studyReminders"] | CircleFormData["reminderFrequency"] | CircleFormData["reminderTime"],
   ) => void;
 }
 

@@ -3,20 +3,7 @@ import InviteMemberCard from "./invite/InviteMemberCard";
 import PendingInvitesCard from "./invite/PendingInvitesCard";
 import QRCodeCard from "./invite/QRCodeCard";
 import ShareOptions from "./invite/ShareOptions";
-
-interface Member {
-  id: number;
-  name: string;
-  email: string;
-  avatar: string;
-  color: string;
-}
-
-interface PendingInvite {
-  id: number;
-  email: string;
-  sentAt: string;
-}
+import type { Member, PendingInvite } from "./types";
 
 interface CircleInviteStepProps {
   members: Member[];
