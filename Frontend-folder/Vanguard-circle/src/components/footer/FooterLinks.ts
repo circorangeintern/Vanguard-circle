@@ -1,14 +1,29 @@
 export const quickLinks = [
-  "Home",
-  "Features",
-  "How It Works",
-  "Why StudyCircle",
-  "FAQs",
+  {
+    label: "Home",
+    to: "/",
+  },
+  {
+    label: "Features",
+    to: "/#features",
+  },
+  {
+    label: "How It Works",
+    to: "/#how-it-works",
+  },
+  {
+    label: "Why StudyCircle",
+    to: "/#why-studycircle",
+  },
+  {
+    label: "FAQs",
+    to: "/#faqs",
+  },
 ];
 
 export const supportLinks = [
-  "Contact",
-  "Help Center",
-  "Privacy Policy",
-  "Terms of Use",
+  { label: "Contact", to: "/contact" },
+  { label: "Help Center", to: "/help-center" },
+  { label: "Privacy Policy", to: "/privacy-policy" },
+  { label: "Terms & Conditions", to: "/terms-and-conditions" },
 ];

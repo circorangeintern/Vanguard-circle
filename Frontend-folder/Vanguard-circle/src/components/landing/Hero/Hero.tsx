@@ -4,6 +4,7 @@ import { HiCheckCircle } from "react-icons/hi2";
 import { Button, Container } from "../../ui";
 
 import hero from "../../../images/hero.webp";
+import { useNavigate } from "react-router-dom";
 
 const Hero = () => {
   const counterRef = useRef<HTMLDivElement>(null);
@@ -27,6 +28,7 @@ const Hero = () => {
 
     return () => controls.stop();
   }, [isInView]);
+  const navigate = useNavigate();
   return (
     <section
       id="home"
@@ -206,9 +208,15 @@ const Hero = () => {
                 lg:justify-start
               "
             >
-              <Button size="lg">Get Started Free</Button>
+              <Button size="lg" onClick={() => navigate("signup")}>
+                Get Started Free
+              </Button>
 
-              <Button variant="secondary" size="lg">
+              <Button
+                variant="secondary"
+                size="lg"
+                onClick={() => navigate("/login")}
+              >
                 Explore Features
               </Button>
             </motion.div>

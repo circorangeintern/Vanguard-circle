@@ -14,6 +14,7 @@ import DashboardLayout from "./layout/DashboardLayout";
 import DashboardPage from "./pages/dashboard/DashboardPage";
 import PrivacyPolicy from "./pages/PrivacyPolicy/PrivacyPolicy";
 import TermsAndConditions from "./pages/TermsAndConditions/TermsAndConditions";
+import ScrollToTop from "./components/common/ScrollToTop";
 
 const App = () => {
   const { pathname } = useLocation();
@@ -29,6 +30,7 @@ const App = () => {
 
   return (
     <>
+      <ScrollToTop />
       {!hideLayout && <Navbar />}
 
       <Routes>

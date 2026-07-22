@@ -2,8 +2,10 @@ import { motion } from "framer-motion";
 import { HiArrowRight } from "react-icons/hi2";
 
 import { Button, Container } from "../../ui";
+import { useNavigate } from "react-router-dom";
 
 const CTASection = () => {
+  const navigate = useNavigate();
   return (
     <section className="bg-white py-20 lg:py-24">
       <Container>
@@ -232,6 +234,7 @@ const CTASection = () => {
                     hover:-translate-y-1
                     hover:bg-white
                   "
+                  onClick={() => navigate("signup")}
                 >
                   <span className="mr-3">Create Free Account</span>
 

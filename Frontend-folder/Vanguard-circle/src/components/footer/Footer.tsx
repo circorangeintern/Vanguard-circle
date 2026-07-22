@@ -7,6 +7,9 @@ import { motion } from "framer-motion";
 import { Container } from "../ui";
 
 import { quickLinks, supportLinks } from "./FooterLinks";
+import { NavLink } from "react-router-dom";
+
+import { useNavigate } from "react-router-dom";
 
 const socials = [
   {
@@ -28,6 +31,23 @@ const socials = [
 ];
 
 const Footer = () => {
+  const navigate = useNavigate();
+
+  const handleNavigation = (path: string) => {
+    if (path.includes("#")) {
+      const [route, id] = path.split("#");
+
+      navigate(route);
+
+      setTimeout(() => {
+        document.getElementById(id)?.scrollIntoView({
+          behavior: "smooth",
+        });
+      }, 100);
+    } else {
+      navigate(path);
+    }
+  };
   return (
     <footer className="border-t border-[var(--color-border)] bg-white">
       <Container className="pt-16 pb-8">
@@ -56,13 +76,13 @@ const Footer = () => {
 
             <ul className="space-y-4">
               {quickLinks.map((link) => (
-                <li key={link}>
-                  <a
-                    href="#"
+                <li key={link.to}>
+                  <button
+                    onClick={() => handleNavigation(link.to)}
                     className="transition hover:text-[var(--color-primary)]"
                   >
-                    {link}
-                  </a>
+                    {link.label}
+                  </button>
                 </li>
               ))}
             </ul>
@@ -77,13 +97,13 @@ const Footer = () => {
 
             <ul className="space-y-4">
               {supportLinks.map((link) => (
-                <li key={link}>
-                  <a
-                    href="#"
+                <li key={link.to}>
+                  <NavLink
+                    to={link.to}
                     className="transition hover:text-[var(--color-primary)]"
                   >
-                    {link}
-                  </a>
+                    {link.label}
+                  </NavLink>
                 </li>
               ))}
             </ul>
