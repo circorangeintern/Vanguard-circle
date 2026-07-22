@@ -14,6 +14,7 @@ import type {
   NotificationSettings,
   PendingInvite,
 } from "../create-circle/types";
+import { trackCircleCreated } from "../../../services/analytics";
 
 interface CreateCircleModalProps {
   open: boolean;
@@ -141,6 +142,12 @@ const CreateCircleModal = ({
       };
 
       await api.post("/groups", payload);
+
+      trackCircleCreated({
+        circleName: formData.name,
+        category: formData.category,
+        visibility: formData.visibility,
+      });
 
       // Reset everything
       setFormData({

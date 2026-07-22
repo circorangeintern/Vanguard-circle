@@ -2,6 +2,8 @@ import StreakCard from "../cards/StreakCard";
 import { useState } from "react";
 import { api } from "../../../lib/api";
 
+import { trackDailyCheckin } from "../../../services/analytics";
+
 interface KeepStreakProps {
   streak: number;
   checkedInToday?: boolean;
@@ -23,8 +25,16 @@ const KeepStreak = ({
 
     try {
       await api.post(`/groups/${groupId}/checkins`, { status: "DONE" });
-      setCurrentStreak((prev) => prev + 1);
+
+      const newStreak = currentStreak + 1;
+
+      trackDailyCheckin({
+        streak: newStreak,
+      });
+
+      setCurrentStreak(newStreak);
       setHasCheckedInToday(true);
+
       onCheckInSuccess?.();
     } catch (error) {
       console.error(error);
