@@ -5,6 +5,11 @@ const { requireAuth } = require("../middleware/auth");
 const router = express.Router();
 const prisma = new PrismaClient();
 
+// GET /users/me — current authenticated profile
+router.get("/me", requireAuth, async (req, res) => {
+  res.success(req.user);
+});
+
 // GET /users/me/dashboard — one overview across all circles the user belongs to
 router.get("/me/dashboard", requireAuth, async (req, res) => {
   const userId = req.user.id;

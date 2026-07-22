@@ -3,7 +3,7 @@ import { useState } from "react";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { toast } from "sonner";
 
-import { auth } from "../../../lib/firebase";
+import { auth, setAuthPersistence, signInWithGoogle } from "../../../lib/firebase";
 import AuthButton from "../common/AuthButton";
 import AuthInput from "../inputs/AuthInput";
 import PasswordInput from "../inputs/PasswordInput";
@@ -27,10 +27,23 @@ const LoginForm = () => {
 
     setLoading(true);
     try {
+      await setAuthPersistence(rememberMe);
       await signInWithEmailAndPassword(auth!, email, password);
       navigate("/dashboard");
     } catch (err) {
       toast.error("Incorrect email or password.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleGoogleSignIn = async () => {
+    setLoading(true);
+    try {
+      await signInWithGoogle(rememberMe);
+      navigate("/dashboard");
+    } catch (err) {
+      toast.error("Could not sign in with Google.");
     } finally {
       setLoading(false);
     }
@@ -94,7 +107,10 @@ const LoginForm = () => {
       </div>
 
       <div className="mt-4">
-        <SocialLogin />
+        <SocialLogin
+          isLoading={loading}
+          onGoogleClick={handleGoogleSignIn}
+        />
       </div>
 
       <div className="mt-7 text-center">

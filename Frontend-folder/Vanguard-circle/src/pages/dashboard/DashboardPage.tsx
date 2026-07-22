@@ -72,7 +72,14 @@ const DashboardPage = () => {
   const allUpcomingTasks = circles.flatMap((c) =>
     c.upcomingTasks.map((t) => ({ ...t, circleName: c.name })),
   );
-  const highestStreak = circles.reduce((max, c) => Math.max(max, c.streak), 0);
+  const streakCircle = circles.length
+    ? circles.reduce((best, current) =>
+        current.streak > best.streak ? current : best,
+      circles[0])
+    : null;
+  const highestStreak = streakCircle?.streak ?? 0;
+  const streakCircleId = streakCircle?.groupId;
+  const checkedInToday = streakCircle?.checkedInToday ?? false;
   const circlesActiveToday = circles.filter((c) => c.checkedInToday).length;
 
   return (
@@ -99,7 +106,12 @@ const DashboardPage = () => {
         onCreateCircle={() => setOpenCreateModal(true)}
       />
 
-      <KeepStreak streak={highestStreak} />
+      <KeepStreak
+        streak={highestStreak}
+        checkedInToday={checkedInToday}
+        groupId={streakCircleId}
+        onCheckInSuccess={loadDashboard}
+      />
       <CreateCircleModal
         open={openCreateModal}
         onClose={() => setOpenCreateModal(false)}

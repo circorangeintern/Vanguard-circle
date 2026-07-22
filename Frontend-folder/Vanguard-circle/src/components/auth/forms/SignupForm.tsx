@@ -4,7 +4,7 @@ import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
 import { HiOutlineMail, HiOutlineUser } from "react-icons/hi";
 import { toast } from "sonner";
 
-import { auth } from "../../../lib/firebase";
+import { auth, signInWithGoogle } from "../../../lib/firebase";
 import AuthButton from "../common/AuthButton";
 import AuthInput from "../inputs/AuthInput";
 import PasswordInput from "../inputs/PasswordInput";
@@ -27,6 +27,10 @@ const SignupForm = () => {
       toast.error("Please fill in all fields.");
       return;
     }
+    if (password.length < 6) {
+      toast.error("Password too short. Please use at least 6 characters.");
+      return;
+    }
     if (password !== confirmPassword) {
       toast.error("Passwords do not match.");
       return;
@@ -46,6 +50,18 @@ const SignupForm = () => {
       navigate("/dashboard");
     } catch (err) {
       toast.error("Could not create account. That email may already be in use.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleGoogleSignIn = async () => {
+    setLoading(true);
+    try {
+      await signInWithGoogle();
+      navigate("/dashboard");
+    } catch (err) {
+      toast.error("Could not sign in with Google.");
     } finally {
       setLoading(false);
     }
@@ -128,7 +144,10 @@ const SignupForm = () => {
       </div>
 
       <div className="mt-5">
-        <SocialLogin />
+        <SocialLogin
+          isLoading={loading}
+          onGoogleClick={handleGoogleSignIn}
+        />
       </div>
 
       <div className="mt-7 text-center">

@@ -1,16 +1,13 @@
 import { FcGoogle } from "react-icons/fc";
-import { FaApple } from "react-icons/fa";
 
 interface SocialLoginProps {
   isLoading?: boolean;
   onGoogleClick?: () => void;
-  onAppleClick?: () => void;
 }
 
 const SocialLogin = ({
   isLoading = false,
   onGoogleClick,
-  onAppleClick,
 }: SocialLoginProps) => {
   return (
     <div className="mt-5">
@@ -53,32 +50,6 @@ const SocialLogin = ({
           "
         >
           <FcGoogle className="text-[26px]" />
-        </button>
-
-        <button
-          type="button"
-          disabled={isLoading}
-          onClick={onAppleClick}
-          className="
-            flex
-            h-12
-            w-12
-            items-center
-            justify-center
-            rounded-full
-            border
-            border-[var(--color-border)]
-            bg-white
-            transition-all
-            duration-300
-            hover:-translate-y-0.5
-            hover:border-[var(--color-primary)]
-            hover:shadow-md
-            disabled:cursor-not-allowed
-            disabled:opacity-60
-          "
-        >
-          <FaApple className="text-[22px]" />
         </button>
       </div>
     </div>

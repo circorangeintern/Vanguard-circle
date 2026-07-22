@@ -1,5 +1,13 @@
 import { initializeApp, type FirebaseApp } from "firebase/app";
-import { getAuth, type Auth } from "firebase/auth";
+import {
+  getAuth,
+  type Auth,
+  GoogleAuthProvider,
+  signInWithPopup,
+  setPersistence,
+  browserLocalPersistence,
+  browserSessionPersistence,
+} from "firebase/auth";
 
 // These values are safe to expose client-side — Firebase's Web API key
 // is designed to be public; real security comes from Firebase's own rules.
@@ -12,6 +20,8 @@ const firebaseConfig = {
   messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
   appId: import.meta.env.VITE_FIREBASE_APP_ID,
 };
+
+const googleProvider = new GoogleAuthProvider();
 
 let app: FirebaseApp | null = null;
 export let auth: Auth | null = null;
@@ -31,6 +41,17 @@ if (!apiKey) {
     // eslint-disable-next-line no-console
     console.error("Firebase initialization failed:", e);
   }
+}
+
+export async function setAuthPersistence(remember: boolean) {
+  if (!auth) throw new Error("Firebase auth is not initialized");
+  await setPersistence(auth, remember ? browserLocalPersistence : browserSessionPersistence);
+}
+
+export async function signInWithGoogle(remember = true) {
+  if (!auth) throw new Error("Firebase auth is not initialized");
+  await setAuthPersistence(remember);
+  return signInWithPopup(auth, googleProvider);
 }
 
 // `auth` is exported above; it may be `null` if initialization was skipped or failed.

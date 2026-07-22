@@ -2,6 +2,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { HiOutlineXMark } from "react-icons/hi2";
 import { useEffect, useState } from "react";
 
+import { api } from "../../../lib/api";
 import CircleProgress from "../create-circle/CircleProgress";
 import CircleDetailsStep from "../create-circle/CircleDetailsStep";
 import CircleInviteStep from "../create-circle/CircleInviteStep";
@@ -124,12 +125,22 @@ const CreateCircleModal = ({
       setSubmitting(true);
 
       const payload = {
-        ...formData,
+        name: formData.name,
+        courseName: formData.category,
+        description: formData.description,
+        icon: formData.icon,
+        visibility: formData.visibility,
+        approval: formData.approval,
+        maxMembers: formData.maxMembers,
+        allowMemberInvites: formData.allowMemberInvites,
+        requireAdminApproval: formData.requireAdminApproval,
+        studyReminders: formData.studyReminders,
+        reminderFrequency: formData.reminderFrequency,
+        reminderTime: formData.reminderTime,
         members,
       };
-      console.log(payload);
 
-      // await api.post("/groups", payload);
+      await api.post("/groups", payload);
 
       // Reset everything
       setFormData({

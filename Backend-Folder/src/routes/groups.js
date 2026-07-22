@@ -7,20 +7,67 @@ const prisma = new PrismaClient();
 
 // POST /groups — create a new circle
 router.post("/", requireAuth, async (req, res) => {
-  const { name, courseName } = req.body;
-  if (!name || !courseName) return res.error("name and courseName are required");
+  const {
+    name,
+    courseName,
+    category,
+    description,
+    icon,
+    visibility,
+    approval,
+    maxMembers,
+    allowMemberInvites,
+    requireAdminApproval,
+    studyReminders,
+    reminderFrequency,
+    reminderTime,
+    members,
+  } = req.body;
+
+  const resolvedCourseName = courseName || category;
+  if (!name || !resolvedCourseName) return res.error("name and courseName are required");
 
   const inviteCode = Math.random().toString(36).slice(2, 9);
 
+  const invitations = Array.isArray(members)
+    ? members
+        .filter((member) => member?.email)
+        .map((member) => ({
+          invitedBy: req.user.id,
+          email: member.email,
+        }))
+    : [];
+
   const group = await prisma.group.create({
-    data: { name, courseName, inviteCode, createdBy: req.user.id },
+    data: {
+      name,
+      courseName: resolvedCourseName,
+      description,
+      icon,
+      visibility,
+      approval,
+      maxMembers,
+      allowMemberInvites,
+      requireAdminApproval,
+      studyReminders,
+      reminderFrequency,
+      reminderTime,
+      inviteCode,
+      createdBy: req.user.id,
+      invitations: invitations.length > 0 ? { create: invitations } : undefined,
+    },
+    include: {
+      invitations: true,
+    },
   });
 
   await prisma.membership.create({
     data: { userId: req.user.id, groupId: group.id, role: "ORGANIZER" },
   });
 
-  res.success(group, 201);
+  const inviteLink = `${process.env.FRONTEND_URL || "https://studycircle.app"}/invite/${inviteCode}`;
+
+  res.success({ group, inviteLink }, 201);
 });
 
 // POST /groups/:inviteCode/join — join a circle via invite link

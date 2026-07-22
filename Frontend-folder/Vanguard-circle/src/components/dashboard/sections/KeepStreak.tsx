@@ -1,24 +1,34 @@
 import StreakCard from "../cards/StreakCard";
 import { useState } from "react";
+import { api } from "../../../lib/api";
 
 interface KeepStreakProps {
   streak: number;
   checkedInToday?: boolean;
+  groupId?: string;
+  onCheckInSuccess?: () => void;
 }
 
-const KeepStreak = ({ streak, checkedInToday = false }: KeepStreakProps) => {
+const KeepStreak = ({
+  streak,
+  checkedInToday = false,
+  groupId,
+  onCheckInSuccess,
+}: KeepStreakProps) => {
   const [currentStreak, setCurrentStreak] = useState(streak);
-
   const [hasCheckedInToday, setHasCheckedInToday] = useState(checkedInToday);
 
-  const handleCheckIn = () => {
-    if (hasCheckedInToday) return;
+  const handleCheckIn = async () => {
+    if (hasCheckedInToday || !groupId) return;
 
-    setCurrentStreak((prev) => prev + 1);
-    setHasCheckedInToday(true);
-
-    // Backend later:
-    // await api.post("/streak/check-in");
+    try {
+      await api.post(`/groups/${groupId}/checkins`, { status: "DONE" });
+      setCurrentStreak((prev) => prev + 1);
+      setHasCheckedInToday(true);
+      onCheckInSuccess?.();
+    } catch (error) {
+      console.error(error);
+    }
   };
   const subtitle = hasCheckedInToday
     ? "Great job! Come back tomorrow to keep your streak alive."

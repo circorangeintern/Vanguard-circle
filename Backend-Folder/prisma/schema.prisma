@@ -36,6 +36,12 @@ enum NotificationChannel {
   EMAIL
 }
 
+enum InvitationStatus {
+  PENDING
+  ACCEPTED
+  DECLINED
+}
+
 model User {
   id         String   @id @default(uuid())
   firebaseUid String  @unique
@@ -52,17 +58,28 @@ model User {
 }
 
 model Group {
-  id          String   @id @default(uuid())
-  name        String
-  courseName  String
-  inviteCode  String   @unique
-  createdBy   String
-  createdAt   DateTime @default(now())
+  id                 String   @id @default(uuid())
+  name               String
+  courseName         String
+  description        String?
+  icon               String?
+  visibility         String   @default("private")
+  approval           Boolean  @default(false)
+  maxMembers         Int?
+  allowMemberInvites Boolean  @default(true)
+  requireAdminApproval Boolean @default(true)
+  studyReminders      Boolean @default(true)
+  reminderFrequency   String   @default("Every day")
+  reminderTime        String   @default("09:00 AM")
+  inviteCode          String   @unique
+  createdBy           String
+  createdAt           DateTime @default(now())
 
   memberships Membership[]
   tasks       Task[]
   checkIns    CheckIn[]
   streaks     Streak[]
+  invitations Invitation[]
 }
 
 // Join table — a User can belong to many Groups (supports the cross-circle dashboard)
@@ -77,6 +94,17 @@ model Membership {
   group Group @relation(fields: [groupId], references: [id])
 
   @@unique([userId, groupId])
+}
+
+model Invitation {
+  id         String           @id @default(uuid())
+  groupId    String
+  invitedBy  String
+  email      String
+  status     InvitationStatus @default(PENDING)
+  createdAt  DateTime         @default(now())
+
+  group Group @relation(fields: [groupId], references: [id])
 }
 
 model Task {
