@@ -12,6 +12,8 @@ import VerifyOtpPage from "./pages/auth/VerifyOtpPage";
 import ResetPasswordPage from "./pages/auth/ResetPasswordPage";
 import DashboardLayout from "./layout/DashboardLayout";
 import DashboardPage from "./pages/dashboard/DashboardPage";
+import PrivacyPolicy from "./pages/PrivacyPolicy/PrivacyPolicy";
+import TermsAndConditions from "./pages/TermsAndConditions/TermsAndConditions";
 
 const App = () => {
   const { pathname } = useLocation();
@@ -44,6 +46,9 @@ const App = () => {
         <Route element={<DashboardLayout />}>
           <Route path="/dashboard" element={<DashboardPage />} />
         </Route>
+
+        <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+        <Route path="/terms-and-conditions" element={<TermsAndConditions />} />
       </Routes>
 
       <Toaster position="top-right" richColors closeButton duration={3000} />

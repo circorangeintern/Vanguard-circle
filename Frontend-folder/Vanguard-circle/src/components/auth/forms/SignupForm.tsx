@@ -42,14 +42,20 @@ const SignupForm = () => {
 
     setLoading(true);
     try {
-      const credential = await createUserWithEmailAndPassword(auth!, email, password);
+      const credential = await createUserWithEmailAndPassword(
+        auth!,
+        email,
+        password,
+      );
       await updateProfile(credential.user, { displayName: fullName });
 
       // First authenticated request auto-creates the matching backend User row
       // (handled by the backend's auth middleware) — no extra call needed here.
       navigate("/dashboard");
     } catch (err) {
-      toast.error("Could not create account. That email may already be in use.");
+      toast.error(
+        "Could not create account. That email may already be in use.",
+      );
     } finally {
       setLoading(false);
     }
@@ -122,14 +128,14 @@ const SignupForm = () => {
         <p className="text-sm leading-6 text-[var(--color-text-primary)]">
           I agree to the{" "}
           <Link
-            to="/terms"
+            to="/terms-and-conditions"
             className="text-[var(--color-primary)] hover:text-[var(--color-primary-dark)]"
           >
-            Terms of Service
+            Terms & Conditions
           </Link>{" "}
           and{" "}
           <Link
-            to="/privacy"
+            to="/privacy-policy"
             className="text-[var(--color-primary)] hover:text-[var(--color-primary-dark)]"
           >
             Privacy Policy
@@ -144,10 +150,7 @@ const SignupForm = () => {
       </div>
 
       <div className="mt-5">
-        <SocialLogin
-          isLoading={loading}
-          onGoogleClick={handleGoogleSignIn}
-        />
+        <SocialLogin isLoading={loading} onGoogleClick={handleGoogleSignIn} />
       </div>
 
       <div className="mt-7 text-center">
