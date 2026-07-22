@@ -4,9 +4,16 @@ import { HiOutlineFire, HiOutlineArrowTrendingUp } from "react-icons/hi2";
 interface StreakCardProps {
   streak: number;
   subtitle: string;
+  checkedInToday: boolean;
+  onCheckIn: () => void;
 }
 
-const StreakCard = ({ streak, subtitle }: StreakCardProps) => {
+const StreakCard = ({
+  streak,
+  subtitle,
+  checkedInToday,
+  onCheckIn,
+}: StreakCardProps) => {
   return (
     <motion.div
       whileHover={{ y: -2 }}
@@ -65,12 +72,13 @@ const StreakCard = ({ streak, subtitle }: StreakCardProps) => {
         {/* Desktop Button */}
 
         <button
-          className="
+          onClick={onCheckIn}
+          disabled={checkedInToday}
+          className={`
             hidden
             items-center
             gap-2
             rounded-xl
-            bg-[var(--color-primary)]
             px-6
             py-3
             text-sm
@@ -78,26 +86,41 @@ const StreakCard = ({ streak, subtitle }: StreakCardProps) => {
             text-white
             transition-all
             duration-300
-            hover:opacity-90
+
+            ${
+              checkedInToday
+                ? "cursor-not-allowed bg-emerald-600"
+                : "bg-[var(--color-primary)] hover:opacity-90"
+            }
 
             md:flex
-          "
+          `}
         >
-          View Progress
-          <HiOutlineArrowTrendingUp className="text-lg" />
+          {checkedInToday ? (
+            <>
+              <HiOutlineFire className="text-lg" />
+              Checked In Today
+            </>
+          ) : (
+            <>
+              Check In
+              <HiOutlineArrowTrendingUp className="text-lg" />
+            </>
+          )}
         </button>
 
         {/* Mobile Button */}
 
         <button
-          className="
+          onClick={onCheckIn}
+          disabled={checkedInToday}
+          className={`
             flex
             w-full
             items-center
             justify-center
             gap-2
             rounded-xl
-            bg-[var(--color-primary)]
             px-6
             py-3
             text-sm
@@ -105,13 +128,27 @@ const StreakCard = ({ streak, subtitle }: StreakCardProps) => {
             text-white
             transition-all
             duration-300
-            hover:opacity-90
+
+            ${
+              checkedInToday
+                ? "cursor-not-allowed bg-emerald-600"
+                : "bg-[var(--color-primary)] hover:opacity-90"
+            }
 
             md:hidden
-          "
+          `}
         >
-          View Progress
-          <HiOutlineArrowTrendingUp className="text-lg" />
+          {checkedInToday ? (
+            <>
+              <HiOutlineFire className="text-lg" />
+              Checked In Today
+            </>
+          ) : (
+            <>
+              Check In
+              <HiOutlineArrowTrendingUp className="text-lg" />
+            </>
+          )}
         </button>
       </div>
     </motion.div>
