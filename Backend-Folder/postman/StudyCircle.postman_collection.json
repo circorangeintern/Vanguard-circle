@@ -1,0 +1,260 @@
+{
+  "info": {
+    "name": "StudyCircle API",
+    "description": "Backend endpoints for StudyCircle. Run \"1. Sign In (get idToken)\" first — it saves the token into {{idToken}} automatically via a test script, and every other request uses {{idToken}} as its Bearer token.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "auth": {
+    "type": "bearer",
+    "bearer": [{ "key": "token", "value": "{{idToken}}", "type": "string" }]
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:4000" },
+    { "key": "firebaseApiKey", "value": "REPLACE_WITH_VITE_FIREBASE_API_KEY" },
+    { "key": "testEmail", "value": "postman.test@studycircle.dev" },
+    { "key": "testPassword", "value": "PostmanTest123!" },
+    { "key": "idToken", "value": "" },
+    { "key": "groupId", "value": "" },
+    { "key": "inviteCode", "value": "" },
+    { "key": "taskId", "value": "" }
+  ],
+  "item": [
+    {
+      "name": "0. Health",
+      "request": {
+        "method": "GET",
+        "url": "{{baseUrl}}/health",
+        "auth": { "type": "noauth" }
+      }
+    },
+    {
+      "name": "Auth (Firebase)",
+      "item": [
+        {
+          "name": "Sign Up (email/password)",
+          "request": {
+            "method": "POST",
+            "url": "https://identitytoolkit.googleapis.com/v1/accounts:signUp?key={{firebaseApiKey}}",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "auth": { "type": "noauth" },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{testEmail}}\",\n  \"password\": \"{{testPassword}}\",\n  \"returnSecureToken\": true\n}"
+            }
+          }
+        },
+        {
+          "name": "1. Sign In (get idToken)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const data = pm.response.json();",
+                  "if (data.idToken) {",
+                  "  pm.collectionVariables.set('idToken', data.idToken);",
+                  "  console.log('idToken saved to {{idToken}}');",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "url": "https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key={{firebaseApiKey}}",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "auth": { "type": "noauth" },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{testEmail}}\",\n  \"password\": \"{{testPassword}}\",\n  \"returnSecureToken\": true\n}"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Users",
+      "item": [
+        {
+          "name": "Get my profile",
+          "request": { "method": "GET", "url": "{{baseUrl}}/users/me" }
+        },
+        {
+          "name": "Get my dashboard",
+          "request": { "method": "GET", "url": "{{baseUrl}}/users/me/dashboard" }
+        },
+        {
+          "name": "Get my notifications",
+          "request": { "method": "GET", "url": "{{baseUrl}}/users/me/notifications" }
+        },
+        {
+          "name": "Mark all notifications read",
+          "request": { "method": "PATCH", "url": "{{baseUrl}}/users/me/notifications/read-all" }
+        }
+      ]
+    },
+    {
+      "name": "Circles (Groups)",
+      "item": [
+        {
+          "name": "Create a circle",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const data = pm.response.json();",
+                  "if (data?.data?.group) {",
+                  "  pm.collectionVariables.set('groupId', data.data.group.id);",
+                  "  pm.collectionVariables.set('inviteCode', data.data.group.inviteCode);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/groups",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"CS301 Study Group\",\n  \"courseName\": \"Data Structures\",\n  \"description\": \"Weekly sessions for CS301\",\n  \"icon\": \"📚\",\n  \"visibility\": \"private\",\n  \"approval\": false,\n  \"maxMembers\": 20,\n  \"allowMemberInvites\": true,\n  \"requireAdminApproval\": true,\n  \"studyReminders\": true,\n  \"reminderFrequency\": \"Every day\",\n  \"reminderTime\": \"09:00 AM\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Preview circle by invite code (public)",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/groups/invite/{{inviteCode}}",
+            "auth": { "type": "noauth" }
+          }
+        },
+        {
+          "name": "Join circle via invite code",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/groups/{{inviteCode}}/join"
+          }
+        },
+        {
+          "name": "Get one circle",
+          "request": { "method": "GET", "url": "{{baseUrl}}/groups/{{groupId}}" }
+        },
+        {
+          "name": "Update circle settings (organizer only)",
+          "request": {
+            "method": "PATCH",
+            "url": "{{baseUrl}}/groups/{{groupId}}",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"description\": \"Updated description\",\n  \"maxMembers\": 30,\n  \"studyReminders\": false\n}"
+            }
+          }
+        },
+        {
+          "name": "Invite members by email",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/groups/{{groupId}}/invitations",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"emails\": [\"friend1@example.com\", \"friend2@example.com\"]\n}"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Sessions",
+      "item": [
+        {
+          "name": "Schedule a session",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const data = pm.response.json();",
+                  "if (data?.data?.id) pm.collectionVariables.set('sessionId', data.data.id);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/groups/{{groupId}}/sessions",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Study Session\",\n  \"startTime\": \"2026-07-24T10:00:00.000Z\"\n}"
+            }
+          }
+        },
+        {
+          "name": "List upcoming sessions for a circle",
+          "request": { "method": "GET", "url": "{{baseUrl}}/groups/{{groupId}}/sessions" }
+        }
+      ]
+    },
+    {
+      "name": "Tasks",
+      "item": [
+        {
+          "name": "Create a task",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const data = pm.response.json();",
+                  "if (data?.data?.id) pm.collectionVariables.set('taskId', data.data.id);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/groups/{{groupId}}/tasks",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Read Chapter 4\",\n  \"dueDate\": \"2026-07-30T23:59:00.000Z\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Update task status / reassign",
+          "request": {
+            "method": "PATCH",
+            "url": "{{baseUrl}}/groups/{{groupId}}/tasks/{{taskId}}",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"DOING\"\n}"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Check-ins",
+      "item": [
+        {
+          "name": "Daily check-in",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/groups/{{groupId}}/checkins",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"DONE\"\n}"
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

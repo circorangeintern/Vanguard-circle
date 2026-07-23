@@ -16,8 +16,11 @@ router.post("/:groupId/tasks", requireAuth, async (req, res) => {
   res.success(task, 201);
 });
 
-// PATCH /tasks/:id — update status or reassign
-router.patch("/:id", requireAuth, async (req, res) => {
+// PATCH /groups/:groupId/tasks/:id — update status or reassign
+// (Was PATCH /:id, which mounted as PATCH /groups/:id — identical to the
+// circle-settings PATCH in groups.js and registered after it, so Express
+// never reached this handler at all; every request fell into the wrong route.)
+router.patch("/:groupId/tasks/:id", requireAuth, async (req, res) => {
   const { status, assignedTo } = req.body;
 
   const task = await prisma.task.update({
