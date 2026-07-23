@@ -1,0 +1,418 @@
+{
+	"id": "d3bfc777-813a-4f10-a784-af26b20ccdd1",
+	"name": "StudyCircle API",
+	"timestamp": "2026-07-23T08:41:54.716Z",
+	"collection_id": "40911641-2df8fb58-1c8a-4673-827a-8b179a9d5e02",
+	"folder_id": 0,
+	"environment_id": "0",
+	"totalPass": 0,
+	"delay": 0,
+	"persist": true,
+	"status": "finished",
+	"startedAt": "2026-07-23T08:41:27.732Z",
+	"totalFail": 0,
+	"results": [
+		{
+			"id": "91c89286-dfab-4968-9cda-44f1c1cf1b9a",
+			"name": "Sign Up (email/password)",
+			"url": "https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=*****",
+			"time": 909,
+			"responseCode": {
+				"code": 400,
+				"name": "Bad Request"
+			},
+			"tests": {},
+			"testPassFailCounts": {},
+			"times": [
+				909
+			],
+			"allTests": [
+				{}
+			]
+		},
+		{
+			"id": "5c2e41de-e092-4e77-aba2-068384fa9590",
+			"name": "1. Sign In (saves idToken automatically)",
+			"url": "https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=*****",
+			"time": 297,
+			"responseCode": {
+				"code": 200,
+				"name": "OK"
+			},
+			"tests": {},
+			"testPassFailCounts": {},
+			"times": [
+				297
+			],
+			"allTests": [
+				{}
+			]
+		},
+		{
+			"id": "2b43a212-b502-40c2-bdc7-58396946d418",
+			"name": "Get my profile",
+			"url": "http://localhost:4000/users/me",
+			"time": 2593,
+			"responseCode": {
+				"code": 200,
+				"name": "OK"
+			},
+			"tests": {},
+			"testPassFailCounts": {},
+			"times": [
+				2593
+			],
+			"allTests": [
+				{}
+			]
+		},
+		{
+			"id": "5413deed-c710-43dc-b052-bfeb964ca535",
+			"name": "Get my dashboard",
+			"url": "http://localhost:4000/users/me/dashboard",
+			"time": 3182,
+			"responseCode": {
+				"code": 200,
+				"name": "OK"
+			},
+			"tests": {},
+			"testPassFailCounts": {},
+			"times": [
+				3182
+			],
+			"allTests": [
+				{}
+			]
+		},
+		{
+			"id": "725d0a7b-e495-418d-8a82-7e13a8502f93",
+			"name": "Get my notifications",
+			"url": "http://localhost:4000/users/me/notifications",
+			"time": 2152,
+			"responseCode": {
+				"code": 200,
+				"name": "OK"
+			},
+			"tests": {},
+			"testPassFailCounts": {},
+			"times": [
+				2152
+			],
+			"allTests": [
+				{}
+			]
+		},
+		{
+			"id": "3ea9fb03-78d6-475b-a75b-cfc128f058be",
+			"name": "Mark all notifications read",
+			"url": "http://localhost:4000/users/me/notifications/read-all",
+			"time": 1209,
+			"responseCode": {
+				"code": 200,
+				"name": "OK"
+			},
+			"tests": {},
+			"testPassFailCounts": {},
+			"times": [
+				1209
+			],
+			"allTests": [
+				{}
+			]
+		},
+		{
+			"id": "b19dcad3-42aa-46c7-a4c3-05a0970f6d3b",
+			"name": "Create a circle",
+			"url": "http://localhost:4000/groups",
+			"time": 2234,
+			"responseCode": {
+				"code": 201,
+				"name": "Created"
+			},
+			"tests": {},
+			"testPassFailCounts": {},
+			"times": [
+				2234
+			],
+			"allTests": [
+				{}
+			]
+		},
+		{
+			"id": "bec0f9fc-aa65-4df2-82e4-1eeee5018ca3",
+			"name": "Preview circle by invite code (public)",
+			"url": "http://localhost:4000/groups/invite/nj6duf8",
+			"time": 842,
+			"responseCode": {
+				"code": 200,
+				"name": "OK"
+			},
+			"tests": {},
+			"testPassFailCounts": {},
+			"times": [
+				842
+			],
+			"allTests": [
+				{}
+			]
+		},
+		{
+			"id": "aa9ef9a9-2cc2-47aa-82c9-d30ae5ad9543",
+			"name": "Join circle via invite code",
+			"url": "http://localhost:4000/groups/nj6duf8/join",
+			"time": 823,
+			"responseCode": {
+				"code": 200,
+				"name": "OK"
+			},
+			"tests": {},
+			"testPassFailCounts": {},
+			"times": [
+				823
+			],
+			"allTests": [
+				{}
+			]
+		},
+		{
+			"id": "36977f91-3b90-4e26-9705-7353fb22ad8a",
+			"name": "Get one circle",
+			"url": "http://localhost:4000/groups/dd9577f7-d1d9-4179-9938-353a3ad017d2",
+			"time": 1600,
+			"responseCode": {
+				"code": 200,
+				"name": "OK"
+			},
+			"tests": {},
+			"testPassFailCounts": {},
+			"times": [
+				1600
+			],
+			"allTests": [
+				{}
+			]
+		},
+		{
+			"id": "aa975c37-cc65-4dcf-a081-28a9a1650455",
+			"name": "Update circle settings (organizer only)",
+			"url": "http://localhost:4000/groups/dd9577f7-d1d9-4179-9938-353a3ad017d2",
+			"time": 1066,
+			"responseCode": {
+				"code": 200,
+				"name": "OK"
+			},
+			"tests": {},
+			"testPassFailCounts": {},
+			"times": [
+				1066
+			],
+			"allTests": [
+				{}
+			]
+		},
+		{
+			"id": "551d833b-aa60-45d7-a89e-2d6dd8bf68d3",
+			"name": "Invite members by email",
+			"url": "http://localhost:4000/groups/dd9577f7-d1d9-4179-9938-353a3ad017d2/invitations",
+			"time": 1644,
+			"responseCode": {
+				"code": 201,
+				"name": "Created"
+			},
+			"tests": {},
+			"testPassFailCounts": {},
+			"times": [
+				1644
+			],
+			"allTests": [
+				{}
+			]
+		},
+		{
+			"id": "d24505f6-74d6-49b4-a188-e33142fdb7ae",
+			"name": "Schedule a session",
+			"url": "http://localhost:4000/groups/dd9577f7-d1d9-4179-9938-353a3ad017d2/sessions",
+			"time": 824,
+			"responseCode": {
+				"code": 201,
+				"name": "Created"
+			},
+			"tests": {},
+			"testPassFailCounts": {},
+			"times": [
+				824
+			],
+			"allTests": [
+				{}
+			]
+		},
+		{
+			"id": "054fbda0-1974-429f-8b8b-5e5284d77819",
+			"name": "List upcoming sessions for a circle",
+			"url": "http://localhost:4000/groups/dd9577f7-d1d9-4179-9938-353a3ad017d2/sessions",
+			"time": 815,
+			"responseCode": {
+				"code": 200,
+				"name": "OK"
+			},
+			"tests": {},
+			"testPassFailCounts": {},
+			"times": [
+				815
+			],
+			"allTests": [
+				{}
+			]
+		},
+		{
+			"id": "a8278668-072f-4dba-9906-94700cd9d77d",
+			"name": "Create a task",
+			"url": "http://localhost:4000/groups/dd9577f7-d1d9-4179-9938-353a3ad017d2/tasks",
+			"time": 613,
+			"responseCode": {
+				"code": 201,
+				"name": "Created"
+			},
+			"tests": {},
+			"testPassFailCounts": {},
+			"times": [
+				613
+			],
+			"allTests": [
+				{}
+			]
+		},
+		{
+			"id": "fa69211d-8b82-48e8-91f0-2e5f3a2867b2",
+			"name": "Update task status / reassign",
+			"url": "http://localhost:4000/groups/dd9577f7-d1d9-4179-9938-353a3ad017d2/tasks/13d75e16-ab12-4d17-891a-599ceb6e9871",
+			"time": 607,
+			"responseCode": {
+				"code": 200,
+				"name": "OK"
+			},
+			"tests": {},
+			"testPassFailCounts": {},
+			"times": [
+				607
+			],
+			"allTests": [
+				{}
+			]
+		},
+		{
+			"id": "cd61a7d1-10c1-4304-946a-e200947e656b",
+			"name": "Daily check-in",
+			"url": "http://localhost:4000/groups/dd9577f7-d1d9-4179-9938-353a3ad017d2/checkins",
+			"time": 1488,
+			"responseCode": {
+				"code": 200,
+				"name": "OK"
+			},
+			"tests": {},
+			"testPassFailCounts": {},
+			"times": [
+				1488
+			],
+			"allTests": [
+				{}
+			]
+		},
+		{
+			"id": "dbe0a7da-90d3-40c5-abd7-e2cbd0abb94e",
+			"name": "0. Health",
+			"url": "http://localhost:4000/health",
+			"time": 4,
+			"responseCode": {
+				"code": 200,
+				"name": "OK"
+			},
+			"tests": {},
+			"testPassFailCounts": {},
+			"times": [
+				4
+			],
+			"allTests": [
+				{}
+			]
+		}
+	],
+	"count": 1,
+	"totalTime": 22902,
+	"collection": {
+		"requests": [
+			{
+				"id": "91c89286-dfab-4968-9cda-44f1c1cf1b9a",
+				"method": "POST"
+			},
+			{
+				"id": "5c2e41de-e092-4e77-aba2-068384fa9590",
+				"method": "POST"
+			},
+			{
+				"id": "2b43a212-b502-40c2-bdc7-58396946d418",
+				"method": "GET"
+			},
+			{
+				"id": "5413deed-c710-43dc-b052-bfeb964ca535",
+				"method": "GET"
+			},
+			{
+				"id": "725d0a7b-e495-418d-8a82-7e13a8502f93",
+				"method": "GET"
+			},
+			{
+				"id": "3ea9fb03-78d6-475b-a75b-cfc128f058be",
+				"method": "PATCH"
+			},
+			{
+				"id": "b19dcad3-42aa-46c7-a4c3-05a0970f6d3b",
+				"method": "POST"
+			},
+			{
+				"id": "bec0f9fc-aa65-4df2-82e4-1eeee5018ca3",
+				"method": "GET"
+			},
+			{
+				"id": "aa9ef9a9-2cc2-47aa-82c9-d30ae5ad9543",
+				"method": "POST"
+			},
+			{
+				"id": "36977f91-3b90-4e26-9705-7353fb22ad8a",
+				"method": "GET"
+			},
+			{
+				"id": "aa975c37-cc65-4dcf-a081-28a9a1650455",
+				"method": "PATCH"
+			},
+			{
+				"id": "551d833b-aa60-45d7-a89e-2d6dd8bf68d3",
+				"method": "POST"
+			},
+			{
+				"id": "d24505f6-74d6-49b4-a188-e33142fdb7ae",
+				"method": "POST"
+			},
+			{
+				"id": "054fbda0-1974-429f-8b8b-5e5284d77819",
+				"method": "GET"
+			},
+			{
+				"id": "a8278668-072f-4dba-9906-94700cd9d77d",
+				"method": "POST"
+			},
+			{
+				"id": "fa69211d-8b82-48e8-91f0-2e5f3a2867b2",
+				"method": "PATCH"
+			},
+			{
+				"id": "cd61a7d1-10c1-4304-946a-e200947e656b",
+				"method": "POST"
+			},
+			{
+				"id": "dbe0a7da-90d3-40c5-abd7-e2cbd0abb94e",
+				"method": "GET"
+			}
+		]
+	}
+}
