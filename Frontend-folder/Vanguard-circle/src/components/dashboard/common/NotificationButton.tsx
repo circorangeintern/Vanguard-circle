@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { HiBell } from "react-icons/hi2";
 
 import { api } from "../../../lib/api";
+import { trackNotificationOpened } from "../../../services/analytics";
 
 interface NotificationPayload {
   type?: string;
@@ -65,6 +66,9 @@ const NotificationButton = () => {
   const handleToggle = () => {
     const next = !open;
     setOpen(next);
+    if (next) {
+      trackNotificationOpened({ unreadCount });
+    }
     if (next && unreadCount > 0) {
       api
         .patch("/users/me/notifications/read-all")

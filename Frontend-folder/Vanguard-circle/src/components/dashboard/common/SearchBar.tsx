@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { HiMagnifyingGlass } from "react-icons/hi2";
 
 import { api } from "../../../lib/api";
+import { trackSearch } from "../../../services/analytics";
 
 interface TaskResult {
   id: string;
@@ -80,6 +81,21 @@ const SearchBar = () => {
     ? tasks.filter((t) => t.title.toLowerCase().includes(q))
     : [];
   const hasResults = matchedCircles.length > 0 || matchedTasks.length > 0;
+
+  // Debounced — fires once ~600ms after typing settles, not per keystroke,
+  // so a data analyst sees "someone searched X" instead of a noisy stream of
+  // partial substrings for every letter typed.
+  useEffect(() => {
+    if (!q) return;
+    const timeout = setTimeout(() => {
+      trackSearch({
+        query: q,
+        resultCount: matchedCircles.length + matchedTasks.length,
+      });
+    }, 600);
+    return () => clearTimeout(timeout);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [q]);
 
   return (
     <div className="relative w-full max-w-xl" ref={containerRef}>

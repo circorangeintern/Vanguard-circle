@@ -57,3 +57,36 @@ export const trackDailyCheckin = (payload: DailyCheckinPayload) => {
     streak: payload.streak,
   });
 };
+
+export const trackSessionScheduled = (payload: {
+  circleId: string;
+  title: string;
+}) => {
+  mixpanel.track("Session Scheduled", {
+    circle_id: payload.circleId,
+    title: payload.title,
+  });
+};
+
+export const trackNotificationOpened = (payload: { unreadCount: number }) => {
+  mixpanel.track("Notification Opened", {
+    unread_count: payload.unreadCount,
+  });
+};
+
+export const trackSearch = (payload: { query: string; resultCount: number }) => {
+  mixpanel.track("Search", {
+    query: payload.query,
+    result_count: payload.resultCount,
+  });
+};
+
+export const trackMemberInvited = (payload: {
+  circleId: string;
+  inviteCount: number;
+}) => {
+  mixpanel.track("Member Invited", {
+    circle_id: payload.circleId,
+    invite_count: payload.inviteCount,
+  });
+};

@@ -15,7 +15,7 @@ import type {
   NotificationSettings,
   PendingInvite,
 } from "../create-circle/types";
-import { trackCircleCreated } from "../../../services/analytics";
+import { trackCircleCreated, trackMemberInvited } from "../../../services/analytics";
 
 interface CreatedGroup {
   id: string;
@@ -216,6 +216,10 @@ const CreateCircleModal = ({
         try {
           await api.post(`/groups/${createdGroup.id}/invitations`, {
             emails: members.map((m) => m.email),
+          });
+          trackMemberInvited({
+            circleId: createdGroup.id,
+            inviteCount: members.length,
           });
         } catch (err) {
           // Circle is already created and configured — don't fail the whole

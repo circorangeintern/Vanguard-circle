@@ -5,6 +5,7 @@ import { HiOutlineXMark } from "react-icons/hi2";
 import { toast } from "sonner";
 
 import { api } from "../../../lib/api";
+import { trackSessionScheduled } from "../../../services/analytics";
 
 interface CircleOption {
   groupId: string;
@@ -54,6 +55,7 @@ const CreateSessionModal = ({
         title,
         startTime: new Date(startTime).toISOString(),
       });
+      trackSessionScheduled({ circleId: selectedGroupId, title });
       toast.success("Session scheduled!");
       setTitle("Study Session");
       setStartTime(toDatetimeLocalDefault());
