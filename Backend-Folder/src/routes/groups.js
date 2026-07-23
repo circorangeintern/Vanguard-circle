@@ -2,6 +2,7 @@ const express = require("express");
 const prisma = require("../config/prisma");
 const { requireAuth } = require("../middleware/auth");
 const { notify } = require("../services/notify");
+const { sendInviteEmail } = require("../services/email");
 
 const router = express.Router();
 
@@ -65,7 +66,23 @@ router.post("/", requireAuth, async (req, res) => {
     data: { userId: req.user.id, groupId: group.id, role: "ORGANIZER" },
   });
 
-  const inviteLink = `${process.env.FRONTEND_URL || "https://studycircle.app"}/invite/${inviteCode}`;
+  // FRONTEND_URL must be set in Render's env vars — the previous fallback
+  // ("https://studycircle.app") is someone else's real, unrelated live site,
+  // so an unset env var was silently sending every invite link/QR code there.
+  const inviteLink = `${process.env.FRONTEND_URL || "https://studycircle-vyo1.onrender.com"}/invite/${inviteCode}`;
+
+  // Fire-and-forget — a slow/failed email provider shouldn't hold up circle
+  // creation, which has already fully succeeded by this point.
+  Promise.all(
+    group.invitations.map((inv) =>
+      sendInviteEmail({
+        to: inv.email,
+        inviterName: req.user.name,
+        circleName: group.name,
+        inviteLink,
+      }),
+    ),
+  ).catch(() => {});
 
   res.success({ group, inviteLink }, 201);
 });
@@ -216,6 +233,18 @@ router.post("/:id/invitations", requireAuth, async (req, res) => {
       }),
     ),
   );
+
+  const inviteLink = `${process.env.FRONTEND_URL || "https://studycircle-vyo1.onrender.com"}/invite/${group.inviteCode}`;
+  Promise.all(
+    invitations.map((inv) =>
+      sendInviteEmail({
+        to: inv.email,
+        inviterName: req.user.name,
+        circleName: group.name,
+        inviteLink,
+      }),
+    ),
+  ).catch(() => {});
 
   res.success({ invitations }, 201);
 });

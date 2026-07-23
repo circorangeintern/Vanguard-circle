@@ -9,6 +9,7 @@ import TodayAgenda, { type AgendaItem } from "../../components/dashboard/section
 import UpcomingAssignments from "../../components/dashboard/sections/UpcomingAssignments";
 import CreateCircleModal from "../../components/dashboard/modals/CreateCircleModal";
 import CreateSessionModal from "../../components/dashboard/modals/CreateSessionModal";
+import DashboardSkeleton from "../../components/dashboard/DashboardSkeleton";
 
 interface Task {
   id: string;
@@ -57,12 +58,11 @@ const DashboardPage = () => {
     loadDashboard();
   }, []);
 
-  if (loading) {
-    return (
-      <div className="py-20 text-center text-slate-500">
-        Loading your dashboard...
-      </div>
-    );
+  // Only the first load shows the full skeleton — a check-in/circle-creation
+  // refresh already has real data on screen, so re-fetching shouldn't blank
+  // the whole page back out while it loads.
+  if (loading && !data) {
+    return <DashboardSkeleton />;
   }
 
   if (error || !data) {
