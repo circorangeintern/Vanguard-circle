@@ -1,31 +1,97 @@
 {
   "info": {
     "name": "StudyCircle API",
-    "description": "Backend endpoints for StudyCircle. Run \"1. Sign In (get idToken)\" first — it saves the token into {{idToken}} automatically via a test script, and every other request uses {{idToken}} as its Bearer token.",
+    "description": "Every backend endpoint, pre-filled and pre-tested. Run 'Sign In' first (auto-saves idToken), then 'Create a circle' (auto-saves groupId/inviteCode) — everything else just works after that. Each request has a real saved example response from a live test run.",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "auth": {
     "type": "bearer",
-    "bearer": [{ "key": "token", "value": "{{idToken}}", "type": "string" }]
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{idToken}}",
+        "type": "string"
+      }
+    ]
   },
   "variable": [
-    { "key": "baseUrl", "value": "http://localhost:4000" },
-    { "key": "firebaseApiKey", "value": "REPLACE_WITH_VITE_FIREBASE_API_KEY" },
-    { "key": "testEmail", "value": "postman.test@studycircle.dev" },
-    { "key": "testPassword", "value": "PostmanTest123!" },
-    { "key": "idToken", "value": "" },
-    { "key": "groupId", "value": "" },
-    { "key": "inviteCode", "value": "" },
-    { "key": "taskId", "value": "" }
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:4000",
+      "type": "default"
+    },
+    {
+      "key": "firebaseApiKey",
+      "value": "AIzaSyDBnR_KcsFJxx3KqsmRVIKvlqZqrHqrvqs",
+      "type": "default"
+    },
+    {
+      "key": "testEmail",
+      "value": "postman.test@studycircle.dev",
+      "type": "default"
+    },
+    {
+      "key": "testPassword",
+      "value": "PostmanTest123!",
+      "type": "default"
+    },
+    {
+      "key": "idToken",
+      "value": "",
+      "type": "default"
+    },
+    {
+      "key": "groupId",
+      "value": "e1f5c0c8-e5cf-4902-a3e5-0e5c3387aedd",
+      "type": "default"
+    },
+    {
+      "key": "inviteCode",
+      "value": "9sxqn5n",
+      "type": "default"
+    },
+    {
+      "key": "taskId",
+      "value": "956b0760-ffb2-4ad9-903d-4df020b6ae75",
+      "type": "default"
+    }
   ],
   "item": [
     {
       "name": "0. Health",
       "request": {
         "method": "GET",
+        "header": [],
         "url": "{{baseUrl}}/health",
-        "auth": { "type": "noauth" }
-      }
+        "auth": {
+          "type": "noauth"
+        }
+      },
+      "response": [
+        {
+          "name": "200 GET response",
+          "originalRequest": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/health"
+          },
+          "status": "OK",
+          "code": 200,
+          "_postman_previewlanguage": "json",
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "body": "{\n  \"success\": true,\n  \"data\": {\n    \"status\": \"ok\"\n  },\n  \"error\": null\n}"
+        }
+      ]
     },
     {
       "name": "Auth (Firebase)",
@@ -34,17 +100,25 @@
           "name": "Sign Up (email/password)",
           "request": {
             "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
             "url": "https://identitytoolkit.googleapis.com/v1/accounts:signUp?key={{firebaseApiKey}}",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
-            "auth": { "type": "noauth" },
+            "auth": {
+              "type": "noauth"
+            },
             "body": {
               "mode": "raw",
               "raw": "{\n  \"email\": \"{{testEmail}}\",\n  \"password\": \"{{testPassword}}\",\n  \"returnSecureToken\": true\n}"
             }
-          }
+          },
+          "response": []
         },
         {
-          "name": "1. Sign In (get idToken)",
+          "name": "1. Sign In (saves idToken automatically)",
           "event": [
             {
               "listen": "test",
@@ -53,7 +127,7 @@
                   "const data = pm.response.json();",
                   "if (data.idToken) {",
                   "  pm.collectionVariables.set('idToken', data.idToken);",
-                  "  console.log('idToken saved to {{idToken}}');",
+                  "  console.log('idToken saved');",
                   "}"
                 ]
               }
@@ -61,14 +135,40 @@
           ],
           "request": {
             "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
             "url": "https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key={{firebaseApiKey}}",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
-            "auth": { "type": "noauth" },
+            "auth": {
+              "type": "noauth"
+            },
             "body": {
               "mode": "raw",
               "raw": "{\n  \"email\": \"{{testEmail}}\",\n  \"password\": \"{{testPassword}}\",\n  \"returnSecureToken\": true\n}"
             }
-          }
+          },
+          "response": [
+            {
+              "name": "200 sign-in response",
+              "originalRequest": {
+                "method": "POST",
+                "url": "https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key={{firebaseApiKey}}"
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"kind\": \"identitytoolkit#VerifyPasswordResponse\",\n  \"localId\": \"FDYDWVgIemPwHCgAsZK0tdetfGS2\",\n  \"email\": \"postman.test@studycircle.dev\",\n  \"displayName\": \"Postman Test User\",\n  \"idToken\": \"<redacted — a real token looks like this, much longer>\",\n  \"registered\": true,\n  \"refreshToken\": \"<redacted>\",\n  \"expiresIn\": \"3600\"\n}"
+            }
+          ]
         }
       ]
     },
@@ -77,19 +177,135 @@
       "item": [
         {
           "name": "Get my profile",
-          "request": { "method": "GET", "url": "{{baseUrl}}/users/me" }
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/users/me"
+          },
+          "response": [
+            {
+              "name": "200 GET response",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": "{{baseUrl}}/users/me"
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"success\": true,\n  \"data\": {\n    \"id\": \"cd2d0dcc-94ac-4cf6-97f7-f29f9e300a46\",\n    \"firebaseUid\": \"FDYDWVgIemPwHCgAsZK0tdetfGS2\",\n    \"name\": \"Postman Test User\",\n    \"email\": \"postman.test@studycircle.dev\",\n    \"phone\": null,\n    \"createdAt\": \"2026-07-23T06:47:07.693Z\"\n  },\n  \"error\": null\n}"
+            }
+          ]
         },
         {
           "name": "Get my dashboard",
-          "request": { "method": "GET", "url": "{{baseUrl}}/users/me/dashboard" }
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/users/me/dashboard"
+          },
+          "response": [
+            {
+              "name": "200 GET response",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": "{{baseUrl}}/users/me/dashboard"
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"success\": true,\n  \"data\": {\n    \"circles\": [\n      {\n        \"groupId\": \"3637e5aa-d6a1-4098-a624-10908388839b\",\n        \"name\": \"Postman Test Circle\",\n        \"courseName\": \"Testing 101\",\n        \"streak\": 1,\n        \"checkedInToday\": true,\n        \"upcomingTasks\": [\n          {\n            \"id\": \"a7d6796d-d60f-4694-8049-f8cfb627e029\",\n            \"groupId\": \"3637e5aa-d6a1-4098-a624-10908388839b\",\n            \"title\": \"Read Ch 4\",\n            \"dueDate\": \"2026-08-01T00:00:00.000Z\",\n            \"status\": \"DOING\",\n            \"assignedTo\": null,\n            \"createdAt\": \"2026-07-23T06:47:11.090Z\"\n          }\n        ]\n      },\n      {\n        \"groupId\": \"a81d1a71-8003-4a0d-8860-492f5f675b12\",\n        \"name\": \"CS401 Study Group\",\n        \"courseName\": \"Data Analysis\",\n        \"streak\": 1,\n        \"checkedInToday\": true,\n        \"upcomingTasks\": [\n          {\n            \"id\": \"af6793c7-4c19-4148-80ea-172144367264\",\n            \"groupId\": \"a81d1a71-8003-4a0d-8860-492f5f675b12\",\n            \"title\": \"Finish Chapter 4 exercises\",\n            \"dueDate\": \"2026-07-20T00:00:00.000Z\",\n            \"status\": \"TODO\",\n            \"assignedTo\": null,\n            \"createdAt\": \"2026-07-23T07:19:01.538Z\"\n          }\n        ]\n      },\n      {\n        \"groupId\": \"e1f5c0c8-e5cf-4902-a3e5-0e5c3387aedd\",\n        \"name\": \"CS301 Study Group\",\n        \"courseName\": \"Data Structures\",\n        \"streak\": 1,\n        \"checkedInToday\": true,\n        \"upcomingTasks\": [\n          {\n            \"id\": \"956b0760-ffb2-4ad9-903d-4df020b6ae75\",\n            \"groupId\": \"e1f5c0c8-e5cf-4902-a3e5-0e5c3387aedd\",\n            \"title\": \"Read Chapter 4\",\n            \"dueDate\": \"2026-08-01T23:59:00.000Z\",\n            \"status\": \"DOING\",\n            \"assignedTo\": null,\n            \"createdAt\": \"2026-07-23T07:32:34.359Z\"\n          }\n        ]\n      }\n    ],\n    \"todayAgenda\": [\n      {\n        \"id\": \"138025fb-474b-4524-a4d7-e5aa9d824ac6\",\n        \"title\": \"Study Session\",\n        \"startTime\": \"2026-07-23T06:47:14.140Z\",\n        \"groupId\": \"3637e5aa-d6a1-4098-a624-10908388839b\",\n        \"groupName\": \"Postman Test Circle\"\n      }\n    ]\n  },\n  \"error\": null\n}"
+            }
+          ]
         },
         {
           "name": "Get my notifications",
-          "request": { "method": "GET", "url": "{{baseUrl}}/users/me/notifications" }
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/users/me/notifications"
+          },
+          "response": [
+            {
+              "name": "200 GET response",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": "{{baseUrl}}/users/me/notifications"
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"success\": true,\n  \"data\": {\n    \"notifications\": [],\n    \"unreadCount\": 0\n  },\n  \"error\": null\n}"
+            }
+          ]
         },
         {
           "name": "Mark all notifications read",
-          "request": { "method": "PATCH", "url": "{{baseUrl}}/users/me/notifications/read-all" }
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "url": "{{baseUrl}}/users/me/notifications/read-all"
+          },
+          "response": [
+            {
+              "name": "200 PATCH response",
+              "originalRequest": {
+                "method": "PATCH",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": "{{baseUrl}}/users/me/notifications/read-all"
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"success\": true,\n  \"data\": {\n    \"ok\": true\n  },\n  \"error\": null\n}"
+            }
+          ]
         }
       ]
     },
@@ -98,6 +314,49 @@
       "item": [
         {
           "name": "Create a circle",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/groups",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"CS301 Study Group\",\n  \"courseName\": \"Data Structures\",\n  \"description\": \"Weekly sessions for CS301\",\n  \"icon\": \"📚\",\n  \"visibility\": \"private\",\n  \"approval\": false,\n  \"maxMembers\": 20,\n  \"allowMemberInvites\": true,\n  \"requireAdminApproval\": true,\n  \"studyReminders\": true,\n  \"reminderFrequency\": \"Every day\",\n  \"reminderTime\": \"09:00 AM\"\n}"
+            }
+          },
+          "response": [
+            {
+              "name": "201 POST response",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": "{{baseUrl}}/groups",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"CS301 Study Group\",\n  \"courseName\": \"Data Structures\",\n  \"description\": \"Weekly sessions for CS301\",\n  \"icon\": \"📚\",\n  \"visibility\": \"private\",\n  \"approval\": false,\n  \"maxMembers\": 20,\n  \"allowMemberInvites\": true,\n  \"requireAdminApproval\": true,\n  \"studyReminders\": true,\n  \"reminderFrequency\": \"Every day\",\n  \"reminderTime\": \"09:00 AM\"\n}"
+                }
+              },
+              "status": "Created",
+              "code": 201,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"success\": true,\n  \"data\": {\n    \"group\": {\n      \"id\": \"e1f5c0c8-e5cf-4902-a3e5-0e5c3387aedd\",\n      \"name\": \"CS301 Study Group\",\n      \"courseName\": \"Data Structures\",\n      \"description\": \"Weekly sessions for CS301\",\n      \"icon\": \"📚\",\n      \"visibility\": \"private\",\n      \"approval\": false,\n      \"maxMembers\": 20,\n      \"allowMemberInvites\": true,\n      \"requireAdminApproval\": true,\n      \"studyReminders\": true,\n      \"reminderFrequency\": \"Every day\",\n      \"reminderTime\": \"09:00 AM\",\n      \"inviteCode\": \"9sxqn5n\",\n      \"createdBy\": \"cd2d0dcc-94ac-4cf6-97f7-f29f9e300a46\",\n      \"createdAt\": \"2026-07-23T07:32:26.879Z\",\n      \"invitations\": []\n    },\n    \"inviteLink\": \"https://studycircle.app/invite/9sxqn5n\"\n  },\n  \"error\": null\n}"
+            }
+          ],
           "event": [
             {
               "listen": "test",
@@ -111,59 +370,201 @@
                 ]
               }
             }
-          ],
-          "request": {
-            "method": "POST",
-            "url": "{{baseUrl}}/groups",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"name\": \"CS301 Study Group\",\n  \"courseName\": \"Data Structures\",\n  \"description\": \"Weekly sessions for CS301\",\n  \"icon\": \"📚\",\n  \"visibility\": \"private\",\n  \"approval\": false,\n  \"maxMembers\": 20,\n  \"allowMemberInvites\": true,\n  \"requireAdminApproval\": true,\n  \"studyReminders\": true,\n  \"reminderFrequency\": \"Every day\",\n  \"reminderTime\": \"09:00 AM\"\n}"
-            }
-          }
+          ]
         },
         {
           "name": "Preview circle by invite code (public)",
           "request": {
             "method": "GET",
+            "header": [],
             "url": "{{baseUrl}}/groups/invite/{{inviteCode}}",
-            "auth": { "type": "noauth" }
-          }
+            "auth": {
+              "type": "noauth"
+            }
+          },
+          "response": [
+            {
+              "name": "200 GET response",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": "{{baseUrl}}/groups/invite/{{inviteCode}}"
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"success\": true,\n  \"data\": {\n    \"id\": \"e1f5c0c8-e5cf-4902-a3e5-0e5c3387aedd\",\n    \"name\": \"CS301 Study Group\",\n    \"courseName\": \"Data Structures\",\n    \"description\": \"Weekly sessions for CS301\",\n    \"icon\": \"📚\",\n    \"visibility\": \"private\",\n    \"memberCount\": 1,\n    \"maxMembers\": 20\n  },\n  \"error\": null\n}"
+            }
+          ]
         },
         {
           "name": "Join circle via invite code",
           "request": {
             "method": "POST",
+            "header": [],
             "url": "{{baseUrl}}/groups/{{inviteCode}}/join"
-          }
+          },
+          "response": [
+            {
+              "name": "200 POST response",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": "{{baseUrl}}/groups/{{inviteCode}}/join"
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"success\": true,\n  \"data\": {\n    \"group\": {\n      \"id\": \"e1f5c0c8-e5cf-4902-a3e5-0e5c3387aedd\",\n      \"name\": \"CS301 Study Group\",\n      \"courseName\": \"Data Structures\",\n      \"description\": \"Updated description\",\n      \"icon\": \"📚\",\n      \"visibility\": \"private\",\n      \"approval\": false,\n      \"maxMembers\": 30,\n      \"allowMemberInvites\": true,\n      \"requireAdminApproval\": true,\n      \"studyReminders\": true,\n      \"reminderFrequency\": \"Every day\",\n      \"reminderTime\": \"09:00 AM\",\n      \"inviteCode\": \"9sxqn5n\",\n      \"createdBy\": \"cd2d0dcc-94ac-4cf6-97f7-f29f9e300a46\",\n      \"createdAt\": \"2026-07-23T07:32:26.879Z\"\n    },\n    \"membership\": {\n      \"id\": \"8a333309-ab72-42e8-97d6-1f1a92283b21\",\n      \"userId\": \"cd2d0dcc-94ac-4cf6-97f7-f29f9e300a46\",\n      \"groupId\": \"e1f5c0c8-e5cf-4902-a3e5-0e5c3387aedd\",\n      \"role\": \"ORGANIZER\",\n      \"joinedAt\": \"2026-07-23T07:32:28.477Z\"\n    },\n    \"alreadyMember\": true\n  },\n  \"error\": null\n}"
+            }
+          ]
         },
         {
           "name": "Get one circle",
-          "request": { "method": "GET", "url": "{{baseUrl}}/groups/{{groupId}}" }
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/groups/{{groupId}}"
+          },
+          "response": [
+            {
+              "name": "200 GET response",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": "{{baseUrl}}/groups/{{groupId}}"
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"success\": true,\n  \"data\": {\n    \"id\": \"e1f5c0c8-e5cf-4902-a3e5-0e5c3387aedd\",\n    \"name\": \"CS301 Study Group\",\n    \"courseName\": \"Data Structures\",\n    \"description\": \"Weekly sessions for CS301\",\n    \"icon\": \"📚\",\n    \"visibility\": \"private\",\n    \"approval\": false,\n    \"maxMembers\": 20,\n    \"allowMemberInvites\": true,\n    \"requireAdminApproval\": true,\n    \"studyReminders\": true,\n    \"reminderFrequency\": \"Every day\",\n    \"reminderTime\": \"09:00 AM\",\n    \"inviteCode\": \"9sxqn5n\",\n    \"createdBy\": \"cd2d0dcc-94ac-4cf6-97f7-f29f9e300a46\",\n    \"createdAt\": \"2026-07-23T07:32:26.879Z\",\n    \"tasks\": [],\n    \"memberships\": [\n      {\n        \"id\": \"8a333309-ab72-42e8-97d6-1f1a92283b21\",\n        \"userId\": \"cd2d0dcc-94ac-4cf6-97f7-f29f9e300a46\",\n        \"groupId\": \"e1f5c0c8-e5cf-4902-a3e5-0e5c3387aedd\",\n        \"role\": \"ORGANIZER\",\n        \"joinedAt\": \"2026-07-23T07:32:28.477Z\",\n        \"user\": {\n          \"id\": \"cd2d0dcc-94ac-4cf6-97f7-f29f9e300a46\",\n          \"firebaseUid\": \"FDYDWVgIemPwHCgAsZK0tdetfGS2\",\n          \"name\": \"Postman Test User\",\n          \"email\": \"postman.test@studycircle.dev\",\n          \"phone\": null,\n          \"createdAt\": \"2026-07-23T06:47:07.693Z\"\n        }\n      }\n    ]\n  },\n  \"error\": null\n}"
+            }
+          ]
         },
         {
           "name": "Update circle settings (organizer only)",
           "request": {
             "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
             "url": "{{baseUrl}}/groups/{{groupId}}",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
             "body": {
               "mode": "raw",
               "raw": "{\n  \"description\": \"Updated description\",\n  \"maxMembers\": 30,\n  \"studyReminders\": false\n}"
             }
-          }
+          },
+          "response": [
+            {
+              "name": "200 PATCH response",
+              "originalRequest": {
+                "method": "PATCH",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": "{{baseUrl}}/groups/{{groupId}}",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"description\": \"Updated description\",\n  \"maxMembers\": 30,\n  \"studyReminders\": false\n}"
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"success\": true,\n  \"data\": {\n    \"id\": \"e1f5c0c8-e5cf-4902-a3e5-0e5c3387aedd\",\n    \"name\": \"CS301 Study Group\",\n    \"courseName\": \"Data Structures\",\n    \"description\": \"Updated description\",\n    \"icon\": \"📚\",\n    \"visibility\": \"private\",\n    \"approval\": false,\n    \"maxMembers\": 30,\n    \"allowMemberInvites\": true,\n    \"requireAdminApproval\": true,\n    \"studyReminders\": true,\n    \"reminderFrequency\": \"Every day\",\n    \"reminderTime\": \"09:00 AM\",\n    \"inviteCode\": \"9sxqn5n\",\n    \"createdBy\": \"cd2d0dcc-94ac-4cf6-97f7-f29f9e300a46\",\n    \"createdAt\": \"2026-07-23T07:32:26.879Z\"\n  },\n  \"error\": null\n}"
+            }
+          ]
         },
         {
           "name": "Invite members by email",
           "request": {
             "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
             "url": "{{baseUrl}}/groups/{{groupId}}/invitations",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"emails\": [\"friend1@example.com\", \"friend2@example.com\"]\n}"
+              "raw": "{\n  \"emails\": [\n    \"friend1@example.com\",\n    \"friend2@example.com\"\n  ]\n}"
             }
-          }
+          },
+          "response": [
+            {
+              "name": "201 POST response",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": "{{baseUrl}}/groups/{{groupId}}/invitations",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"emails\": [\n    \"friend1@example.com\",\n    \"friend2@example.com\"\n  ]\n}"
+                }
+              },
+              "status": "Created",
+              "code": 201,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"success\": true,\n  \"data\": {\n    \"invitations\": [\n      {\n        \"id\": \"d4e43466-347b-4034-a2aa-2df420caad59\",\n        \"groupId\": \"e1f5c0c8-e5cf-4902-a3e5-0e5c3387aedd\",\n        \"invitedBy\": \"cd2d0dcc-94ac-4cf6-97f7-f29f9e300a46\",\n        \"email\": \"friend1@example.com\",\n        \"status\": \"PENDING\",\n        \"createdAt\": \"2026-07-23T07:32:33.136Z\"\n      },\n      {\n        \"id\": \"5a9806cd-5ea6-4b20-941c-a05fbca5b581\",\n        \"groupId\": \"e1f5c0c8-e5cf-4902-a3e5-0e5c3387aedd\",\n        \"invitedBy\": \"cd2d0dcc-94ac-4cf6-97f7-f29f9e300a46\",\n        \"email\": \"friend2@example.com\",\n        \"status\": \"PENDING\",\n        \"createdAt\": \"2026-07-23T07:32:33.136Z\"\n      }\n    ]\n  },\n  \"error\": null\n}"
+            }
+          ]
         }
       ]
     },
@@ -172,30 +573,82 @@
       "item": [
         {
           "name": "Schedule a session",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "const data = pm.response.json();",
-                  "if (data?.data?.id) pm.collectionVariables.set('sessionId', data.data.id);"
-                ]
-              }
-            }
-          ],
           "request": {
             "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
             "url": "{{baseUrl}}/groups/{{groupId}}/sessions",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
             "body": {
               "mode": "raw",
               "raw": "{\n  \"title\": \"Study Session\",\n  \"startTime\": \"2026-07-24T10:00:00.000Z\"\n}"
             }
-          }
+          },
+          "response": [
+            {
+              "name": "201 POST response",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": "{{baseUrl}}/groups/{{groupId}}/sessions",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"title\": \"Study Session\",\n  \"startTime\": \"2026-07-24T10:00:00.000Z\"\n}"
+                }
+              },
+              "status": "Created",
+              "code": 201,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"success\": true,\n  \"data\": {\n    \"id\": \"5fdaf7e3-b467-474d-9e48-78e896ac2393\",\n    \"groupId\": \"e1f5c0c8-e5cf-4902-a3e5-0e5c3387aedd\",\n    \"title\": \"Study Session\",\n    \"startTime\": \"2026-07-24T10:00:00.000Z\",\n    \"createdBy\": \"cd2d0dcc-94ac-4cf6-97f7-f29f9e300a46\",\n    \"createdAt\": \"2026-07-23T07:32:37.282Z\"\n  },\n  \"error\": null\n}"
+            }
+          ]
         },
         {
           "name": "List upcoming sessions for a circle",
-          "request": { "method": "GET", "url": "{{baseUrl}}/groups/{{groupId}}/sessions" }
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/groups/{{groupId}}/sessions"
+          },
+          "response": [
+            {
+              "name": "200 GET response",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": "{{baseUrl}}/groups/{{groupId}}/sessions"
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"success\": true,\n  \"data\": {\n    \"sessions\": [\n      {\n        \"id\": \"5fdaf7e3-b467-474d-9e48-78e896ac2393\",\n        \"groupId\": \"e1f5c0c8-e5cf-4902-a3e5-0e5c3387aedd\",\n        \"title\": \"Study Session\",\n        \"startTime\": \"2026-07-24T10:00:00.000Z\",\n        \"createdBy\": \"cd2d0dcc-94ac-4cf6-97f7-f29f9e300a46\",\n        \"createdAt\": \"2026-07-23T07:32:37.282Z\"\n      }\n    ]\n  },\n  \"error\": null\n}"
+            }
+          ]
         }
       ]
     },
@@ -204,6 +657,49 @@
       "item": [
         {
           "name": "Create a task",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/groups/{{groupId}}/tasks",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Read Chapter 4\",\n  \"dueDate\": \"2026-08-01T23:59:00.000Z\"\n}"
+            }
+          },
+          "response": [
+            {
+              "name": "201 POST response",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": "{{baseUrl}}/groups/{{groupId}}/tasks",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"title\": \"Read Chapter 4\",\n  \"dueDate\": \"2026-08-01T23:59:00.000Z\"\n}"
+                }
+              },
+              "status": "Created",
+              "code": 201,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"success\": true,\n  \"data\": {\n    \"id\": \"956b0760-ffb2-4ad9-903d-4df020b6ae75\",\n    \"groupId\": \"e1f5c0c8-e5cf-4902-a3e5-0e5c3387aedd\",\n    \"title\": \"Read Chapter 4\",\n    \"dueDate\": \"2026-08-01T23:59:00.000Z\",\n    \"status\": \"TODO\",\n    \"assignedTo\": null,\n    \"createdAt\": \"2026-07-23T07:32:34.359Z\"\n  },\n  \"error\": null\n}"
+            }
+          ],
           "event": [
             {
               "listen": "test",
@@ -214,28 +710,53 @@
                 ]
               }
             }
-          ],
-          "request": {
-            "method": "POST",
-            "url": "{{baseUrl}}/groups/{{groupId}}/tasks",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"title\": \"Read Chapter 4\",\n  \"dueDate\": \"2026-07-30T23:59:00.000Z\"\n}"
-            }
-          }
+          ]
         },
         {
           "name": "Update task status / reassign",
           "request": {
             "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
             "url": "{{baseUrl}}/groups/{{groupId}}/tasks/{{taskId}}",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
             "body": {
               "mode": "raw",
               "raw": "{\n  \"status\": \"DOING\"\n}"
             }
-          }
+          },
+          "response": [
+            {
+              "name": "200 PATCH response",
+              "originalRequest": {
+                "method": "PATCH",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": "{{baseUrl}}/groups/{{groupId}}/tasks/{{taskId}}",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"status\": \"DOING\"\n}"
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"success\": true,\n  \"data\": {\n    \"id\": \"956b0760-ffb2-4ad9-903d-4df020b6ae75\",\n    \"groupId\": \"e1f5c0c8-e5cf-4902-a3e5-0e5c3387aedd\",\n    \"title\": \"Read Chapter 4\",\n    \"dueDate\": \"2026-08-01T23:59:00.000Z\",\n    \"status\": \"DOING\",\n    \"assignedTo\": null,\n    \"createdAt\": \"2026-07-23T07:32:34.359Z\"\n  },\n  \"error\": null\n}"
+            }
+          ]
         }
       ]
     },
@@ -246,13 +767,47 @@
           "name": "Daily check-in",
           "request": {
             "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
             "url": "{{baseUrl}}/groups/{{groupId}}/checkins",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
             "body": {
               "mode": "raw",
               "raw": "{\n  \"status\": \"DONE\"\n}"
             }
-          }
+          },
+          "response": [
+            {
+              "name": "200 POST response",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": "{{baseUrl}}/groups/{{groupId}}/checkins",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"status\": \"DONE\"\n}"
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"success\": true,\n  \"data\": {\n    \"checkIn\": {\n      \"id\": \"627943bf-b55e-44d3-a19d-41f30f5ff929\",\n      \"userId\": \"cd2d0dcc-94ac-4cf6-97f7-f29f9e300a46\",\n      \"groupId\": \"e1f5c0c8-e5cf-4902-a3e5-0e5c3387aedd\",\n      \"date\": \"2026-07-22T23:00:00.000Z\",\n      \"status\": \"DONE\",\n      \"createdAt\": \"2026-07-23T07:32:35.572Z\"\n    },\n    \"streak\": {\n      \"id\": \"71fe242e-e188-4524-8595-5e287082e3e5\",\n      \"userId\": \"cd2d0dcc-94ac-4cf6-97f7-f29f9e300a46\",\n      \"groupId\": \"e1f5c0c8-e5cf-4902-a3e5-0e5c3387aedd\",\n      \"currentStreak\": 1,\n      \"lastCheckInDate\": \"2026-07-22T23:00:00.000Z\",\n      \"updatedAt\": \"2026-07-23T07:32:36.460Z\"\n    }\n  },\n  \"error\": null\n}"
+            }
+          ]
         }
       ]
     }
