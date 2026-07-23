@@ -4,6 +4,7 @@ import { confirmPasswordReset } from "firebase/auth";
 import { toast } from "sonner";
 
 import { auth } from "../../../lib/firebase";
+import { getAuthErrorMessage } from "../../../lib/authErrors";
 import AuthButton from "../common/AuthButton";
 import PasswordInput from "../inputs/PasswordInput";
 import SuccessModal from "../modal/SuccessModal";
@@ -44,7 +45,7 @@ const ResetPasswordForm = () => {
       await confirmPasswordReset(auth!, oobCode, password);
       setShowSuccess(true);
     } catch (err) {
-      toast.error("This reset link is invalid or has expired.");
+      toast.error(getAuthErrorMessage(err, "This reset link is invalid or has expired."));
     } finally {
       setLoading(false);
     }

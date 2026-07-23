@@ -1,6 +1,7 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { HiOutlineXMark } from "react-icons/hi2";
 import { useEffect, useState } from "react";
+import { toast } from "sonner";
 
 import { api } from "../../../lib/api";
 import CircleProgress from "../create-circle/CircleProgress";
@@ -15,6 +16,11 @@ import type {
   PendingInvite,
 } from "../create-circle/types";
 import { trackCircleCreated } from "../../../services/analytics";
+
+interface CreatedGroup {
+  id: string;
+  inviteCode: string;
+}
 
 interface CreateCircleModalProps {
   open: boolean;
@@ -51,18 +57,7 @@ const CreateCircleModal = ({
 
   const [members, setMembers] = useState<Member[]>([]);
 
-  const [pendingInvites] = useState<PendingInvite[]>([
-    {
-      id: 1,
-      email: "sarahcole@example.com",
-      sentAt: "2 mins ago",
-    },
-    {
-      id: 2,
-      email: "davidteo@example.com",
-      sentAt: "10 mins ago",
-    },
-  ]);
+  const [pendingInvites, setPendingInvites] = useState<PendingInvite[]>([]);
 
   const [notificationSettings, setNotificationSettings] =
     useState<NotificationSettings>({
@@ -75,6 +70,16 @@ const CreateCircleModal = ({
     });
 
   const [submitting, setSubmitting] = useState(false);
+
+  // The circle is created as soon as the user leaves Step 1 (not on final
+  // submit) — Step 2 needs a real invite code to generate a working invite
+  // link/QR code for, and there was no way to do that against a circle that
+  // doesn't exist in the database yet.
+  const [createdGroup, setCreatedGroup] = useState<CreatedGroup | null>(null);
+  const [creatingCircle, setCreatingCircle] = useState(false);
+  const inviteLink = createdGroup
+    ? `${window.location.origin}/invite/${createdGroup.inviteCode}`
+    : undefined;
 
   const updateForm = <K extends keyof CircleFormData>(
     key: K,
@@ -89,6 +94,9 @@ const CreateCircleModal = ({
   useEffect(() => {
     if (!open) {
       setStep(1);
+      setCreatedGroup(null);
+      setMembers([]);
+      setPendingInvites([]);
     }
   }, [open]);
 
@@ -105,6 +113,7 @@ const CreateCircleModal = ({
             members={members}
             setMembers={setMembers}
             pendingInvites={pendingInvites}
+            inviteLink={inviteLink}
           />
         );
       case 3:
@@ -121,11 +130,26 @@ const CreateCircleModal = ({
         return null;
     }
   };
-  const handleSubmit = async () => {
-    try {
-      setSubmitting(true);
 
-      const payload = {
+  // Creates the circle in the database the first time the user leaves Step 1.
+  // Returns whether it's safe to advance to Step 2.
+  const ensureCircleCreated = async () => {
+    if (createdGroup) return true;
+
+    if (!formData.name.trim()) {
+      toast.error("Give your circle a name before continuing.");
+      return false;
+    }
+    if (!formData.category) {
+      toast.error("Choose a category before continuing.");
+      return false;
+    }
+
+    setCreatingCircle(true);
+    try {
+      const result = await api.post<{
+        group: CreatedGroup;
+      }>("/groups", {
         name: formData.name,
         courseName: formData.category,
         description: formData.description,
@@ -138,16 +162,77 @@ const CreateCircleModal = ({
         studyReminders: formData.studyReminders,
         reminderFrequency: formData.reminderFrequency,
         reminderTime: formData.reminderTime,
-        members,
-      };
+      });
 
-      await api.post("/groups", payload);
+      setCreatedGroup(result.group);
+      return true;
+    } catch (err) {
+      toast.error(
+        err instanceof Error ? err.message : "Couldn't create the circle. Please try again.",
+      );
+      return false;
+    } finally {
+      setCreatingCircle(false);
+    }
+  };
+
+  // Closing the modal after the circle already exists in the database (i.e.
+  // past Step 1) should still refresh the dashboard — otherwise the circle
+  // is real but invisible until the user manually reloads.
+  const handleClose = () => {
+    if (createdGroup) onSuccess?.();
+    onClose();
+  };
+
+  const handleNext = async () => {
+    if (step === 1) {
+      const ok = await ensureCircleCreated();
+      if (!ok) return;
+    }
+    setStep((prev) => prev + 1);
+  };
+
+  const handleSubmit = async () => {
+    if (!createdGroup) return;
+
+    try {
+      setSubmitting(true);
+
+      await api.patch(`/groups/${createdGroup.id}`, {
+        name: formData.name,
+        description: formData.description,
+        icon: formData.icon,
+        visibility: formData.visibility,
+        approval: formData.approval,
+        maxMembers: formData.maxMembers,
+        allowMemberInvites: formData.allowMemberInvites,
+        requireAdminApproval: formData.requireAdminApproval,
+        studyReminders: formData.studyReminders,
+        reminderFrequency: formData.reminderFrequency,
+        reminderTime: formData.reminderTime,
+      });
+
+      if (members.length > 0) {
+        try {
+          await api.post(`/groups/${createdGroup.id}/invitations`, {
+            emails: members.map((m) => m.email),
+          });
+        } catch (err) {
+          // Circle is already created and configured — don't fail the whole
+          // flow over invites; let the user retry those from the circle later.
+          toast.error(
+            err instanceof Error ? err.message : "Circle created, but some invites failed to send.",
+          );
+        }
+      }
 
       trackCircleCreated({
         circleName: formData.name,
         category: formData.category,
         visibility: formData.visibility,
       });
+
+      toast.success(`${formData.name} is ready!`);
 
       // Reset everything
       setFormData({
@@ -167,6 +252,8 @@ const CreateCircleModal = ({
       });
 
       setMembers([]);
+      setPendingInvites([]);
+      setCreatedGroup(null);
       setNotificationSettings({
         newMemberJoins: true,
         newAssignments: true,
@@ -179,6 +266,10 @@ const CreateCircleModal = ({
       setStep(1);
 
       onClose();
+    } catch (err) {
+      toast.error(
+        err instanceof Error ? err.message : "Couldn't save circle settings. Please try again.",
+      );
     } finally {
       setSubmitting(false);
     }
@@ -193,7 +284,7 @@ const CreateCircleModal = ({
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            onClick={onClose}
+            onClick={handleClose}
             className="
               fixed
               inset-0
@@ -218,7 +309,7 @@ const CreateCircleModal = ({
               pt-4
               pb-6
             "
-            onClick={onClose}
+            onClick={handleClose}
           >
             <div
               className="
@@ -290,7 +381,7 @@ const CreateCircleModal = ({
                     </h2>
 
                     <button
-                      onClick={onClose}
+                      onClick={handleClose}
                       className="
                     flex
                     h-10
@@ -372,7 +463,7 @@ const CreateCircleModal = ({
                     <button
                       onClick={() => {
                         if (step === 1) {
-                          onClose();
+                          handleClose();
                         } else {
                           setStep(step - 1);
                         }
@@ -397,10 +488,10 @@ const CreateCircleModal = ({
                     </button>
 
                     <button
-                      disabled={submitting}
+                      disabled={submitting || creatingCircle}
                       onClick={() => {
                         if (step < 3) {
-                          setStep((prev) => prev + 1);
+                          handleNext();
                         } else {
                           handleSubmit();
                         }
@@ -419,11 +510,13 @@ const CreateCircleModal = ({
                     disabled:opacity-60
                 "
                     >
-                      {submitting
-                        ? "Creating..."
-                        : step === 3
-                          ? "Create Circle"
-                          : "Next"}
+                      {creatingCircle
+                        ? "Creating circle..."
+                        : submitting
+                          ? "Saving..."
+                          : step === 3
+                            ? "Finish Setup"
+                            : "Next"}
                     </button>
                   </div>
                 </div>

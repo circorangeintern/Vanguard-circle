@@ -5,6 +5,7 @@ import { HiOutlineMail } from "react-icons/hi";
 import { toast } from "sonner";
 
 import { auth } from "../../../lib/firebase";
+import { getAuthErrorMessage } from "../../../lib/authErrors";
 import AuthButton from "../common/AuthButton";
 import AuthInput from "../inputs/AuthInput";
 
@@ -25,9 +26,16 @@ const ForgotPasswordForm = () => {
       await sendPasswordResetEmail(auth!, email);
       toast.success("Password reset link sent — check your email.");
     } catch (err) {
-      // Firebase intentionally doesn't reveal whether an email exists,
-      // to avoid leaking which addresses are registered.
-      toast.success("If that email is registered, a reset link has been sent.");
+      const code = (err as { code?: string } | null)?.code;
+      if (code === "auth/invalid-email") {
+        // Safe to be specific here — a malformed address reveals nothing
+        // about whether an account exists.
+        toast.error(getAuthErrorMessage(err, "That email address doesn't look right."));
+      } else {
+        // Firebase intentionally doesn't reveal whether an email exists,
+        // to avoid leaking which addresses are registered.
+        toast.success("If that email is registered, a reset link has been sent.");
+      }
     } finally {
       setLoading(false);
     }

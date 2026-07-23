@@ -1,10 +1,14 @@
 import { HiOutlineClipboardDocument, HiOutlineLink } from "react-icons/hi2";
 import { toast } from "sonner";
 
-const inviteLink = "https://studycircle.app/invite/8s7Ai2b";
+interface InviteLinkCardProps {
+  inviteLink?: string;
+}
 
-const InviteLinkCard = () => {
+const InviteLinkCard = ({ inviteLink }: InviteLinkCardProps) => {
   const handleCopy = async () => {
+    if (!inviteLink) return;
+
     try {
       await navigator.clipboard.writeText(inviteLink);
 
@@ -72,13 +76,18 @@ const InviteLinkCard = () => {
         </div>
 
         <div className="min-w-0 flex-1">
-          <p className="truncate text-sm text-slate-600">{inviteLink}</p>
+          <p className="truncate text-sm text-slate-600">
+            {inviteLink || "Generating your invite link..."}
+          </p>
         </div>
 
         <button
           type="button"
+          disabled={!inviteLink}
           onClick={handleCopy}
           className="
+      disabled:cursor-not-allowed
+      disabled:opacity-60
       flex
       w-full
       items-center

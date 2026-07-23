@@ -1,9 +1,11 @@
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { useState } from "react";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { toast } from "sonner";
 
 import { auth, setAuthPersistence, signInWithGoogle } from "../../../lib/firebase";
+import { getAuthErrorMessage } from "../../../lib/authErrors";
+import { trackLogin } from "../../../services/analytics";
 import AuthButton from "../common/AuthButton";
 import AuthInput from "../inputs/AuthInput";
 import PasswordInput from "../inputs/PasswordInput";
@@ -11,6 +13,10 @@ import SocialLogin from "../social/SocialLogin";
 
 const LoginForm = () => {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  // Preserves where the user was headed — e.g. a copied /dashboard link or an
+  // /invite/:code page — so login sends them back there instead of always /dashboard.
+  const redirectTo = searchParams.get("redirect") || "/dashboard";
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -28,10 +34,11 @@ const LoginForm = () => {
     setLoading(true);
     try {
       await setAuthPersistence(rememberMe);
-      await signInWithEmailAndPassword(auth!, email, password);
-      navigate("/dashboard");
+      const credential = await signInWithEmailAndPassword(auth!, email, password);
+      trackLogin({ method: "email", userId: credential.user.uid });
+      navigate(redirectTo, { replace: true });
     } catch (err) {
-      toast.error("Incorrect email or password.");
+      toast.error(getAuthErrorMessage(err, "Incorrect email or password."));
     } finally {
       setLoading(false);
     }
@@ -40,10 +47,11 @@ const LoginForm = () => {
   const handleGoogleSignIn = async () => {
     setLoading(true);
     try {
-      await signInWithGoogle(rememberMe);
-      navigate("/dashboard");
+      const credential = await signInWithGoogle(rememberMe);
+      trackLogin({ method: "google", userId: credential.user.uid });
+      navigate(redirectTo, { replace: true });
     } catch (err) {
-      toast.error("Could not sign in with Google.");
+      toast.error(getAuthErrorMessage(err, "Could not sign in with Google."));
     } finally {
       setLoading(false);
     }

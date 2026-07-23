@@ -2,11 +2,15 @@ import { initializeApp, type FirebaseApp } from "firebase/app";
 import {
   getAuth,
   type Auth,
+  type User,
   GoogleAuthProvider,
   signInWithPopup,
   setPersistence,
   browserLocalPersistence,
   browserSessionPersistence,
+  sendEmailVerification,
+  applyActionCode,
+  checkActionCode,
 } from "firebase/auth";
 
 // These values are safe to expose client-side — Firebase's Web API key
@@ -52,6 +56,24 @@ export async function signInWithGoogle(remember = true) {
   if (!auth) throw new Error("Firebase auth is not initialized");
   await setAuthPersistence(remember);
   return signInWithPopup(auth, googleProvider);
+}
+
+// Sends Firebase's built-in verification link (not a 6-digit code — Firebase has no
+// numeric-OTP email verification without extra backend infra). The link carries an
+// oobCode back to /verify-email, which calls confirmEmailVerification below.
+export async function sendVerificationEmail(user: User) {
+  await sendEmailVerification(user, {
+    url: `${window.location.origin}/verify-email`,
+  });
+}
+
+// Validates + consumes a verification link's oobCode. Throws with a Firebase
+// error code (auth/invalid-action-code, auth/expired-action-code, ...) on failure —
+// callers should map that through getAuthErrorMessage for user-facing copy.
+export async function confirmEmailVerification(oobCode: string) {
+  if (!auth) throw new Error("Firebase auth is not initialized");
+  await checkActionCode(auth, oobCode);
+  await applyActionCode(auth, oobCode);
 }
 
 // `auth` is exported above; it may be `null` if initialization was skipped or failed.

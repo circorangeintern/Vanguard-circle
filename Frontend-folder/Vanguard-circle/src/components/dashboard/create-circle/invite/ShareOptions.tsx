@@ -1,4 +1,5 @@
 import { HiOutlineEnvelope, HiOutlineLink } from "react-icons/hi2";
+import { toast } from "sonner";
 
 import { FaWhatsapp, FaTelegramPlane } from "react-icons/fa";
 
@@ -6,14 +7,43 @@ interface ShareOptionsProps {
   inviteLink?: string;
 }
 
-const ShareOptions = ({
-  inviteLink = "https://studycircle.app/invite/8s7Ai2b",
-}: ShareOptionsProps) => {
+const ShareOptions = ({ inviteLink }: ShareOptionsProps) => {
+  const shareText = "Join my study circle on StudyCircle!";
+
+  const openShare = (url: string) => {
+    if (!inviteLink) {
+      toast.info("The invite link will be ready once the circle is created.");
+      return;
+    }
+    window.open(url, "_blank", "noopener,noreferrer");
+  };
+
+  const handleWhatsApp = () =>
+    openShare(
+      `https://wa.me/?text=${encodeURIComponent(`${shareText} ${inviteLink}`)}`,
+    );
+
+  const handleTelegram = () =>
+    openShare(
+      `https://t.me/share/url?url=${encodeURIComponent(inviteLink || "")}&text=${encodeURIComponent(shareText)}`,
+    );
+
+  const handleEmail = () =>
+    openShare(
+      `mailto:?subject=${encodeURIComponent("Join my StudyCircle")}&body=${encodeURIComponent(`${shareText} ${inviteLink}`)}`,
+    );
+
   const handleCopy = async () => {
+    if (!inviteLink) {
+      toast.info("The invite link will be ready once the circle is created.");
+      return;
+    }
     try {
       await navigator.clipboard.writeText(inviteLink);
+      toast.success("Invite link copied!");
     } catch (error) {
       console.error(error);
+      toast.error("Couldn't copy invite link.");
     }
   };
 
@@ -36,6 +66,7 @@ const ShareOptions = ({
 
         <button
           type="button"
+          onClick={handleWhatsApp}
           className="group flex flex-col items-center gap-2"
         >
           <div
@@ -66,6 +97,7 @@ const ShareOptions = ({
 
         <button
           type="button"
+          onClick={handleTelegram}
           className="group flex flex-col items-center gap-2"
         >
           <div
@@ -96,6 +128,7 @@ const ShareOptions = ({
 
         <button
           type="button"
+          onClick={handleEmail}
           className="group flex flex-col items-center gap-2"
         >
           <div

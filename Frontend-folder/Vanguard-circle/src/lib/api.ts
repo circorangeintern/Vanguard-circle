@@ -19,16 +19,33 @@ async function request<T>(
   const user = auth!.currentUser;
   const token = user ? await user.getIdToken() : null;
 
-  const res = await fetch(`${BASE_URL}${path}`, {
-    ...options,
-    headers: {
-      "Content-Type": "application/json",
-      ...(token ? { Authorization: `Bearer ${token}` } : {}),
-      ...options.headers,
-    },
-  });
+  let res: Response;
+  try {
+    res = await fetch(`${BASE_URL}${path}`, {
+      ...options,
+      headers: {
+        "Content-Type": "application/json",
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        ...options.headers,
+      },
+    });
+  } catch {
+    throw new Error("Network error — check your connection and try again.");
+  }
 
-  const json: ApiResponse<T> = await res.json();
+  let json: ApiResponse<T>;
+  try {
+    json = await res.json();
+  } catch {
+    // The server returned something that isn't JSON (a host's own 404/500
+    // HTML page, a proxy error, etc.) — surface a readable message instead
+    // of a raw "Unexpected token <" parse error.
+    throw new Error(
+      res.ok
+        ? "Something went wrong. Please try again."
+        : `Request failed (${res.status}). Please try again.`,
+    );
+  }
 
   if (!json.success) {
     throw new Error(json.error || "Something went wrong");

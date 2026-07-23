@@ -42,7 +42,9 @@ const DashboardPage = () => {
       setData(result);
       setError(null);
     } catch (err) {
-      setError("Couldn't load your dashboard. Please try again.");
+      setError(
+        err instanceof Error ? err.message : "Couldn't load your dashboard. Please try again.",
+      );
     } finally {
       setLoading(false);
     }
@@ -62,8 +64,15 @@ const DashboardPage = () => {
 
   if (error || !data) {
     return (
-      <div className="py-20 text-center text-red-500">
-        {error || "Something went wrong."}
+      <div className="flex flex-col items-center gap-4 py-20 text-center">
+        <p className="text-red-500">{error || "Something went wrong."}</p>
+        <button
+          type="button"
+          onClick={loadDashboard}
+          className="rounded-xl bg-[var(--color-primary)] px-6 py-2.5 text-sm font-medium text-white transition-all hover:-translate-y-0.5 hover:shadow-lg"
+        >
+          Try again
+        </button>
       </div>
     );
   }

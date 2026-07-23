@@ -1,11 +1,35 @@
+import { useEffect, useState } from "react";
+import QRCode from "qrcode";
 import { HiOutlineArrowDownTray } from "react-icons/hi2";
 import { toast } from "sonner";
 
 interface QRCodeCardProps {
-  qrCode?: string;
+  inviteLink?: string;
 }
 
-const QRCodeCard = ({ qrCode }: QRCodeCardProps) => {
+const QRCodeCard = ({ inviteLink }: QRCodeCardProps) => {
+  const [qrCode, setQrCode] = useState<string | undefined>();
+
+  useEffect(() => {
+    if (!inviteLink) {
+      setQrCode(undefined);
+      return;
+    }
+
+    let cancelled = false;
+    QRCode.toDataURL(inviteLink, { width: 320, margin: 1 })
+      .then((dataUrl) => {
+        if (!cancelled) setQrCode(dataUrl);
+      })
+      .catch(() => {
+        if (!cancelled) setQrCode(undefined);
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [inviteLink]);
+
   const handleDownload = () => {
     if (!qrCode) {
       toast.info("QR Code will be available after the circle is created.");
@@ -67,7 +91,7 @@ const QRCodeCard = ({ qrCode }: QRCodeCardProps) => {
             <img
               src={qrCode}
               alt="Study Circle QR Code"
-              className="h-full w-full object-cover"
+              className="h-full w-full object-contain p-2"
             />
           ) : (
             <div className="text-center">

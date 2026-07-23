@@ -19,7 +19,7 @@ const VerifyOtpPage = () => {
 
       <AuthHeader
         title="Verify Your Email"
-        subtitle="A 6-digit verification code has been sent to your email."
+        subtitle="Click the link we emailed you to verify your account."
       />
 
       <VerifyOtpForm />

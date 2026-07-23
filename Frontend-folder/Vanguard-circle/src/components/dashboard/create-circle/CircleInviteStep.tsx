@@ -9,12 +9,14 @@ interface CircleInviteStepProps {
   members: Member[];
   setMembers: React.Dispatch<React.SetStateAction<Member[]>>;
   pendingInvites: PendingInvite[];
+  inviteLink?: string;
 }
 
 const CircleInviteStep = ({
   members,
   setMembers,
   pendingInvites,
+  inviteLink,
 }: CircleInviteStepProps) => {
   return (
     <section className="w-full">
@@ -48,14 +50,14 @@ const CircleInviteStep = ({
         <div className="space-y-5 lg:space-y-6">
           <InviteMemberCard members={members} setMembers={setMembers} />
 
-          <InviteLinkCard />
+          <InviteLinkCard inviteLink={inviteLink} />
         </div>
 
         {/* Right */}
         <div className="space-y-5 lg:space-y-6">
-          <QRCodeCard />
+          <QRCodeCard inviteLink={inviteLink} />
 
-          <ShareOptions />
+          <ShareOptions inviteLink={inviteLink} />
 
           <PendingInvitesCard pendingInvites={pendingInvites} />
         </div>

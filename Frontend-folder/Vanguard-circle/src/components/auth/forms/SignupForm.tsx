@@ -1,10 +1,12 @@
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { useState } from "react";
 import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
 import { HiOutlineMail, HiOutlineUser } from "react-icons/hi";
 import { toast } from "sonner";
 
-import { auth, signInWithGoogle } from "../../../lib/firebase";
+import { auth, sendVerificationEmail, signInWithGoogle } from "../../../lib/firebase";
+import { getAuthErrorMessage } from "../../../lib/authErrors";
+import { trackSignup } from "../../../services/analytics";
 import AuthButton from "../common/AuthButton";
 import AuthInput from "../inputs/AuthInput";
 import PasswordInput from "../inputs/PasswordInput";
@@ -12,6 +14,8 @@ import SocialLogin from "../social/SocialLogin";
 
 const SignupForm = () => {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const redirectTo = searchParams.get("redirect") || "/dashboard";
 
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
@@ -49,12 +53,22 @@ const SignupForm = () => {
       );
       await updateProfile(credential.user, { displayName: fullName });
 
+      trackSignup({ method: "email", userId: credential.user.uid, email });
+
+      // Fire-and-forget: don't block getting the user into the app on the
+      // verification email actually sending.
+      sendVerificationEmail(credential.user)
+        .then(() => toast.success(`We sent a verification link to ${email}.`))
+        .catch(() => {
+          /* non-fatal — user can resend from /verify-email later */
+        });
+
       // First authenticated request auto-creates the matching backend User row
       // (handled by the backend's auth middleware) — no extra call needed here.
-      navigate("/dashboard");
+      navigate(redirectTo, { replace: true });
     } catch (err) {
       toast.error(
-        "Could not create account. That email may already be in use.",
+        getAuthErrorMessage(err, "Could not create account. Please try again."),
       );
     } finally {
       setLoading(false);
@@ -64,10 +78,15 @@ const SignupForm = () => {
   const handleGoogleSignIn = async () => {
     setLoading(true);
     try {
-      await signInWithGoogle();
-      navigate("/dashboard");
+      const credential = await signInWithGoogle();
+      trackSignup({
+        method: "google",
+        userId: credential.user.uid,
+        email: credential.user.email ?? undefined,
+      });
+      navigate(redirectTo, { replace: true });
     } catch (err) {
-      toast.error("Could not sign in with Google.");
+      toast.error(getAuthErrorMessage(err, "Could not sign in with Google."));
     } finally {
       setLoading(false);
     }
