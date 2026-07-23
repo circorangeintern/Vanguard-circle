@@ -165,6 +165,18 @@ const CreateCircleModal = ({
       });
 
       setCreatedGroup(result.group);
+
+      // Fire the moment the circle actually exists in the database, not at
+      // the end of the wizard — settings (step 3) are edits to an already-real
+      // circle, and gating the event on finishing them undercounts every
+      // circle whose creator closed the modal early (a real, valid circle
+      // with zero analytics for it).
+      trackCircleCreated({
+        circleName: formData.name,
+        category: formData.category,
+        visibility: formData.visibility,
+      });
+
       return true;
     } catch (err) {
       toast.error(
@@ -229,12 +241,6 @@ const CreateCircleModal = ({
           );
         }
       }
-
-      trackCircleCreated({
-        circleName: formData.name,
-        category: formData.category,
-        visibility: formData.visibility,
-      });
 
       toast.success(`${formData.name} is ready!`);
 
