@@ -1,6 +1,5 @@
 const { auth } = require("../config/firebase");
-const { PrismaClient } = require("@prisma/client");
-const prisma = new PrismaClient();
+const prisma = require("../config/prisma");
 
 // Verifies the Firebase ID token sent from the frontend (Authorization: Bearer <token>),
 // then attaches the matching Postgres User row to req.user.

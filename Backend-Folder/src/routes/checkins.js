@@ -1,9 +1,8 @@
 const express = require("express");
-const { PrismaClient } = require("@prisma/client");
+const prisma = require("../config/prisma");
 const { requireAuth } = require("../middleware/auth");
 
 const router = express.Router();
-const prisma = new PrismaClient();
 
 // POST /groups/:groupId/checkins — daily check-in, scoped to this circle only
 router.post("/:groupId/checkins", requireAuth, async (req, res) => {

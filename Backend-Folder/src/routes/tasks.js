@@ -1,9 +1,8 @@
 const express = require("express");
-const { PrismaClient } = require("@prisma/client");
+const prisma = require("../config/prisma");
 const { requireAuth } = require("../middleware/auth");
 
 const router = express.Router();
-const prisma = new PrismaClient();
 
 // POST /groups/:groupId/tasks — add a task, optionally assigned to a member
 router.post("/:groupId/tasks", requireAuth, async (req, res) => {
