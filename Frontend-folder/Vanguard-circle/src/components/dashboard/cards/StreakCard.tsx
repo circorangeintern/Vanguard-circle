@@ -6,6 +6,7 @@ interface StreakCardProps {
   subtitle: string;
   checkedInToday: boolean;
   onCheckIn: () => void;
+  loading?: boolean;
 }
 
 const StreakCard = ({
@@ -13,6 +14,7 @@ const StreakCard = ({
   subtitle,
   checkedInToday,
   onCheckIn,
+  loading = false,
 }: StreakCardProps) => {
   return (
     <motion.div
@@ -73,7 +75,7 @@ const StreakCard = ({
 
         <button
           onClick={onCheckIn}
-          disabled={checkedInToday}
+          disabled={checkedInToday || loading}
           className={`
             hidden
             items-center
@@ -90,7 +92,9 @@ const StreakCard = ({
             ${
               checkedInToday
                 ? "cursor-not-allowed bg-emerald-600"
-                : "bg-[var(--color-primary)] hover:opacity-90"
+                : loading
+                  ? "cursor-not-allowed bg-[var(--color-primary)] opacity-60"
+                  : "bg-[var(--color-primary)] hover:opacity-90"
             }
 
             md:flex
@@ -101,6 +105,8 @@ const StreakCard = ({
               <HiOutlineFire className="text-lg" />
               Checked In Today
             </>
+          ) : loading ? (
+            "Checking in..."
           ) : (
             <>
               Check In
@@ -113,7 +119,7 @@ const StreakCard = ({
 
         <button
           onClick={onCheckIn}
-          disabled={checkedInToday}
+          disabled={checkedInToday || loading}
           className={`
             flex
             w-full
@@ -132,7 +138,9 @@ const StreakCard = ({
             ${
               checkedInToday
                 ? "cursor-not-allowed bg-emerald-600"
-                : "bg-[var(--color-primary)] hover:opacity-90"
+                : loading
+                  ? "cursor-not-allowed bg-[var(--color-primary)] opacity-60"
+                  : "bg-[var(--color-primary)] hover:opacity-90"
             }
 
             md:hidden
@@ -143,6 +151,8 @@ const StreakCard = ({
               <HiOutlineFire className="text-lg" />
               Checked In Today
             </>
+          ) : loading ? (
+            "Checking in..."
           ) : (
             <>
               Check In

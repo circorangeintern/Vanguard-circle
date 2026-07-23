@@ -1,5 +1,6 @@
 import StreakCard from "../cards/StreakCard";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { toast } from "sonner";
 import { api } from "../../../lib/api";
 
 import { trackDailyCheckin } from "../../../services/analytics";
@@ -11,6 +12,10 @@ interface KeepStreakProps {
   onCheckInSuccess?: () => void;
 }
 
+interface CheckInResponse {
+  streak: { currentStreak: number };
+}
+
 const KeepStreak = ({
   streak,
   checkedInToday = false,
@@ -19,25 +24,43 @@ const KeepStreak = ({
 }: KeepStreakProps) => {
   const [currentStreak, setCurrentStreak] = useState(streak);
   const [hasCheckedInToday, setHasCheckedInToday] = useState(checkedInToday);
+  const [checkingIn, setCheckingIn] = useState(false);
+
+  // `useState(streak)` only seeds from props on the very first render — once
+  // the dashboard refetches after a check-in (or you switch to a different
+  // circle's streak being "best"), these props change but this component
+  // never picked them up, so the card looked frozen/stale until a hard reload.
+  useEffect(() => {
+    setCurrentStreak(streak);
+    setHasCheckedInToday(checkedInToday);
+  }, [streak, checkedInToday]);
 
   const handleCheckIn = async () => {
-    if (hasCheckedInToday || !groupId) return;
+    if (hasCheckedInToday || !groupId || checkingIn) return;
 
+    setCheckingIn(true);
     try {
-      await api.post(`/groups/${groupId}/checkins`, { status: "DONE" });
+      // Use the server's computed streak, not a client-side "+1" guess — the
+      // backend resets the streak to 1 if yesterday wasn't checked in, which
+      // a naive increment would get wrong and silently show the wrong number.
+      const result = await api.post<CheckInResponse>(
+        `/groups/${groupId}/checkins`,
+        { status: "DONE" },
+      );
+      const newStreak = result.streak.currentStreak;
 
-      const newStreak = currentStreak + 1;
-
-      trackDailyCheckin({
-        streak: newStreak,
-      });
+      trackDailyCheckin({ streak: newStreak });
 
       setCurrentStreak(newStreak);
       setHasCheckedInToday(true);
 
       onCheckInSuccess?.();
     } catch (error) {
-      console.error(error);
+      toast.error(
+        error instanceof Error ? error.message : "Couldn't check in. Please try again.",
+      );
+    } finally {
+      setCheckingIn(false);
     }
   };
   const subtitle = hasCheckedInToday
@@ -54,6 +77,7 @@ const KeepStreak = ({
         subtitle={subtitle}
         checkedInToday={hasCheckedInToday}
         onCheckIn={handleCheckIn}
+        loading={checkingIn}
       />
     </section>
   );

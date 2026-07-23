@@ -1,6 +1,7 @@
 const express = require("express");
 const prisma = require("../config/prisma");
 const { requireAuth } = require("../middleware/auth");
+const { notify } = require("../services/notify");
 
 const router = express.Router();
 
@@ -113,6 +114,20 @@ router.post("/:inviteCode/join", requireAuth, async (req, res) => {
   const membership = await prisma.membership.create({
     data: { userId: req.user.id, groupId: group.id, role: "MEMBER" },
   });
+
+  const organizers = await prisma.membership.findMany({
+    where: { groupId: group.id, role: "ORGANIZER" },
+  });
+  await Promise.all(
+    organizers.map((org) =>
+      notify(org.userId, {
+        type: "member_joined",
+        groupId: group.id,
+        groupName: group.name,
+        memberName: req.user.name,
+      }),
+    ),
+  );
 
   res.success({ group, membership }, 201);
 });

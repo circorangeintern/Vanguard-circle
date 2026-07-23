@@ -26,10 +26,27 @@ const ProtectedRoute = () => {
       setStatus("guest");
       return;
     }
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      setStatus(user ? "authed" : "guest");
+
+    let unsubscribe: (() => void) | undefined;
+    let cancelled = false;
+
+    // onAuthStateChanged can fire its first callback with `user: null` before
+    // the persisted session finishes rehydrating from storage — on a fresh
+    // mount (e.g. navigating back from a 404 page) that premature `null`
+    // looked like "logged out" and bounced a real, still-logged-in user to
+    // /login. Waiting for authStateReady() first avoids reading that race.
+    auth.authStateReady().then(() => {
+      if (cancelled || !auth) return;
+      setStatus(auth.currentUser ? "authed" : "guest");
+      unsubscribe = onAuthStateChanged(auth, (user) => {
+        setStatus(user ? "authed" : "guest");
+      });
     });
-    return unsubscribe;
+
+    return () => {
+      cancelled = true;
+      unsubscribe?.();
+    };
   }, []);
 
   if (status === "checking") {

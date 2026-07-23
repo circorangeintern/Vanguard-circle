@@ -76,11 +76,12 @@ model Group {
   createdBy           String
   createdAt           DateTime @default(now())
 
-  memberships Membership[]
-  tasks       Task[]
-  checkIns    CheckIn[]
-  streaks     Streak[]
-  invitations Invitation[]
+  memberships   Membership[]
+  tasks         Task[]
+  checkIns      CheckIn[]
+  streaks       Streak[]
+  invitations   Invitation[]
+  studySessions StudySession[]
 }
 
 // Join table — a User can belong to many Groups (supports the cross-circle dashboard)
@@ -157,8 +158,22 @@ model Notification {
   channel   NotificationChannel
   payload   Json
   bundled   Boolean             @default(false) // true if this combines multiple groups' reminders
+  read      Boolean             @default(false)
   sentAt    DateTime?
   createdAt DateTime            @default(now())
 
   user User @relation(fields: [userId], references: [id])
+}
+
+// A scheduled study session or group check-in for a circle — powers the
+// dashboard's "Today's Agenda" (previously static placeholder data).
+model StudySession {
+  id        String   @id @default(uuid())
+  groupId   String
+  title     String
+  startTime DateTime
+  createdBy String
+  createdAt DateTime @default(now())
+
+  group Group @relation(fields: [groupId], references: [id])
 }

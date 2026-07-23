@@ -7,6 +7,8 @@ const groupRoutes = require("./routes/groups");
 const taskRoutes = require("./routes/tasks");
 const checkInRoutes = require("./routes/checkins");
 const dashboardRoutes = require("./routes/dashboard");
+const sessionRoutes = require("./routes/sessions");
+const notificationRoutes = require("./routes/notifications");
 
 const app = express();
 
@@ -19,7 +21,9 @@ app.get("/health", (req, res) => res.success({ status: "ok" }));
 app.use("/groups", groupRoutes);
 app.use("/groups", taskRoutes);   // /groups/:groupId/tasks
 app.use("/groups", checkInRoutes); // /groups/:groupId/checkins
+app.use("/groups", sessionRoutes); // /groups/:groupId/sessions
 app.use("/users", dashboardRoutes); // /users/me/dashboard
+app.use("/users", notificationRoutes); // /users/me/notifications
 
 // Unmatched routes — without this Express falls through to its default
 // "Cannot GET /x" plain-text page, which the frontend's JSON parser then

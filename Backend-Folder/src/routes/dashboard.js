@@ -37,7 +37,30 @@ router.get("/me/dashboard", requireAuth, async (req, res) => {
     upcomingTasks: m.group.tasks,
   }));
 
-  res.success({ circles });
+  const todayStart = new Date();
+  todayStart.setHours(0, 0, 0, 0);
+  const todayEnd = new Date(todayStart);
+  todayEnd.setDate(todayEnd.getDate() + 1);
+
+  const groupIds = memberships.map((m) => m.group.id);
+  const todaySessions = groupIds.length
+    ? await prisma.studySession.findMany({
+        where: { groupId: { in: groupIds }, startTime: { gte: todayStart, lt: todayEnd } },
+        include: { group: { select: { name: true } } },
+        orderBy: { startTime: "asc" },
+      })
+    : [];
+
+  res.success({
+    circles,
+    todayAgenda: todaySessions.map((s) => ({
+      id: s.id,
+      title: s.title,
+      startTime: s.startTime,
+      groupId: s.groupId,
+      groupName: s.group.name,
+    })),
+  });
 });
 
 module.exports = router;

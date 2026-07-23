@@ -37,11 +37,25 @@ const InvitePage = () => {
       setAuthChecked(true);
       return;
     }
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      setIsAuthed(!!user);
+
+    let unsubscribe: (() => void) | undefined;
+    let cancelled = false;
+
+    // See ProtectedRoute for why this waits on authStateReady() first rather
+    // than trusting onAuthStateChanged's very first callback.
+    auth.authStateReady().then(() => {
+      if (cancelled || !auth) return;
+      setIsAuthed(!!auth.currentUser);
       setAuthChecked(true);
+      unsubscribe = onAuthStateChanged(auth, (user) => {
+        setIsAuthed(!!user);
+      });
     });
-    return unsubscribe;
+
+    return () => {
+      cancelled = true;
+      unsubscribe?.();
+    };
   }, []);
 
   useEffect(() => {

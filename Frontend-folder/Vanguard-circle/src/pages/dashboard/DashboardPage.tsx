@@ -5,9 +5,10 @@ import DashboardHero from "../../components/dashboard/sections/DashboardHero";
 import KeepStreak from "../../components/dashboard/sections/KeepStreak";
 import MyCircles from "../../components/dashboard/sections/MyCircles";
 import StatsGrid from "../../components/dashboard/sections/StatsGrid";
-import TodayAgenda from "../../components/dashboard/sections/TodayAgenda";
+import TodayAgenda, { type AgendaItem } from "../../components/dashboard/sections/TodayAgenda";
 import UpcomingAssignments from "../../components/dashboard/sections/UpcomingAssignments";
 import CreateCircleModal from "../../components/dashboard/modals/CreateCircleModal";
+import CreateSessionModal from "../../components/dashboard/modals/CreateSessionModal";
 
 interface Task {
   id: string;
@@ -27,10 +28,12 @@ interface Circle {
 
 interface DashboardData {
   circles: Circle[];
+  todayAgenda: AgendaItem[];
 }
 
 const DashboardPage = () => {
   const [openCreateModal, setOpenCreateModal] = useState(false);
+  const [openSessionModal, setOpenSessionModal] = useState(false);
   const [data, setData] = useState<DashboardData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -104,10 +107,10 @@ const DashboardPage = () => {
 
       <section className="grid gap-8 xl:grid-cols-[1.2fr_0.8fr]">
         <UpcomingAssignments tasks={allUpcomingTasks} />
-        {/* TodayAgenda shows scheduled study sessions — a feature not yet in the
-            backend schema (only Tasks with due dates exist, no session scheduling).
-            Left as-is with placeholder data; flag to PM as a scope question. */}
-        <TodayAgenda />
+        <TodayAgenda
+          sessions={data.todayAgenda}
+          onSchedule={() => setOpenSessionModal(true)}
+        />
       </section>
 
       <MyCircles
@@ -124,6 +127,12 @@ const DashboardPage = () => {
       <CreateCircleModal
         open={openCreateModal}
         onClose={() => setOpenCreateModal(false)}
+        onSuccess={loadDashboard}
+      />
+      <CreateSessionModal
+        open={openSessionModal}
+        circles={circles}
+        onClose={() => setOpenSessionModal(false)}
         onSuccess={loadDashboard}
       />
     </div>
