@@ -25,7 +25,7 @@ export const mainNavigation: SidebarItem[] = [
   },
   {
     label: "My Circles",
-    path: "/dashboard/circles",
+    path: "/my-circles",
     icon: HiOutlineUserGroup,
   },
   {

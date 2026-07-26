@@ -20,7 +20,7 @@ const navigation = [
   },
   {
     label: "My Circles",
-    path: "/dashboard/circles",
+    path: "/my-circles",
     icon: HiOutlineUserGroup,
   },
   {

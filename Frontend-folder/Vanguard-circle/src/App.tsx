@@ -18,6 +18,7 @@ import ScrollToTop from "./components/common/ScrollToTop";
 import InvitePage from "./pages/InvitePage";
 import NotFoundPage from "./pages/NotFoundPage";
 import ProtectedRoute from "./components/auth/ProtectedRoute";
+import MyCirclesPage from "./pages/my-circles/MyCirclesPage";
 
 const App = () => {
   const { pathname } = useLocation();
@@ -31,7 +32,8 @@ const App = () => {
       "/reset-password",
     ].includes(pathname) ||
     pathname.startsWith("/dashboard") ||
-    pathname.startsWith("/invite/");
+    pathname.startsWith("/invite/") ||
+    pathname.startsWith("/my-circles");
 
   return (
     <>
@@ -56,6 +58,7 @@ const App = () => {
         <Route element={<ProtectedRoute />}>
           <Route element={<DashboardLayout />}>
             <Route path="/dashboard" element={<DashboardPage />} />
+            <Route path="/my-circles" element={<MyCirclesPage />} />
           </Route>
         </Route>
 
