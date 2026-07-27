@@ -25,7 +25,7 @@ const navigation = [
   },
   {
     label: "Calendar",
-    path: "/dashboard/calendar",
+    path: "/calendar",
     icon: HiOutlineCalendarDays,
   },
   {

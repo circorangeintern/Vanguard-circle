@@ -19,6 +19,7 @@ import InvitePage from "./pages/InvitePage";
 import NotFoundPage from "./pages/NotFoundPage";
 import ProtectedRoute from "./components/auth/ProtectedRoute";
 import MyCirclesPage from "./pages/my-circles/MyCirclesPage";
+import CalendarPage from "./pages/calendar/CalendarPage";
 
 const App = () => {
   const { pathname } = useLocation();
@@ -33,7 +34,8 @@ const App = () => {
     ].includes(pathname) ||
     pathname.startsWith("/dashboard") ||
     pathname.startsWith("/invite/") ||
-    pathname.startsWith("/my-circles");
+    pathname.startsWith("/my-circles") ||
+    pathname.startsWith("/calendar");
 
   return (
     <>
@@ -59,6 +61,7 @@ const App = () => {
           <Route element={<DashboardLayout />}>
             <Route path="/dashboard" element={<DashboardPage />} />
             <Route path="/my-circles" element={<MyCirclesPage />} />
+            <Route path="/calendar" element={<CalendarPage />} />
           </Route>
         </Route>
 

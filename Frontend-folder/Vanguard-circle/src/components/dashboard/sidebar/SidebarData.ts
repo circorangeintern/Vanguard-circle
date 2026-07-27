@@ -30,7 +30,7 @@ export const mainNavigation: SidebarItem[] = [
   },
   {
     label: "Calendar",
-    path: "/dashboard/calendar",
+    path: "/calendar",
     icon: HiOutlineCalendarDays,
   },
   {
