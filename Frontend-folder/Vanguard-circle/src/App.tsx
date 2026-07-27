@@ -20,6 +20,7 @@ import NotFoundPage from "./pages/NotFoundPage";
 import ProtectedRoute from "./components/auth/ProtectedRoute";
 import MyCirclesPage from "./pages/my-circles/MyCirclesPage";
 import CalendarPage from "./pages/calendar/CalendarPage";
+import NotificationPage from "./pages/notification/NotificationPage";
 
 const App = () => {
   const { pathname } = useLocation();
@@ -35,7 +36,8 @@ const App = () => {
     pathname.startsWith("/dashboard") ||
     pathname.startsWith("/invite/") ||
     pathname.startsWith("/my-circles") ||
-    pathname.startsWith("/calendar");
+    pathname.startsWith("/calendar") ||
+    pathname.startsWith("/notifications");
 
   return (
     <>
@@ -62,6 +64,7 @@ const App = () => {
             <Route path="/dashboard" element={<DashboardPage />} />
             <Route path="/my-circles" element={<MyCirclesPage />} />
             <Route path="/calendar" element={<CalendarPage />} />
+            <Route path="/notifications" element={<NotificationPage />} />
           </Route>
         </Route>
 

@@ -15,18 +15,18 @@ interface FloatingActionMenuProps {
 const actions = [
   {
     label: "Notifications",
-    path: "/dashboard/notifications",
+    path: "/notifications",
     icon: HiOutlineBell,
   },
 
   {
     label: "Settings",
-    path: "/dashboard/settings",
+    path: "/settings",
     icon: HiOutlineCog6Tooth,
   },
   {
     label: "Help",
-    path: "/dashboard/help",
+    path: "/help",
     icon: HiOutlineQuestionMarkCircle,
   },
   {

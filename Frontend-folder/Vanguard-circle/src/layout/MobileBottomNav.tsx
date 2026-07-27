@@ -30,7 +30,7 @@ const navigation = [
   },
   {
     label: "Assignments",
-    path: "/dashboard/assignments",
+    path: "/assignments",
     icon: HiOutlineDocumentText,
   },
 ];

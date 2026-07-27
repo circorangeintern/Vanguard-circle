@@ -1,0 +1,68 @@
+import { FiBell, FiCalendar, FiCheckCircle, FiClipboard } from "react-icons/fi";
+
+import type { Notification } from "../types";
+
+export const INITIAL_NOTIFICATIONS: ReadonlyArray<Notification> = [
+  {
+    id: "1",
+    title: "Study Session Reminder",
+    description: "Design Circle starts in 30 minutes",
+    icon: FiCalendar,
+    iconBackground: "bg-violet-50",
+    iconColor: "text-violet-600",
+    time: "9:30 AM",
+    schedule: "10:00 AM – 11:30 AM",
+    read: false,
+  },
+  {
+    id: "2",
+    title: "Check-in Reminder",
+    description: "Don't forget to check-in for Marketing Circle",
+    icon: FiCheckCircle,
+    iconBackground: "bg-amber-50",
+    iconColor: "text-amber-500",
+    time: "9:00 AM",
+    read: false,
+  },
+  {
+    id: "3",
+    title: "Assignment Due Tomorrow",
+    description: "UI/UX Case Study Presentation is due tomorrow",
+    icon: FiClipboard,
+    iconBackground: "bg-red-50",
+    iconColor: "text-red-500",
+    time: "8:00 AM",
+    read: false,
+  },
+  {
+    id: "4",
+    title: "System Update",
+    description: "We've improved calendar integration",
+    icon: FiBell,
+    iconBackground: "bg-emerald-50",
+    iconColor: "text-emerald-500",
+    time: "Yesterday",
+    read: true,
+  },
+  {
+    id: "5",
+    title: "Assignment Due in 2 Days",
+    description: "Database Normalization is due in 2 days",
+    icon: FiClipboard,
+    iconBackground: "bg-red-50",
+    iconColor: "text-red-500",
+    time: "Yesterday",
+    read: true,
+  },
+  {
+    id: "6",
+    title: "Study Session Reminder",
+    description: "CS 302 Circle starts in 15 minutes",
+    icon: FiCalendar,
+    iconBackground: "bg-violet-50",
+    iconColor: "text-violet-600",
+    time: "Yesterday",
+    schedule: "6:00 PM – 7:30 PM",
+    read: true,
+  },
+] as const;

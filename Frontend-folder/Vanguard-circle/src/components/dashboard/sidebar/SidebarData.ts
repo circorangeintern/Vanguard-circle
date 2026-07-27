@@ -40,7 +40,7 @@ export const mainNavigation: SidebarItem[] = [
   },
   {
     label: "Notifications",
-    path: "/dashboard/notifications",
+    path: "/notifications",
     icon: HiOutlineBell,
   },
 ];
