@@ -35,7 +35,7 @@ export const mainNavigation: SidebarItem[] = [
   },
   {
     label: "Assignments",
-    path: "/dashboard/assignments",
+    path: "/assignments",
     icon: HiOutlineDocumentText,
   },
   {
@@ -53,7 +53,7 @@ export const secondaryNavigation: SidebarItem[] = [
   },
   {
     label: "Help",
-    path: "/dashboard/help",
+    path: "/help",
     icon: HiOutlineQuestionMarkCircle,
   },
   {
