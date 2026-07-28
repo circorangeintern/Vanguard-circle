@@ -4,10 +4,11 @@ import {
   HiOutlineCalendarDays,
   HiOutlineDocumentText,
   HiOutlineBell,
-  HiOutlineCog6Tooth,
   HiOutlineQuestionMarkCircle,
   HiOutlineArrowRightOnRectangle,
 } from "react-icons/hi2";
+
+import { PiUserCircleMinusLight } from "react-icons/pi";
 
 import type { IconType } from "react-icons";
 
@@ -47,9 +48,9 @@ export const mainNavigation: SidebarItem[] = [
 
 export const secondaryNavigation: SidebarItem[] = [
   {
-    label: "Settings",
-    path: "/dashboard/settings",
-    icon: HiOutlineCog6Tooth,
+    label: "Profile",
+    path: "/profile",
+    icon: PiUserCircleMinusLight,
   },
   {
     label: "Help",

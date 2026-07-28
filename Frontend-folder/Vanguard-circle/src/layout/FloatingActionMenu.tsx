@@ -2,10 +2,10 @@ import { AnimatePresence, motion } from "framer-motion";
 import { NavLink } from "react-router-dom";
 import {
   HiOutlineBell,
-  HiOutlineCog6Tooth,
   HiOutlineQuestionMarkCircle,
   HiOutlineArrowRightOnRectangle,
 } from "react-icons/hi2";
+import { PiUserCircleMinusLight } from "react-icons/pi";
 
 interface FloatingActionMenuProps {
   open: boolean;
@@ -20,9 +20,9 @@ const actions = [
   },
 
   {
-    label: "Settings",
-    path: "/settings",
-    icon: HiOutlineCog6Tooth,
+    label: "Profile",
+    path: "/profile",
+    icon: PiUserCircleMinusLight,
   },
   {
     label: "Help",
