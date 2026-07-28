@@ -20,17 +20,17 @@ const navigation = [
   },
   {
     label: "My Circles",
-    path: "/dashboard/circles",
+    path: "/my-circles",
     icon: HiOutlineUserGroup,
   },
   {
     label: "Calendar",
-    path: "/dashboard/calendar",
+    path: "/calendar",
     icon: HiOutlineCalendarDays,
   },
   {
     label: "Assignments",
-    path: "/dashboard/assignments",
+    path: "/assignments",
     icon: HiOutlineDocumentText,
   },
 ];

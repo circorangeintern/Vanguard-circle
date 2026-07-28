@@ -4,10 +4,11 @@ import {
   HiOutlineCalendarDays,
   HiOutlineDocumentText,
   HiOutlineBell,
-  HiOutlineCog6Tooth,
   HiOutlineQuestionMarkCircle,
   HiOutlineArrowRightOnRectangle,
 } from "react-icons/hi2";
+
+import { PiUserCircleMinusLight } from "react-icons/pi";
 
 import type { IconType } from "react-icons";
 
@@ -25,35 +26,35 @@ export const mainNavigation: SidebarItem[] = [
   },
   {
     label: "My Circles",
-    path: "/dashboard/circles",
+    path: "/my-circles",
     icon: HiOutlineUserGroup,
   },
   {
     label: "Calendar",
-    path: "/dashboard/calendar",
+    path: "/calendar",
     icon: HiOutlineCalendarDays,
   },
   {
     label: "Assignments",
-    path: "/dashboard/assignments",
+    path: "/assignments",
     icon: HiOutlineDocumentText,
   },
   {
     label: "Notifications",
-    path: "/dashboard/notifications",
+    path: "/notifications",
     icon: HiOutlineBell,
   },
 ];
 
 export const secondaryNavigation: SidebarItem[] = [
   {
-    label: "Settings",
-    path: "/dashboard/settings",
-    icon: HiOutlineCog6Tooth,
+    label: "Profile",
+    path: "/profile",
+    icon: PiUserCircleMinusLight,
   },
   {
     label: "Help",
-    path: "/dashboard/help",
+    path: "/help",
     icon: HiOutlineQuestionMarkCircle,
   },
   {

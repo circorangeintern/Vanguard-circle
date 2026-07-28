@@ -18,6 +18,12 @@ import ScrollToTop from "./components/common/ScrollToTop";
 import InvitePage from "./pages/InvitePage";
 import NotFoundPage from "./pages/NotFoundPage";
 import ProtectedRoute from "./components/auth/ProtectedRoute";
+import MyCirclesPage from "./pages/my-circles/MyCirclesPage";
+import CalendarPage from "./pages/calendar/CalendarPage";
+import NotificationPage from "./pages/notification/NotificationPage";
+import HelpPage from "./pages/help/HelpPage";
+import AssignmentsPage from "./pages/assignments/AssignmentsPage";
+import ProfilePage from "./pages/profile/ProfilePage";
 
 const App = () => {
   const { pathname } = useLocation();
@@ -31,7 +37,13 @@ const App = () => {
       "/reset-password",
     ].includes(pathname) ||
     pathname.startsWith("/dashboard") ||
-    pathname.startsWith("/invite/");
+    pathname.startsWith("/invite/") ||
+    pathname.startsWith("/my-circles") ||
+    pathname.startsWith("/calendar") ||
+    pathname.startsWith("/notifications") ||
+    pathname.startsWith("/help") ||
+    pathname.startsWith("/assignments") ||
+    pathname.startsWith("/profile");
 
   return (
     <>
@@ -56,6 +68,12 @@ const App = () => {
         <Route element={<ProtectedRoute />}>
           <Route element={<DashboardLayout />}>
             <Route path="/dashboard" element={<DashboardPage />} />
+            <Route path="/my-circles" element={<MyCirclesPage />} />
+            <Route path="/calendar" element={<CalendarPage />} />
+            <Route path="/notifications" element={<NotificationPage />} />
+            <Route path="/help" element={<HelpPage />} />
+            <Route path="/assignments" element={<AssignmentsPage />} />
+            <Route path="/profile" element={<ProfilePage />} />
           </Route>
         </Route>
 
