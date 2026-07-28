@@ -373,53 +373,6 @@ const EditProfileModal = ({ open, onClose }: EditProfileModalProps) => {
                     </p>
                   )}
                 </div>
-
-                {/* Email */}
-                <div>
-                  <label
-                    htmlFor="email"
-                    className="
-                      mb-3
-                      block
-                      text-sm
-                      font-semibold
-                      text-[var(--color-text-primary)]
-                    "
-                  >
-                    Email Address
-                  </label>
-
-                  <input
-                    id="email"
-                    type="email"
-                    value={email}
-                    readOnly
-                    className="
-                      h-14
-                      w-full
-                      cursor-not-allowed
-                      rounded-2xl
-                      border
-                      border-[var(--color-border)]
-                      bg-slate-100
-                      px-5
-                      text-[15px]
-                      text-[var(--color-text-secondary)]
-                      outline-none
-                    "
-                  />
-
-                  <p
-                    className="
-                      mt-3
-                      text-xs
-                      leading-6
-                      text-[var(--color-text-secondary)]
-                    "
-                  >
-                    Email address cannot be changed from your profile.
-                  </p>
-                </div>
               </div>
             </div>
 
