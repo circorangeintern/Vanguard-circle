@@ -22,6 +22,7 @@ import MyCirclesPage from "./pages/my-circles/MyCirclesPage";
 import CalendarPage from "./pages/calendar/CalendarPage";
 import NotificationPage from "./pages/notification/NotificationPage";
 import HelpPage from "./pages/help/HelpPage";
+import AssignmentsPage from "./pages/assignments/AssignmentsPage";
 
 const App = () => {
   const { pathname } = useLocation();
@@ -39,7 +40,8 @@ const App = () => {
     pathname.startsWith("/my-circles") ||
     pathname.startsWith("/calendar") ||
     pathname.startsWith("/notifications") ||
-    pathname.startsWith("/help");
+    pathname.startsWith("/help") ||
+    pathname.startsWith("/assignments");
 
   return (
     <>
@@ -68,6 +70,7 @@ const App = () => {
             <Route path="/calendar" element={<CalendarPage />} />
             <Route path="/notifications" element={<NotificationPage />} />
             <Route path="/help" element={<HelpPage />} />
+            <Route path="/assignments" element={<AssignmentsPage />} />
           </Route>
         </Route>
 
