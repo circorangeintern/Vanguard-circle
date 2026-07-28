@@ -4,20 +4,10 @@ import ProfileHeroCard from "../cards/ProfileHeroCard";
 import AccountInfoCard from "../cards/AccountInfoCard";
 import EditProfileModal from "../modals/EditProfileModal";
 
-import { profile as initialProfile } from "../data/profile";
-import type { Profile } from "../types";
+import { profile } from "../data/profile";
 
 const ProfileSection = () => {
-  const [profile, setProfile] = useState<Profile>(initialProfile);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-
-  const handleEditProfile = () => {
-    console.log("Open Edit Profile Modal");
-  };
-
-  const handleEditAvatar = () => {
-    console.log("Open Avatar Picker");
-  };
 
   return (
     <section className="space-y-8">

@@ -7,7 +7,7 @@ import type { Assignment } from "../types";
 import type { AssignmentFilter } from "./AssignmentTabs";
 
 interface AssignmentListProps {
-  assignments: Assignment[];
+  assignments: readonly Assignment[];
   activeTab: AssignmentFilter;
 }
 

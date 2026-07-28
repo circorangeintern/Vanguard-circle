@@ -7,6 +7,8 @@ export const profile: Profile = {
 
   email: "opeyemi@example.com",
 
+  role: "Student",
+
   avatar:
     "https://images.unsplash.com/photo-1500648767791-00dcc994a43b?w=600&q=80",
 

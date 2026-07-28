@@ -29,7 +29,7 @@ const modalVariants = {
     y: 0,
     transition: {
       duration: 0.28,
-      ease: "easeOut",
+      ease: "easeOut" as const,
     },
   },
   exit: {
