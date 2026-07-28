@@ -1,5 +1,3 @@
-import type { IconType } from "react-icons";
-
 export interface Circle {
   id: string;
 
@@ -11,7 +9,7 @@ export interface Circle {
 
   members: number;
 
-  memberAvatars: string[];
+  memberNames: string[];
 
   tasksDue: number;
 
@@ -20,8 +18,10 @@ export interface Circle {
   dayStreak: number;
 
   lastActive: string;
+  lastActiveAt: string;
+  createdAt: string;
 
-  icon: IconType;
+  icon: string;
 
   gradient: string;
 }

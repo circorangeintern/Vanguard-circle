@@ -1,5 +1,3 @@
-import { useState } from "react";
-
 import CircleFilter from "../filters/CircleFilter";
 import CircleSearch from "../filters/CircleSearch";
 import CircleSort from "../filters/CircleSort";
@@ -10,25 +8,45 @@ import type { ViewMode } from "../types";
 interface FiltersSectionProps {
   view: ViewMode;
   setView: React.Dispatch<React.SetStateAction<ViewMode>>;
+
+  search: string;
+  onSearchChange: (value: string) => void;
+
+  category: string;
+  onCategoryChange: (value: string) => void;
+  categories: string[];
+
+  sort: string;
+  onSortChange: (value: string) => void;
 }
 
-const FiltersSection = ({ view, setView }: FiltersSectionProps) => {
-  const [search, setSearch] = useState("");
-  const [category, setCategory] = useState("All Circles");
-  const [sort, setSort] = useState("Recently Active");
-
+const FiltersSection = ({
+  view,
+  setView,
+  search,
+  onSearchChange,
+  category,
+  onCategoryChange,
+  categories,
+  sort,
+  onSortChange,
+}: FiltersSectionProps) => {
   return (
     <section className="mt-16">
       <div className="flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between">
         {/* Left Controls */}
         <div className="flex flex-col gap-4 md:flex-row md:flex-1 md:items-center">
           <div className="flex-1">
-            <CircleSearch value={search} onChange={setSearch} />
+            <CircleSearch value={search} onChange={onSearchChange} />
           </div>
 
-          <CircleFilter value={category} onChange={setCategory} />
+          <CircleFilter
+            value={category}
+            onChange={onCategoryChange}
+            categories={categories}
+          />
 
-          <CircleSort value={sort} onChange={setSort} />
+          <CircleSort value={sort} onChange={onSortChange} />
         </div>
 
         {/* Right Controls */}

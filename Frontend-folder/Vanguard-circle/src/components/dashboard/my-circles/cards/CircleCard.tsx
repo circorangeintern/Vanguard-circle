@@ -24,9 +24,16 @@ const cardVariants = {
   },
 };
 
-const CircleCard = ({ circle }: CircleCardProps) => {
-  const Icon = circle.icon;
+function initialsOf(name: string) {
+  return name
+    .split(" ")
+    .map((part) => part[0])
+    .join("")
+    .slice(0, 2)
+    .toUpperCase();
+}
 
+const CircleCard = ({ circle }: CircleCardProps) => {
   return (
     <motion.div
       variants={cardVariants}
@@ -77,7 +84,7 @@ const CircleCard = ({ circle }: CircleCardProps) => {
             shadow-lg
           "
         >
-          <Icon className="text-3xl text-white" />
+          <span className="text-3xl">{circle.icon}</span>
         </motion.div>
 
         {/* Menu Button */}
@@ -121,8 +128,8 @@ const CircleCard = ({ circle }: CircleCardProps) => {
         </div>
         {/* Member Avatars */}
         <div className="mt-5 flex items-center">
-          {circle.memberAvatars.slice(0, 5).map((avatar, index) => (
-            <motion.img
+          {circle.memberNames.slice(0, 5).map((name, index) => (
+            <motion.div
               initial={{
                 opacity: 0,
                 scale: 0.8,
@@ -135,22 +142,29 @@ const CircleCard = ({ circle }: CircleCardProps) => {
                 delay: index * 0.05,
               }}
               key={index}
-              src={avatar}
-              alt={`Member ${index + 1}`}
+              title={name}
               className="
+                flex
                 h-9
                 w-9
+                items-center
+                justify-center
                 rounded-full
                 border-2
                 border-white
-                object-cover
+                bg-[var(--color-primary)]
+                text-[11px]
+                font-semibold
+                text-white
                 shadow-sm
               "
               style={{
                 marginLeft: index === 0 ? 0 : -10,
                 zIndex: 10 - index,
               }}
-            />
+            >
+              {initialsOf(name)}
+            </motion.div>
           ))}
 
           {circle.members > 5 && (

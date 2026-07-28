@@ -1,11 +1,17 @@
+import { useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { FiX } from "react-icons/fi";
 import { HiOutlineUserGroup } from "react-icons/hi2";
 import { HiOutlineLink } from "react-icons/hi";
+import { toast } from "sonner";
+
+import { api } from "../../../lib/api";
+import { trackCircleJoined } from "../../../services/analytics";
 
 interface JoinCircleModalProps {
   open: boolean;
   onClose: () => void;
+  onSuccess?: () => void;
 }
 
 const backdropVariants = {
@@ -42,7 +48,64 @@ const modalVariants = {
   },
 };
 
-const JoinCircleModal = ({ open, onClose }: JoinCircleModalProps) => {
+// Accepts either a full invite URL (https://.../invite/abc1234) or a bare
+// invite code pasted directly — people copy either depending on how the link
+// was shared with them.
+function extractInviteCode(input: string): string {
+  const trimmed = input.trim();
+  const marker = "/invite/";
+  const index = trimmed.indexOf(marker);
+  if (index === -1) return trimmed;
+  return trimmed.slice(index + marker.length).split(/[/?#]/)[0];
+}
+
+const JoinCircleModal = ({ open, onClose, onSuccess }: JoinCircleModalProps) => {
+  const [link, setLink] = useState("");
+  const [joining, setJoining] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const handleClose = () => {
+    setLink("");
+    setError(null);
+    onClose();
+  };
+
+  const handleSubmit = async () => {
+    const inviteCode = extractInviteCode(link);
+    if (!inviteCode) {
+      setError("Paste an invitation link or code first.");
+      return;
+    }
+
+    setJoining(true);
+    setError(null);
+    try {
+      const result = await api.post<{
+        group: { id: string; name: string };
+        alreadyMember?: boolean;
+      }>(`/groups/${inviteCode}/join`);
+
+      if (!result.alreadyMember) {
+        trackCircleJoined({
+          circleId: result.group.id,
+          circleName: result.group.name,
+        });
+        toast.success(`You've joined ${result.group.name}!`);
+      } else {
+        toast.info(`You're already a member of ${result.group.name}.`);
+      }
+
+      onSuccess?.();
+      handleClose();
+    } catch (err) {
+      setError(
+        err instanceof Error ? err.message : "Couldn't join this circle. Please try again.",
+      );
+    } finally {
+      setJoining(false);
+    }
+  };
+
   return (
     <AnimatePresence>
       {open && (
@@ -62,7 +125,7 @@ const JoinCircleModal = ({ open, onClose }: JoinCircleModalProps) => {
             p-4
             backdrop-blur-md
           "
-          onClick={onClose}
+          onClick={handleClose}
         >
           <motion.div
             variants={modalVariants}
@@ -85,7 +148,7 @@ const JoinCircleModal = ({ open, onClose }: JoinCircleModalProps) => {
               {/* Close Button */}
               <button
                 type="button"
-                onClick={onClose}
+                onClick={handleClose}
                 className="
                   absolute
                   right-6
@@ -167,8 +230,16 @@ const JoinCircleModal = ({ open, onClose }: JoinCircleModalProps) => {
 
                   <input
                     id="invite-link"
-                    type="url"
-                    placeholder="https://studycircle.app/invite/..."
+                    type="text"
+                    value={link}
+                    onChange={(e) => {
+                      setLink(e.target.value);
+                      if (error) setError(null);
+                    }}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter" && !joining) handleSubmit();
+                    }}
+                    placeholder="https://studycircle-vyo1.onrender.com/invite/..."
                     className="
                       h-12
                       w-full
@@ -192,39 +263,33 @@ const JoinCircleModal = ({ open, onClose }: JoinCircleModalProps) => {
                 </div>
 
                 <p className="mt-3 text-[12px] md:text-sm leading-6 text-[var(--color-text-secondary)]">
-                  Paste the invitation link you received
+                  Paste the invitation link (or just the invite code) you received
                 </p>
               </div>
-              {/* Error Message */}
-              {/* 
-                Show this only when an error exists.
 
-                Example:
-                {error && (
-                  ...
-                )}
-              */}
-              {/* <div
-                className="
-                  mt-6
-                  rounded-2xl
-                  border
-                  border-red-200
-                  bg-red-50
-                  px-5
-                  py-4
-                "
-              >
-                <p className="text-sm font-medium text-red-600">
-                  Invalid invitation link. Please check the link and try again.
-                </p>
-              </div> */}
+              {/* Error Message */}
+              {error && (
+                <div
+                  className="
+                    mt-6
+                    rounded-2xl
+                    border
+                    border-red-200
+                    bg-red-50
+                    px-5
+                    py-4
+                  "
+                >
+                  <p className="text-sm font-medium text-red-600">{error}</p>
+                </div>
+              )}
+
               {/* Footer */}
               <div className="mt-10 flex flex-col-reverse gap-4 sm:flex-row sm:justify-end">
                 {/* Cancel */}
                 <button
                   type="button"
-                  onClick={onClose}
+                  onClick={handleClose}
                   className="
                     flex
                     h-12
@@ -254,7 +319,9 @@ const JoinCircleModal = ({ open, onClose }: JoinCircleModalProps) => {
                   whileTap={{
                     scale: 0.98,
                   }}
-                  type="submit"
+                  type="button"
+                  onClick={handleSubmit}
+                  disabled={joining}
                   className="
                     flex
                     h-12
@@ -278,21 +345,7 @@ const JoinCircleModal = ({ open, onClose }: JoinCircleModalProps) => {
                     disabled:opacity-70
                   "
                 >
-                  {/*
-                    Replace this with your loading state later.
-
-                    Example:
-
-                    {loading ? (
-                      <>
-                        <svg ... />
-                        Joining...
-                      </>
-                    ) : (
-                      "Join Circle"
-                    )}
-                  */}
-                  Join Circle
+                  {joining ? "Joining..." : "Join Circle"}
                 </motion.button>
               </div>
             </div>

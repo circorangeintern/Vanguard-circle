@@ -7,7 +7,11 @@ import CreateCircleModal from "../../modals/CreateCircleModal";
 
 // import studyTogetherImage from "../../../../images/dashboard/study-together.webp";
 
-const MyCirclesEmpty = () => {
+interface MyCirclesEmptyProps {
+  onSuccess?: () => void;
+}
+
+const MyCirclesEmpty = ({ onSuccess }: MyCirclesEmptyProps) => {
   const [openCreateModal, setOpenCreateModal] = useState(false);
 
   return (
@@ -149,6 +153,7 @@ const MyCirclesEmpty = () => {
       <CreateCircleModal
         open={openCreateModal}
         onClose={() => setOpenCreateModal(false)}
+        onSuccess={onSuccess}
       />
     </>
   );

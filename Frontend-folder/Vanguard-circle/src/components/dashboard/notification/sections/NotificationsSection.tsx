@@ -1,16 +1,31 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { toast } from "sonner";
 
 import NotificationCard from "../cards/NotificationCard";
 import NotificationHeader from "./NotificationHeader";
+import NotificationLoading from "../states/NotificationLoading";
+import NotificationEmpty from "../states/NotificationEmpty";
 
-import { INITIAL_NOTIFICATIONS } from "../data/notifications";
+import { api } from "../../../../lib/api";
+import { mapNotification, type RawNotification } from "../data/mapNotification";
 import type { Notification } from "../types";
 
 const NotificationsSection = () => {
-  const [notifications, setNotifications] = useState<Notification[]>([
-    ...INITIAL_NOTIFICATIONS,
-  ]);
+  const [notifications, setNotifications] = useState<Notification[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    api
+      .get<{ notifications: RawNotification[] }>("/users/me/notifications")
+      .then((data) => {
+        setNotifications(data.notifications.map(mapNotification));
+      })
+      .catch(() => {
+        toast.error("Couldn't load notifications. Please try again.");
+      })
+      .finally(() => setLoading(false));
+  }, []);
 
   const unreadCount = useMemo(
     () => notifications.filter((item) => !item.read).length,
@@ -19,41 +34,29 @@ const NotificationsSection = () => {
 
   const markAsRead = (id: string) => {
     setNotifications((prev) =>
-      prev.map((item) =>
-        item.id === id
-          ? {
-              ...item,
-              read: true,
-            }
-          : item,
-      ),
+      prev.map((item) => (item.id === id ? { ...item, read: true } : item)),
     );
-
-    // TODO: Persist read state
+    api.patch(`/users/me/notifications/${id}/read`).catch(() => {
+      // Non-fatal — worst case it shows unread again after a refresh.
+    });
   };
 
   const markAllAsRead = () => {
     if (unreadCount === 0) return;
 
-    setNotifications((prev) =>
-      prev.map((item) => ({
-        ...item,
-        read: true,
-      })),
-    );
-
-    // TODO: Persist read state
+    setNotifications((prev) => prev.map((item) => ({ ...item, read: true })));
+    api.patch("/users/me/notifications/read-all").catch(() => {
+      // Non-fatal — same as above.
+    });
   };
 
   const groupedNotifications = useMemo(() => {
     const unread = notifications.filter((item) => !item.read);
     const read = notifications.filter((item) => item.read);
-
-    return {
-      unread,
-      read,
-    };
+    return { unread, read };
   }, [notifications]);
+
+  if (loading) return <NotificationLoading />;
 
   return (
     <div className="space-y-8">
@@ -61,6 +64,8 @@ const NotificationsSection = () => {
         unreadCount={unreadCount}
         onMarkAllAsRead={markAllAsRead}
       />
+
+      {notifications.length === 0 && <NotificationEmpty />}
 
       {/* Unread */}
       {groupedNotifications.unread.length > 0 && (

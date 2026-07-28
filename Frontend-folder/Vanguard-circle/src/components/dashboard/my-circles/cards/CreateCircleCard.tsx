@@ -5,7 +5,11 @@ import { FiPlus } from "react-icons/fi";
 import CreateCircleModal from "../../modals/CreateCircleModal";
 import JoinCircleModal from "../../modals/JoinCircleModal";
 
-const CreateCircleCard = () => {
+interface CreateCircleCardProps {
+  onSuccess?: () => void;
+}
+
+const CreateCircleCard = ({ onSuccess }: CreateCircleCardProps) => {
   const [openCreateModal, setOpenCreateModal] = useState(false);
   const [openJoinModal, setOpenJoinModal] = useState(false);
 
@@ -114,10 +118,12 @@ const CreateCircleCard = () => {
       <CreateCircleModal
         open={openCreateModal}
         onClose={() => setOpenCreateModal(false)}
+        onSuccess={onSuccess}
       />
       <JoinCircleModal
         open={openJoinModal}
         onClose={() => setOpenJoinModal(false)}
+        onSuccess={onSuccess}
       />
     </>
   );

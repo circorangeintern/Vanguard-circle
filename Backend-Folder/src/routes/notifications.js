@@ -30,4 +30,19 @@ router.patch("/me/notifications/read-all", requireAuth, async (req, res) => {
   res.success({ ok: true });
 });
 
+// PATCH /users/me/notifications/:id/read — mark a single notification as read
+router.patch("/me/notifications/:id/read", requireAuth, async (req, res) => {
+  const notification = await prisma.notification.findUnique({ where: { id: req.params.id } });
+  if (!notification || notification.userId !== req.user.id) {
+    return res.error("Notification not found", 404);
+  }
+
+  const updated = await prisma.notification.update({
+    where: { id: req.params.id },
+    data: { read: true },
+  });
+
+  res.success(updated);
+});
+
 module.exports = router;

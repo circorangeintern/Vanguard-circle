@@ -1,11 +1,12 @@
 import { motion } from "framer-motion";
+import { FiSearch } from "react-icons/fi";
 
 import CircleCard from "../cards/CircleCard";
-import { mockCircles } from "../data/mockCircles";
-import type { ViewMode } from "../types";
+import type { Circle, ViewMode } from "../types";
 
 interface CirclesGridProps {
   view: ViewMode;
+  circles: Circle[];
 }
 
 const containerVariants = {
@@ -17,7 +18,18 @@ const containerVariants = {
   },
 };
 
-const CirclesGrid = ({ view }: CirclesGridProps) => {
+const CirclesGrid = ({ view, circles }: CirclesGridProps) => {
+  if (circles.length === 0) {
+    return (
+      <div className="mt-16 flex flex-col items-center justify-center rounded-3xl border border-[var(--color-border)] bg-white px-6 py-16 text-center">
+        <FiSearch className="text-3xl text-slate-300" />
+        <p className="mt-4 text-sm text-[var(--color-text-secondary)]">
+          No circles match your search or filters.
+        </p>
+      </div>
+    );
+  }
+
   return (
     <motion.section
       variants={containerVariants}
@@ -41,7 +53,7 @@ const CirclesGrid = ({ view }: CirclesGridProps) => {
             `
       }
     >
-      {mockCircles.map((circle) => (
+      {circles.map((circle) => (
         <CircleCard key={circle.id} circle={circle} />
       ))}
     </motion.section>

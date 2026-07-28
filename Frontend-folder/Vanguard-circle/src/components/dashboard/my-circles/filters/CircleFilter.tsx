@@ -3,17 +3,10 @@ import { FiChevronDown } from "react-icons/fi";
 interface CircleFilterProps {
   value: string;
   onChange: (value: string) => void;
+  categories: string[];
 }
 
-const categories = [
-  "All Circles",
-  "Design",
-  "Computer Science",
-  "Marketing",
-  "Engineering",
-];
-
-const CircleFilter = ({ value, onChange }: CircleFilterProps) => {
+const CircleFilter = ({ value, onChange, categories }: CircleFilterProps) => {
   return (
     <div className="w-full md:w-[170px]">
       <div className="relative">
