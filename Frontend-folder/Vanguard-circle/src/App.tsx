@@ -25,6 +25,15 @@ import HelpPage from "./pages/help/HelpPage";
 import AssignmentsPage from "./pages/assignments/AssignmentsPage";
 import ProfilePage from "./pages/profile/ProfilePage";
 
+import { Navigate } from "react-router-dom";
+
+import CircleLayout from "./pages/dashboard/circle/CircleLayout";
+import FeedPage from "./pages/dashboard/circle/FeedPage";
+import TaskBoardPage from "./pages/dashboard/circle/TaskBoardPage";
+import StudySessionsPage from "./pages/dashboard/circle/StudySessionsPage";
+import MembersPage from "./pages/dashboard/circle/MembersPage";
+import SettingsPage from "./pages/dashboard/circle/SettingsPage";
+
 const App = () => {
   const { pathname } = useLocation();
 
@@ -43,7 +52,8 @@ const App = () => {
     pathname.startsWith("/notifications") ||
     pathname.startsWith("/help") ||
     pathname.startsWith("/assignments") ||
-    pathname.startsWith("/profile");
+    pathname.startsWith("/profile") ||
+    pathname.startsWith("/circles");
 
   return (
     <>
@@ -74,6 +84,19 @@ const App = () => {
             <Route path="/help" element={<HelpPage />} />
             <Route path="/assignments" element={<AssignmentsPage />} />
             <Route path="/profile" element={<ProfilePage />} />
+
+            {/* ------------- each circle------------- */}
+            <Route path="/circles/:circleId" element={<CircleLayout />}>
+              {/* Default route */}
+              <Route index element={<Navigate to="feed" replace />} />
+
+              {/* Tabs */}
+              <Route path="feed" element={<FeedPage />} />
+              <Route path="task-board" element={<TaskBoardPage />} />
+              <Route path="study-sessions" element={<StudySessionsPage />} />
+              <Route path="members" element={<MembersPage />} />
+              <Route path="settings" element={<SettingsPage />} />
+            </Route>
           </Route>
         </Route>
 
