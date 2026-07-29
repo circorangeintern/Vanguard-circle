@@ -1,7 +1,11 @@
-import React from "react";
+import CircleSettingsSection from "../../../components/dashboard/circle/settings/sections/CircleSettingsSection";
 
 const SettingsPage = () => {
-  return <div>SettingsPage</div>;
+  return (
+    <div>
+      <CircleSettingsSection />
+    </div>
+  );
 };
 
 export default SettingsPage;
