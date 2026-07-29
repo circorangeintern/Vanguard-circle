@@ -1,7 +1,11 @@
-import React from "react";
+import MembersSection from "../../../components/dashboard/circle/members/sections/MembersSection";
 
 const MembersPage = () => {
-  return <div>MembersPage</div>;
+  return (
+    <div>
+      <MembersSection />
+    </div>
+  );
 };
 
 export default MembersPage;
