@@ -1,11 +1,16 @@
+import { useState } from "react";
+
 import { motion } from "framer-motion";
 import { FiClipboard } from "react-icons/fi";
+import AddTaskModal from "../modals/AddTaskModal";
 
 interface TaskBoardEmptyProps {
   onCreateTask?: () => void;
 }
 
-const TaskBoardEmpty = ({ onCreateTask }: TaskBoardEmptyProps) => {
+const TaskBoardEmpty = ({}: TaskBoardEmptyProps) => {
+  const [isAddTaskOpen, setIsAddTaskOpen] = useState(false);
+
   return (
     <motion.section
       initial={{ opacity: 0, y: 15 }}
@@ -49,7 +54,7 @@ const TaskBoardEmpty = ({ onCreateTask }: TaskBoardEmptyProps) => {
       </p>
 
       <button
-        onClick={onCreateTask}
+        onClick={() => setIsAddTaskOpen(true)}
         className="
           mt-8
           inline-flex
@@ -68,6 +73,10 @@ const TaskBoardEmpty = ({ onCreateTask }: TaskBoardEmptyProps) => {
       >
         Create First Task
       </button>
+      <AddTaskModal
+        open={isAddTaskOpen}
+        onClose={() => setIsAddTaskOpen(false)}
+      />
     </motion.section>
   );
 };

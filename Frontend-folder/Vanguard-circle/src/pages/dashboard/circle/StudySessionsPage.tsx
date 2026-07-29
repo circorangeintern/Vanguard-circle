@@ -1,7 +1,11 @@
-import React from "react";
+import StudySessionsSection from "../../../components/dashboard/circle/study-sessions/sections/StudySessionsSection";
 
 const StudySessionsPage = () => {
-  return <div>StudySessionsPage</div>;
+  return (
+    <div className="">
+      <StudySessionsSection />
+    </div>
+  );
 };
 
 export default StudySessionsPage;
