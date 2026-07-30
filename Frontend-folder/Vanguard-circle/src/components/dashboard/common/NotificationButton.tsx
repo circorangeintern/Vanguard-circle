@@ -33,8 +33,8 @@ const NotificationButton = () => {
   const [loading, setLoading] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
-  const load = () => {
-    setLoading(true);
+  const load = (showLoading = true) => {
+    if (showLoading) setLoading(true);
     api
       .get<{ notifications: Notification[]; unreadCount: number }>(
         "/users/me/notifications",
@@ -51,6 +51,11 @@ const NotificationButton = () => {
 
   useEffect(() => {
     load();
+    // 30s poll — near-real-time without needing websocket/SSE infra this app
+    // doesn't have. Silent (no loading flicker) so it doesn't interrupt
+    // whatever the user's doing.
+    const interval = setInterval(() => load(false), 30_000);
+    return () => clearInterval(interval);
   }, []);
 
   useEffect(() => {

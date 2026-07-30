@@ -37,11 +37,9 @@ const CircleHeroCard = ({
       <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
         {/* Left */}
         <div className="flex items-start gap-5">
-          <img
-            src={icon}
-            alt={name}
-            className="h-14 md:h-20 w-14 md:w-20 rounded-2xl object-cover"
-          />
+          <div className="flex h-14 md:h-20 w-14 md:w-20 shrink-0 items-center justify-center rounded-2xl bg-blue-50 text-3xl md:text-4xl">
+            {icon || "📚"}
+          </div>
 
           <div>
             <h1 className="text-3xl md:text-4xl font-bold text-[var(--color-text-primary)]">

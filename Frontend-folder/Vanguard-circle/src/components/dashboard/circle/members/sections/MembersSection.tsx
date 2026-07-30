@@ -2,10 +2,27 @@ import { useMemo, useState } from "react";
 import { FiSearch } from "react-icons/fi";
 
 import MemberCard from "../cards/MemberCard";
-import { members } from "../data/members";
+import type { Member } from "../types";
+import type { CircleMember } from "../../../../../pages/dashboard/circle/CircleLayout";
 
-const MembersSection = () => {
+interface MembersSectionProps {
+  memberships: CircleMember[];
+}
+
+const MembersSection = ({ memberships }: MembersSectionProps) => {
   const [search, setSearch] = useState("");
+
+  const members: Member[] = useMemo(
+    () =>
+      memberships.map((m) => ({
+        id: m.id,
+        name: m.user.name,
+        email: m.user.email,
+        avatar: "",
+        role: m.role === "ORGANIZER" ? "creator" : "member",
+      })),
+    [memberships],
+  );
 
   const filteredMembers = useMemo(() => {
     if (!search.trim()) return members;
@@ -18,7 +35,7 @@ const MembersSection = () => {
         member.email.toLowerCase().includes(value)
       );
     });
-  }, [search]);
+  }, [members, search]);
 
   return (
     <section

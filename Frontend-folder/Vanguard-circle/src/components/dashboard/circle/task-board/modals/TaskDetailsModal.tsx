@@ -3,18 +3,26 @@ import { useEffect, useRef } from "react";
 import { FiX } from "react-icons/fi";
 
 import StatusBadge from "../cards/StatusBadge";
-import { FiCalendar, FiEdit2, FiTrash2 } from "react-icons/fi";
+import { FiCalendar, FiCheckCircle, FiTrash2 } from "react-icons/fi";
 import { createPortal } from "react-dom";
 
-import type { Task } from "../types";
+import type { Task, TaskStatus } from "../types";
 
 interface TaskDetailsModalProps {
   task: Task | null;
   open: boolean;
   onClose: () => void;
+  onStatusChange: (taskId: string, status: TaskStatus) => void;
+  onDelete: (taskId: string) => void;
 }
 
-const TaskDetailsModal = ({ task, open, onClose }: TaskDetailsModalProps) => {
+const TaskDetailsModal = ({
+  task,
+  open,
+  onClose,
+  onStatusChange,
+  onDelete,
+}: TaskDetailsModalProps) => {
   const modalRef = useRef<HTMLDivElement>(null);
 
   // Close with Escape
@@ -245,14 +253,19 @@ const TaskDetailsModal = ({ task, open, onClose }: TaskDetailsModalProps) => {
             "
               >
                 <div className="flex flex-col gap-3 md:flex-row">
-                  {/* Edit */}
+                  {/* Advance status */}
 
-                  <button
-                    type="button"
-                    onClick={() => console.log("Edit Task")}
-                    className="
+                  {task.status !== "done" && (
+                    <button
+                      type="button"
+                      onClick={() =>
+                        onStatusChange(
+                          task.id,
+                          task.status === "todo" ? "in-progress" : "done",
+                        )
+                      }
+                      className="
         inline-flex
-        
         items-center
         justify-center
         gap-2
@@ -270,16 +283,17 @@ const TaskDetailsModal = ({ task, open, onClose }: TaskDetailsModalProps) => {
         hover:border-[var(--color-primary)]
         hover:bg-[var(--color-primary)]/5
       "
-                  >
-                    <FiEdit2 className="h-4 w-4" />
-                    Edit Task
-                  </button>
+                    >
+                      <FiCheckCircle className="h-4 w-4" />
+                      {task.status === "todo" ? "Start Task" : "Mark Done"}
+                    </button>
+                  )}
 
                   {/* Delete */}
 
                   <button
                     type="button"
-                    onClick={() => console.log("Delete Task")}
+                    onClick={() => onDelete(task.id)}
                     className="
                         inline-flex
                         

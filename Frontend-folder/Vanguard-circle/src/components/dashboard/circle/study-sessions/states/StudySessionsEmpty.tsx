@@ -5,10 +5,11 @@ import { FiCalendar } from "react-icons/fi";
 import ScheduleSessionModal from "../modals/ScheduleSessionModal";
 
 interface StudySessionsEmptyProps {
-  onScheduleSession: () => void;
+  groupId: string;
+  onSuccess: () => void;
 }
 
-const StudySessionsEmpty = ({}: StudySessionsEmptyProps) => {
+const StudySessionsEmpty = ({ groupId, onSuccess }: StudySessionsEmptyProps) => {
   const [isScheduleModalOpen, setIsScheduleModalOpen] = useState(false);
   return (
     <motion.div
@@ -83,7 +84,9 @@ const StudySessionsEmpty = ({}: StudySessionsEmptyProps) => {
       </button>
       <ScheduleSessionModal
         open={isScheduleModalOpen}
+        groupId={groupId}
         onClose={() => setIsScheduleModalOpen(false)}
+        onSuccess={onSuccess}
       />
     </motion.div>
   );

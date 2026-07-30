@@ -34,4 +34,12 @@ router.patch("/:groupId/tasks/:id", requireAuth, async (req, res) => {
   res.success(task);
 });
 
+// DELETE /groups/:groupId/tasks/:id
+router.delete("/:groupId/tasks/:id", requireAuth, async (req, res) => {
+  await prisma.task.delete({ where: { id: req.params.id } }).catch(() => {
+    // Already gone — deleting a task twice should still read as success.
+  });
+  res.success({ deleted: true });
+});
+
 module.exports = router;

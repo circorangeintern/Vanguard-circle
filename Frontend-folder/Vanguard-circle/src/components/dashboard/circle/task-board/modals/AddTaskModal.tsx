@@ -1,15 +1,56 @@
 import { AnimatePresence, motion } from "framer-motion";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { FiX } from "react-icons/fi";
 import { createPortal } from "react-dom";
+import { toast } from "sonner";
+
+import { api } from "../../../../../lib/api";
 
 interface AddTaskModalProps {
   open: boolean;
+  groupId: string;
   onClose: () => void;
+  onSuccess?: () => void;
 }
 
-const AddTaskModal = ({ open, onClose }: AddTaskModalProps) => {
+const AddTaskModal = ({ open, groupId, onClose, onSuccess }: AddTaskModalProps) => {
   const modalRef = useRef<HTMLDivElement>(null);
+  const [title, setTitle] = useState("");
+  const [dueDate, setDueDate] = useState("");
+  const [submitting, setSubmitting] = useState(false);
+
+  const handleClose = () => {
+    setTitle("");
+    setDueDate("");
+    onClose();
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!title.trim()) {
+      toast.error("Give this task a title.");
+      return;
+    }
+    if (!dueDate) {
+      toast.error("Pick a due date.");
+      return;
+    }
+
+    setSubmitting(true);
+    try {
+      await api.post(`/groups/${groupId}/tasks`, {
+        title,
+        dueDate: new Date(dueDate).toISOString(),
+      });
+      toast.success("Task created!");
+      onSuccess?.();
+      handleClose();
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Couldn't create this task.");
+    } finally {
+      setSubmitting(false);
+    }
+  };
 
   // Close with Escape key
   useEffect(() => {
@@ -91,7 +132,7 @@ const AddTaskModal = ({ open, onClose }: AddTaskModalProps) => {
               </div>
 
               <button
-                onClick={onClose}
+                onClick={handleClose}
                 className="
                   rounded-xl
                   p-2
@@ -106,7 +147,7 @@ const AddTaskModal = ({ open, onClose }: AddTaskModalProps) => {
             {/* Body */}
 
             <div className="max-h-[70vh] overflow-y-auto p-6">
-              <form className="space-y-6">
+              <form className="space-y-6" onSubmit={handleSubmit}>
                 {/* Task Title */}
 
                 <div>
@@ -116,6 +157,8 @@ const AddTaskModal = ({ open, onClose }: AddTaskModalProps) => {
 
                   <input
                     type="text"
+                    value={title}
+                    onChange={(e) => setTitle(e.target.value)}
                     placeholder="e.g. Create Homepage Wireframe"
                     className="
                         w-full
@@ -134,78 +177,18 @@ const AddTaskModal = ({ open, onClose }: AddTaskModalProps) => {
                   />
                 </div>
 
-                {/* Description */}
+                {/* Due Date */}
 
                 <div>
                   <label className="mb-2 block text-sm font-medium text-[var(--color-text-primary)]">
-                    Description{" "}
-                    <span className="text-gray-300">(optional)</span>
+                    Due Date
                   </label>
 
-                  <textarea
-                    rows={5}
-                    placeholder="Describe this task..."
+                  <input
+                    type="date"
+                    value={dueDate}
+                    onChange={(e) => setDueDate(e.target.value)}
                     className="
-                        w-full
-                        resize-none
-                        rounded-xl
-                        border
-                        border-[var(--color-border)]
-                        px-4
-                        py-3
-                        text-sm
-                        outline-none
-                        transition
-                        focus:border-[var(--color-primary)]
-                        focus:ring-2
-                        focus:ring-[var(--color-primary)]/10
-                    "
-                  />
-                </div>
-
-                {/* Status + Due Date */}
-
-                <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
-                  {/* Status */}
-
-                  <div>
-                    <label className="mb-2 block text-sm font-medium text-[var(--color-text-primary)]">
-                      Status
-                    </label>
-
-                    <select
-                      className="
-                        w-full
-                        rounded-xl
-                        border
-                        border-[var(--color-border)]
-                        bg-white
-                        px-4
-                        py-3
-                        text-sm
-                        outline-none
-                        transition
-                        focus:border-[var(--color-primary)]
-                        focus:ring-2
-                        focus:ring-[var(--color-primary)]/10
-                    "
-                    >
-                      <option value="todo">To Do</option>
-                      <option value="in-progress">In Progress</option>
-                      <option value="done">Done</option>
-                    </select>
-                  </div>
-
-                  {/* Due Date */}
-
-                  <div>
-                    <label className="mb-2 block text-sm font-medium text-[var(--color-text-primary)]">
-                      Due Date
-                    </label>
-
-                    <input
-                      type="date"
-                      className="
                         w-full
                         rounded-xl
                         border
@@ -220,8 +203,7 @@ const AddTaskModal = ({ open, onClose }: AddTaskModalProps) => {
                         focus:ring-2
                         focus:ring-[var(--color-primary)]/10
                      "
-                    />
-                  </div>
+                  />
                 </div>
 
                 {/* Footer */}
@@ -229,7 +211,7 @@ const AddTaskModal = ({ open, onClose }: AddTaskModalProps) => {
                 <div className="flex flex-col-reverse gap-3 border-t border-[var(--color-border)] pt-6 sm:flex-row sm:justify-end">
                   <button
                     type="button"
-                    onClick={onClose}
+                    onClick={handleClose}
                     className="
                     rounded-xl
                     border
@@ -246,6 +228,7 @@ const AddTaskModal = ({ open, onClose }: AddTaskModalProps) => {
 
                   <button
                     type="submit"
+                    disabled={submitting}
                     className="
                     rounded-xl
                     bg-[var(--color-primary)]
@@ -255,9 +238,11 @@ const AddTaskModal = ({ open, onClose }: AddTaskModalProps) => {
                     text-white
                     transition
                     hover:bg-[var(--color-primary-dark)]
+                    disabled:cursor-not-allowed
+                    disabled:opacity-60
                     "
                   >
-                    Create Task
+                    {submitting ? "Creating..." : "Create Task"}
                   </button>
                 </div>
               </form>

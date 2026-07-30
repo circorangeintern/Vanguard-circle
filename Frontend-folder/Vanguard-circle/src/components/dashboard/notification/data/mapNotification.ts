@@ -1,4 +1,4 @@
-import { FiBell, FiUserPlus } from "react-icons/fi";
+import { FiBell, FiUserPlus, FiVideo, FiClock } from "react-icons/fi";
 
 import type { Notification } from "../types";
 
@@ -35,6 +35,8 @@ export function mapNotification(raw: RawNotification): Notification {
     type?: string;
     memberName?: string;
     groupName?: string;
+    sessionTitle?: string;
+    taskTitle?: string;
   };
 
   if (payload?.type === "member_joined") {
@@ -45,6 +47,32 @@ export function mapNotification(raw: RawNotification): Notification {
       icon: FiUserPlus,
       iconBackground: "bg-blue-50",
       iconColor: "text-blue-600",
+      time: formatTime(raw.createdAt),
+      read: raw.read,
+    };
+  }
+
+  if (payload?.type === "session_reminder") {
+    return {
+      id: raw.id,
+      title: "Study session starting soon",
+      description: `"${payload.sessionTitle}" in ${payload.groupName} is starting soon`,
+      icon: FiVideo,
+      iconBackground: "bg-green-50",
+      iconColor: "text-green-600",
+      time: formatTime(raw.createdAt),
+      read: raw.read,
+    };
+  }
+
+  if (payload?.type === "task_due_soon") {
+    return {
+      id: raw.id,
+      title: "Assignment due soon",
+      description: `"${payload.taskTitle}" in ${payload.groupName} is due soon`,
+      icon: FiClock,
+      iconBackground: "bg-amber-50",
+      iconColor: "text-amber-600",
       time: formatTime(raw.createdAt),
       read: raw.read,
     };

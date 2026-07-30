@@ -9,6 +9,7 @@ const checkInRoutes = require("./routes/checkins");
 const dashboardRoutes = require("./routes/dashboard");
 const sessionRoutes = require("./routes/sessions");
 const notificationRoutes = require("./routes/notifications");
+const { startReminderScheduler } = require("./services/reminders");
 
 const app = express();
 
@@ -46,4 +47,5 @@ app.use((err, req, res, next) => {
 const PORT = process.env.PORT || 4000;
 app.listen(PORT, () => {
   console.log(`StudyCircle backend running on port ${PORT}`);
+  startReminderScheduler();
 });

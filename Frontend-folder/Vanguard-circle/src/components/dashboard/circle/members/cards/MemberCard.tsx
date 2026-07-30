@@ -36,17 +36,28 @@ const MemberCard = ({ member }: MemberCardProps) => {
         {/* Name */}
 
         <div className="flex items-center gap-4 min-w-0">
-          <img
-            src={member.avatar}
-            alt={member.name}
+          <div
             className="
+              flex
               h-12
               w-12
-              rounded-full
-              object-cover
               shrink-0
+              items-center
+              justify-center
+              rounded-full
+              bg-[var(--color-primary)]
+              text-sm
+              font-semibold
+              text-white
             "
-          />
+          >
+            {member.name
+              .split(" ")
+              .map((part) => part[0])
+              .join("")
+              .slice(0, 2)
+              .toUpperCase()}
+          </div>
 
           <div className="min-w-0">
             <h3 className="truncate text-base font-semibold text-[var(--color-text-primary)]">
@@ -72,17 +83,28 @@ const MemberCard = ({ member }: MemberCardProps) => {
 
       <div className="block md:hidden px-5 py-4">
         <div className="flex items-center gap-4">
-          <img
-            src={member.avatar}
-            alt={member.name}
+          <div
             className="
+              flex
               h-12
               w-12
-              rounded-full
-              object-cover
               shrink-0
+              items-center
+              justify-center
+              rounded-full
+              bg-[var(--color-primary)]
+              text-sm
+              font-semibold
+              text-white
             "
-          />
+          >
+            {member.name
+              .split(" ")
+              .map((part) => part[0])
+              .join("")
+              .slice(0, 2)
+              .toUpperCase()}
+          </div>
 
           <div className="min-w-0 flex-1">
             <h3 className="truncate text-base font-semibold text-[var(--color-text-primary)]">

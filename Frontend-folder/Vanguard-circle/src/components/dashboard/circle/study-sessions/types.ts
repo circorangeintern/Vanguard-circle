@@ -2,20 +2,10 @@ export type SessionStatus = "scheduled" | "missed";
 
 export interface Session {
   id: string;
-
   title: string;
-
   description: string;
-
   category: string;
-
-  icon: string;
-
-  date: string;
-
-  time: string;
-
-  meetingLink: string;
-
-  status: SessionStatus;
+  startTime: string; // ISO — the countdown/status is derived from this, not a static field
+  durationMinutes: number;
+  meetingLink: string | null;
 }

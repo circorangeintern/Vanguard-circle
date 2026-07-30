@@ -110,13 +110,14 @@ model Invitation {
 }
 
 model Task {
-  id         String     @id @default(uuid())
-  groupId    String
-  title      String
-  dueDate    DateTime
-  status     TaskStatus @default(TODO)
-  assignedTo String?    // ownership field — nullable until assigned
-  createdAt  DateTime   @default(now())
+  id             String     @id @default(uuid())
+  groupId        String
+  title          String
+  dueDate        DateTime
+  status         TaskStatus @default(TODO)
+  assignedTo     String?    // ownership field — nullable until assigned
+  reminderSentAt DateTime?  // set once a "due soon" notification has fired, so it never repeats
+  createdAt      DateTime   @default(now())
 
   group Group @relation(fields: [groupId], references: [id])
   owner User? @relation("TaskOwner", fields: [assignedTo], references: [id])
@@ -168,12 +169,16 @@ model Notification {
 // A scheduled study session or group check-in for a circle — powers the
 // dashboard's "Today's Agenda" (previously static placeholder data).
 model StudySession {
-  id        String   @id @default(uuid())
-  groupId   String
-  title     String
-  startTime DateTime
-  createdBy String
-  createdAt DateTime @default(now())
+  id              String    @id @default(uuid())
+  groupId         String
+  title           String
+  description     String?
+  startTime       DateTime
+  durationMinutes Int       @default(60)
+  meetingLink     String?
+  createdBy       String
+  reminderSentAt  DateTime? // set once a "starting soon" notification has fired
+  createdAt       DateTime  @default(now())
 
   group Group @relation(fields: [groupId], references: [id])
 }

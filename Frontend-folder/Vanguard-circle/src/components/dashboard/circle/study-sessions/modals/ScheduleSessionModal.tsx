@@ -1,16 +1,80 @@
 import { AnimatePresence, motion } from "framer-motion";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import { FiCalendar, FiClock, FiLink, FiX } from "react-icons/fi";
 import { createPortal } from "react-dom";
+import { toast } from "sonner";
+
+import { api } from "../../../../../lib/api";
 
 interface ScheduleSessionModalProps {
   open: boolean;
+  groupId: string;
   onClose: () => void;
+  onSuccess: () => void;
 }
 
-const ScheduleSessionModal = ({ open, onClose }: ScheduleSessionModalProps) => {
+function defaultDate(): string {
+  const d = new Date();
+  d.setDate(d.getDate() + 1);
+  return d.toISOString().slice(0, 10);
+}
+
+const ScheduleSessionModal = ({ open, groupId, onClose, onSuccess }: ScheduleSessionModalProps) => {
   const modalRef = useRef<HTMLDivElement>(null);
+  const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
+  const [date, setDate] = useState(defaultDate());
+  const [time, setTime] = useState("10:00");
+  const [durationMinutes, setDurationMinutes] = useState(60);
+  const [meetingLink, setMeetingLink] = useState("");
+  const [submitting, setSubmitting] = useState(false);
+
+  const resetForm = () => {
+    setTitle("");
+    setDescription("");
+    setDate(defaultDate());
+    setTime("10:00");
+    setDurationMinutes(60);
+    setMeetingLink("");
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!title.trim()) {
+      toast.error("Give this session a title.");
+      return;
+    }
+    if (!date || !time) {
+      toast.error("Pick a date and time.");
+      return;
+    }
+
+    const startTime = new Date(`${date}T${time}`);
+    if (Number.isNaN(startTime.getTime())) {
+      toast.error("That date/time isn't valid.");
+      return;
+    }
+
+    setSubmitting(true);
+    try {
+      await api.post(`/groups/${groupId}/sessions`, {
+        title,
+        description: description || undefined,
+        startTime: startTime.toISOString(),
+        durationMinutes,
+        meetingLink: meetingLink || undefined,
+      });
+      toast.success("Session scheduled!");
+      onSuccess();
+      resetForm();
+      onClose();
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Couldn't schedule this session.");
+    } finally {
+      setSubmitting(false);
+    }
+  };
 
   // Close with Escape key
   useEffect(() => {
@@ -131,7 +195,7 @@ const ScheduleSessionModal = ({ open, onClose }: ScheduleSessionModalProps) => {
             {/* Body */}
 
             <div className="modal-scrollbar max-h-[45vh] md:max-h-[60vh] overflow-y-auto p-6">
-              <form className="space-y-6">
+              <form id="schedule-session-form" className="space-y-6" onSubmit={handleSubmit}>
                 {/* Session Title */}
 
                 <div>
@@ -141,6 +205,8 @@ const ScheduleSessionModal = ({ open, onClose }: ScheduleSessionModalProps) => {
 
                   <input
                     type="text"
+                    value={title}
+                    onChange={(e) => setTitle(e.target.value)}
                     placeholder="e.g. Figma Auto Layout Deep Dive"
                     className="
                     w-full
@@ -168,6 +234,8 @@ const ScheduleSessionModal = ({ open, onClose }: ScheduleSessionModalProps) => {
 
                   <textarea
                     rows={5}
+                    value={description}
+                    onChange={(e) => setDescription(e.target.value)}
                     placeholder="What will be covered during this study session?"
                     className="
                         w-full
@@ -187,9 +255,9 @@ const ScheduleSessionModal = ({ open, onClose }: ScheduleSessionModalProps) => {
                   />
                 </div>
 
-                {/* Date & Time */}
+                {/* Date, Time & Duration */}
 
-                <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
+                <div className="grid grid-cols-1 gap-5 md:grid-cols-3">
                   {/* Date */}
 
                   <div>
@@ -210,6 +278,8 @@ const ScheduleSessionModal = ({ open, onClose }: ScheduleSessionModalProps) => {
 
                       <input
                         type="date"
+                        value={date}
+                        onChange={(e) => setDate(e.target.value)}
                         className="
                         w-full
                         rounded-xl
@@ -250,6 +320,8 @@ const ScheduleSessionModal = ({ open, onClose }: ScheduleSessionModalProps) => {
 
                       <input
                         type="time"
+                        value={time}
+                        onChange={(e) => setTime(e.target.value)}
                         className="
                             w-full
                             rounded-xl
@@ -268,6 +340,37 @@ const ScheduleSessionModal = ({ open, onClose }: ScheduleSessionModalProps) => {
                         "
                       />
                     </div>
+                  </div>
+
+                  {/* Duration */}
+
+                  <div>
+                    <label className="mb-2 block text-sm font-medium text-[var(--color-text-primary)]">
+                      Duration (minutes)
+                    </label>
+
+                    <input
+                      type="number"
+                      min={15}
+                      step={15}
+                      value={durationMinutes}
+                      onChange={(e) => setDurationMinutes(Number(e.target.value) || 60)}
+                      className="
+                          w-full
+                          rounded-xl
+                          border
+                          border-[var(--color-border)]
+                          bg-white
+                          px-4
+                          py-3
+                          text-sm
+                          outline-none
+                          transition
+                          focus:border-[var(--color-primary)]
+                          focus:ring-2
+                          focus:ring-[var(--color-primary)]/10
+                      "
+                    />
                   </div>
                 </div>
 
@@ -291,6 +394,8 @@ const ScheduleSessionModal = ({ open, onClose }: ScheduleSessionModalProps) => {
 
                     <input
                       type="url"
+                      value={meetingLink}
+                      onChange={(e) => setMeetingLink(e.target.value)}
                       placeholder="https://meet.google.com/..."
                       className="
                         w-full
@@ -376,6 +481,8 @@ const ScheduleSessionModal = ({ open, onClose }: ScheduleSessionModalProps) => {
 
                   <button
                     type="submit"
+                    form="schedule-session-form"
+                    disabled={submitting}
                     className="
                         inline-flex
                         h-12
@@ -389,6 +496,8 @@ const ScheduleSessionModal = ({ open, onClose }: ScheduleSessionModalProps) => {
                         text-white
                         transition-all
                         duration-200
+                        disabled:cursor-not-allowed
+                        disabled:opacity-60
                         hover:bg-[var(--color-primary-dark)]
                         active:scale-[0.98]
                         focus:outline-none
@@ -398,7 +507,7 @@ const ScheduleSessionModal = ({ open, onClose }: ScheduleSessionModalProps) => {
                         disabled:opacity-60
                     "
                   >
-                    Schedule Session
+                    {submitting ? "Scheduling..." : "Schedule Session"}
                   </button>
                 </div>
               </div>

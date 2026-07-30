@@ -208,6 +208,33 @@ router.patch("/:id", requireAuth, async (req, res) => {
   res.success(updated);
 });
 
+// DELETE /groups/:id — permanently delete a circle (organizer only).
+// Foreign keys are RESTRICT, not CASCADE, so dependent rows are deleted
+// explicitly in one transaction before the group itself.
+router.delete("/:id", requireAuth, async (req, res) => {
+  const group = await prisma.group.findUnique({ where: { id: req.params.id } });
+  if (!group) return res.error("Circle not found", 404);
+
+  const membership = await prisma.membership.findUnique({
+    where: { userId_groupId: { userId: req.user.id, groupId: group.id } },
+  });
+  if (!membership || membership.role !== "ORGANIZER") {
+    return res.error("Only the circle organizer can delete this circle.", 403);
+  }
+
+  await prisma.$transaction([
+    prisma.checkIn.deleteMany({ where: { groupId: group.id } }),
+    prisma.streak.deleteMany({ where: { groupId: group.id } }),
+    prisma.task.deleteMany({ where: { groupId: group.id } }),
+    prisma.studySession.deleteMany({ where: { groupId: group.id } }),
+    prisma.invitation.deleteMany({ where: { groupId: group.id } }),
+    prisma.membership.deleteMany({ where: { groupId: group.id } }),
+    prisma.group.delete({ where: { id: group.id } }),
+  ]);
+
+  res.success({ deleted: true });
+});
+
 // POST /groups/:id/invitations — invite more members to an existing circle.
 router.post("/:id/invitations", requireAuth, async (req, res) => {
   const group = await prisma.group.findUnique({ where: { id: req.params.id } });

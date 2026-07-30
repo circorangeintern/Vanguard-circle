@@ -1,12 +1,20 @@
 import { useMemo, useState } from "react";
 import { FiPlus } from "react-icons/fi";
+import { toast } from "sonner";
 
 import TaskCard from "../cards/TaskCard";
-import { tasks } from "../data/tasks";
-import type { TaskStatus } from "../types";
 import AddTaskModal from "../modals/AddTaskModal";
 import TaskDetailsModal from "../modals/TaskDetailsModal";
-import type { Task } from "../types";
+import TaskBoardEmpty from "../states/TaskBoardEmpty";
+import { mapTask } from "../data/mapTask";
+import { api } from "../../../../../lib/api";
+import type { TaskStatus, Task } from "../types";
+import type { CircleGroup } from "../../../../../pages/dashboard/circle/CircleLayout";
+
+interface TaskBoardSectionProps {
+  group: CircleGroup;
+  onChange: () => void;
+}
 
 const filters: ("all" | TaskStatus)[] = ["all", "todo", "in-progress", "done"];
 
@@ -17,28 +25,61 @@ const labels: Record<"all" | TaskStatus, string> = {
   done: "Done",
 };
 
-const TaskBoardSection = () => {
+const REVERSE_STATUS_MAP: Record<TaskStatus, "TODO" | "DOING" | "DONE"> = {
+  todo: "TODO",
+  "in-progress": "DOING",
+  done: "DONE",
+};
+
+const TaskBoardSection = ({ group, onChange }: TaskBoardSectionProps) => {
   const [activeFilter, setActiveFilter] = useState<"all" | TaskStatus>("all");
+  const [isAddTaskOpen, setIsAddTaskOpen] = useState(false);
+  const [selectedTask, setSelectedTask] = useState<Task | null>(null);
+  const [isTaskDetailsOpen, setIsTaskDetailsOpen] = useState(false);
+
+  const tasks = useMemo(
+    () => group.tasks.map((t) => mapTask(t, group.courseName)),
+    [group.tasks, group.courseName],
+  );
 
   const filteredTasks = useMemo(() => {
     if (activeFilter === "all") return tasks;
-
     return tasks.filter((task) => task.status === activeFilter);
-  }, [activeFilter]);
+  }, [tasks, activeFilter]);
 
   const handleMenu = (taskId: string) => {
     const task = tasks.find((t) => t.id === taskId);
-
     if (!task) return;
-
     setSelectedTask(task);
     setIsTaskDetailsOpen(true);
   };
 
-  const [isAddTaskOpen, setIsAddTaskOpen] = useState(false);
-  const [selectedTask, setSelectedTask] = useState<Task | null>(null);
+  const handleStatusChange = async (taskId: string, status: TaskStatus) => {
+    try {
+      await api.patch(`/groups/${group.id}/tasks/${taskId}`, {
+        status: REVERSE_STATUS_MAP[status],
+      });
+      onChange();
+      setIsTaskDetailsOpen(false);
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Couldn't update this task.");
+    }
+  };
 
-  const [isTaskDetailsOpen, setIsTaskDetailsOpen] = useState(false);
+  const handleDelete = async (taskId: string) => {
+    try {
+      await api.delete(`/groups/${group.id}/tasks/${taskId}`);
+      toast.success("Task deleted.");
+      onChange();
+      setIsTaskDetailsOpen(false);
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Couldn't delete this task.");
+    }
+  };
+
+  if (tasks.length === 0) {
+    return <TaskBoardEmpty groupId={group.id} onSuccess={onChange} />;
+  }
 
   return (
     <section className="space-y-6">
@@ -79,12 +120,16 @@ const TaskBoardSection = () => {
       </div>
       <AddTaskModal
         open={isAddTaskOpen}
+        groupId={group.id}
         onClose={() => setIsAddTaskOpen(false)}
+        onSuccess={onChange}
       />
       <TaskDetailsModal
         task={selectedTask}
         open={isTaskDetailsOpen}
         onClose={() => setIsTaskDetailsOpen(false)}
+        onStatusChange={handleStatusChange}
+        onDelete={handleDelete}
       />
     </section>
   );

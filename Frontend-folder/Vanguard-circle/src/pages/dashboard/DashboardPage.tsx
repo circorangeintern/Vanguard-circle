@@ -84,10 +84,16 @@ const DashboardPage = () => {
   const allUpcomingTasks = circles.flatMap((c) =>
     c.upcomingTasks.map((t) => ({ ...t, circleName: c.name })),
   );
+
+  // Picking "whichever circle has the highest streak" meant checking into a
+  // low-streak circle could look like nothing happened — a different circle
+  // that already had a bigger number just kept winning the comparison. This
+  // instead prefers a circle you haven't checked into yet today (something
+  // there's actually a reason to act on), falling back to the highest streak
+  // only when every circle is already checked in.
   const streakCircle = circles.length
-    ? circles.reduce((best, current) =>
-        current.streak > best.streak ? current : best,
-      circles[0])
+    ? circles.find((c) => !c.checkedInToday) ??
+      circles.reduce((best, current) => (current.streak > best.streak ? current : best), circles[0])
     : null;
   const highestStreak = streakCircle?.streak ?? 0;
   const streakCircleId = streakCircle?.groupId;

@@ -5,10 +5,11 @@ import { FiClipboard } from "react-icons/fi";
 import AddTaskModal from "../modals/AddTaskModal";
 
 interface TaskBoardEmptyProps {
-  onCreateTask?: () => void;
+  groupId: string;
+  onSuccess: () => void;
 }
 
-const TaskBoardEmpty = ({}: TaskBoardEmptyProps) => {
+const TaskBoardEmpty = ({ groupId, onSuccess }: TaskBoardEmptyProps) => {
   const [isAddTaskOpen, setIsAddTaskOpen] = useState(false);
 
   return (
@@ -75,7 +76,9 @@ const TaskBoardEmpty = ({}: TaskBoardEmptyProps) => {
       </button>
       <AddTaskModal
         open={isAddTaskOpen}
+        groupId={groupId}
         onClose={() => setIsAddTaskOpen(false)}
+        onSuccess={onSuccess}
       />
     </motion.section>
   );
