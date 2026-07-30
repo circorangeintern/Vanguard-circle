@@ -8,11 +8,11 @@ Vite, Firebase client SDK for auth. Mixpanel for analytics.
 - `Backend-Folder/` — Express API (`src/routes/*.js`, `src/services/*.js`, `prisma/schema.prisma`)
 - `Frontend-folder/Vanguard-circle/` — Vite React app
 
-## Current deployment (mid-migration)
-Moving off Render onto a friend's custom server + domain:
-- Frontend: `https://studycircle.name.ng` — **live, confirmed working** (SPA rewrite works, direct URL loads don't 404)
-- Backend: `https://api.studycircle.name.ng` — **currently down, 502 Bad Gateway** as of last check. nginx is reachable but nothing is answering behind it. Needs checking on the server: is the Node process running, did it crash on a missing/malformed env var (`DATABASE_URL`, `FIREBASE_PRIVATE_KEY` — the private key's `\n` line breaks are a common thing to get mangled when copy-pasting), and is nginx actually proxying to the right local port (`PORT` in `.env`, default 4000).
-- Old Render deploys (`studycircle-backend-ef5n.onrender.com`, `studycircle-vyo1.onrender.com`) still exist and were the last known-working state — useful as a fallback/comparison while debugging the new host.
+## Current deployment
+Migrated off Render onto a friend's custom server + domain — **complete and verified**:
+- Frontend: `https://studycircle.name.ng` — live
+- Backend: `https://api.studycircle.name.ng` — live (was briefly 502 right after cutover; friend fixed it server-side, re-verified with a full 10-step live test: auth, profile, dashboard, create circle, invite link correctly reads the new domain, public invite preview, tasks, sessions, check-in/streak, delete)
+- Old Render deploys (`studycircle-backend-ef5n.onrender.com`, `studycircle-vyo1.onrender.com`) still exist but are no longer the primary deployment — kept only as a fallback reference if needed.
 - CORS on the backend is locked to an explicit allowlist in `src/server.js` (not `cors()` wide-open) — includes `FRONTEND_URL` env var, `https://studycircle.name.ng`, the old Render frontend URL, and localhost. If the new frontend can't reach the new backend once it's up, check `FRONTEND_URL` is set correctly there.
 
 ## Test accounts (Firebase, for Postman/manual testing — throwaway, not real users)
