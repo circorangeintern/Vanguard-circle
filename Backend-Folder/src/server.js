@@ -13,7 +13,33 @@ const { startReminderScheduler } = require("./services/reminders");
 
 const app = express();
 
-app.use(cors());
+// Locked to known frontend origins instead of `cors()`'s "allow any site"
+// default — that was fine while this was a single throwaway Render deploy,
+// but wide-open CORS on a real API means any website in the world could
+// make authenticated-looking requests from a logged-in user's browser.
+// FRONTEND_URL (set per-environment) always gets an entry; the Render and
+// local dev URLs stay allowed too during the studycircle.name.ng migration.
+const allowedOrigins = [
+  process.env.FRONTEND_URL,
+  "https://studycircle.name.ng",
+  "https://studycircle-vyo1.onrender.com",
+  "http://localhost:5173",
+  "http://localhost:4000",
+].filter(Boolean);
+
+app.use(
+  cors({
+    origin(origin, callback) {
+      // No Origin header at all (curl, Postman, server-to-server) — allow,
+      // since there's no browser-cookie/session context to protect there.
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
+  }),
+);
 app.use(express.json());
 app.use(responseWrapper);
 
