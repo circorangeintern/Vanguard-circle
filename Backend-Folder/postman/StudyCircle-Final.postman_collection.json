@@ -1,0 +1,697 @@
+{
+  "info": {
+    "name": "StudyCircle API (Final)",
+    "description": "Complete backend endpoint set including circle-detail features (tasks, sessions with meeting link/duration, delete). Run 'Sign In' first, then everything else works immediately with the pre-filled groupId/taskId from a real run.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{idToken}}",
+        "type": "string"
+      }
+    ]
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:4000",
+      "type": "default"
+    },
+    {
+      "key": "firebaseApiKey",
+      "value": "AIzaSyDBnR_KcsFJxx3KqsmRVIKvlqZqrHqrvqs",
+      "type": "default"
+    },
+    {
+      "key": "testEmail",
+      "value": "demo.reviewer@studycircle.dev",
+      "type": "default"
+    },
+    {
+      "key": "testPassword",
+      "value": "DemoReview2026!",
+      "type": "default"
+    },
+    {
+      "key": "idToken",
+      "value": "",
+      "type": "default"
+    },
+    {
+      "key": "groupId",
+      "value": "e7dcaec1-81b0-4c40-a706-cdc8ec981fdb",
+      "type": "default"
+    },
+    {
+      "key": "inviteCode",
+      "value": "m6rq0bn",
+      "type": "default"
+    },
+    {
+      "key": "taskId",
+      "value": "194f4577-0b54-4e75-8486-e8af284853c7",
+      "type": "default"
+    }
+  ],
+  "item": [
+    {
+      "name": "0. Health",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{baseUrl}}/health",
+        "auth": {
+          "type": "noauth"
+        }
+      },
+      "response": [
+        {
+          "name": "200 response",
+          "originalRequest": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/health"
+          },
+          "status": "OK",
+          "code": 200,
+          "_postman_previewlanguage": "json",
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "body": "{\n  \"success\": true,\n  \"data\": {\n    \"status\": \"ok\"\n  },\n  \"error\": null\n}"
+        }
+      ]
+    },
+    {
+      "name": "Auth (Firebase)",
+      "item": [
+        {
+          "name": "1. Sign In (saves idToken automatically)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const data = pm.response.json();",
+                  "if (data.idToken) { pm.collectionVariables.set('idToken', data.idToken); console.log('idToken saved'); }"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key={{firebaseApiKey}}",
+            "auth": {
+              "type": "noauth"
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{testEmail}}\",\n  \"password\": \"{{testPassword}}\",\n  \"returnSecureToken\": true\n}"
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Users",
+      "item": [
+        {
+          "name": "Get my profile",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/users/me"
+          },
+          "response": []
+        },
+        {
+          "name": "Get my dashboard",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/users/me/dashboard"
+          },
+          "response": [
+            {
+              "name": "200 response",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": "{{baseUrl}}/users/me/dashboard"
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"success\": true,\n  \"data\": {\n    \"circles\": [\n      {\n        \"groupId\": \"e201a743-cccc-4c2d-8d25-7acb2cfd35f2\",\n        \"name\": \"Demo Reviewer Circle\",\n        \"courseName\": \"Verification\",\n        \"description\": null,\n        \"icon\": null,\n        \"streak\": 0,\n        \"checkedInToday\": false,\n        \"upcomingTasks\": [],\n        \"tasksDueCount\": 0,\n        \"sessionCount\": 0,\n        \"memberCount\": 1,\n        \"memberNames\": [\n          \"Demo Reviewer\"\n        ],\n        \"lastActive\": \"2026-07-30T07:37:48.123Z\",\n        \"createdAt\": \"2026-07-30T07:37:48.123Z\"\n      },\n      {\n        \"groupId\": \"a080ceaa-7837-4122-b606-a731b4d5c0f7\",\n        \"name\": \"New Demo Circle\",\n        \"courseName\": \"Live Test\",\n        \"description\": null,\n        \"icon\": null,\n        \"streak\": 1,\n        \"checkedInToday\": true,\n        \"upcomingTasks\": [\n          {\n            \"id\": \"9d275273-2450-498b-995d-e6845c2f0c2f\",\n            \"groupId\": \"a080ceaa-7837-4122-b606-a731b4d5c0f7\",\n            \"title\": \"Read Chapter 4\",\n            \"dueDate\": \"2026-08-15T23:59:00.000Z\",\n            \"status\": \"DOING\",\n            \"assignedTo\": null,\n            \"reminderSentAt\": null,\n            \"createdAt\": \"2026-07-30T08:13:56.611Z\"\n          }\n        ],\n        \"tasksDueCount\": 1,\n        \"sessionCount\": 0,\n        \"memberCount\": 1,\n        \"memberNames\": [\n          \"Demo Reviewer\"\n        ],\n        \"lastActive\": \"2026-07-29T23:00:00.000Z\",\n        \"createdAt\": \"2026-07-30T08:13:48.417Z\"\n      },\n      {\n        \"groupId\": \"b1e323cd-c059-4ff8-b56c-fa8033ce576b\",\n        \"name\": \"New Demo Circle\",\n        \"courseName\": \"Live Test\",\n        \"description\": null,\n        \"icon\": null,\n        \"streak\": 1,\n        \"checkedInToday\": true,\n        \"upcomingTasks\": [\n          {\n            \"id\": \"4848a9d5-06a4-4ecc-bb1d-d937bc2afd35\",\n            \"groupId\": \"b1e323cd-c059-4ff8-b56c-fa8033ce576b\",\n            \"title\": \"Read Chapter 4\",\n            \"dueDate\": \"2026-08-15T23:59:00.000Z\",\n            \"status\": \"DOING\",\n            \"assignedTo\": null,\n            \"reminderSentAt\": null,\n            \"createdAt\": \"2026-07-30T08:14:00.643Z\"\n          }\n        ],\n        \"tasksDueCount\": 1,\n        \"sessionCount\": 0,\n        \"memberCount\": 1,\n        \"memberNames\": [\n          \"Demo Reviewer\"\n        ],\n        \"lastActive\": \"2026-07-29T23:00:00.000Z\",\n        \"createdAt\": \"2026-07-30T08:13:52.633Z\"\n      },\n      {\n        \"groupId\": \"e7dcaec1-81b0-4c40-a706-cdc8ec981fdb\",\n        \"name\": \"Demo Circle Final\",\n        \"courseName\": \"Verification\",\n        \"description\": \"Updated for verification\",\n        \"icon\": null,\n        \"streak\": 1,\n        \"checkedInToday\": true,\n        \"upcomingTasks\": [\n          {\n            \"id\": \"194f4577-0b54-4e75-8486-e8af284853c7\",\n            \"groupId\": \"e7dcaec1-81b0-4c40-a706-cdc8ec981fdb\",\n            \"title\": \"Read Chapter 5\",\n            \"dueDate\": \"2026-08-02T09:56:43.799Z\",\n            \"status\": \"DOING\",\n            \"assignedTo\": null,\n            \"reminderSentAt\": null,\n            \"createdAt\": \"2026-07-30T09:56:44.005Z\"\n          }\n        ],\n        \"tasksDueCount\": 1,\n        \"sessionCount\": 1,\n        \"memberCount\": 1,\n        \"memberNames\": [\n          \"Demo Reviewer\"\n        ],\n        \"lastActive\": \"2026-07-29T23:00:00.000Z\",\n        \"createdAt\": \"2026-07-30T09:56:40.154Z\"\n      }\n    ],\n    \"todayAgenda\": [\n      {\n        \"id\": \"0ba488a8-bb31-4c5c-9366-59d2aeec008e\",\n        \"title\": \"Group Study - Chapter 5\",\n        \"startTime\": \"2026-07-30T10:56:45.024Z\",\n        \"groupId\": \"e7dcaec1-81b0-4c40-a706-cdc8ec981fdb\",\n        \"groupName\": \"Demo Circle Final\"\n      }\n    ]\n  },\n  \"error\": null\n}"
+            }
+          ]
+        },
+        {
+          "name": "Get my tasks (assignments)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/users/me/tasks"
+          },
+          "response": [
+            {
+              "name": "200 response",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": "{{baseUrl}}/users/me/tasks"
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"success\": true,\n  \"data\": {\n    \"tasks\": [\n      {\n        \"id\": \"194f4577-0b54-4e75-8486-e8af284853c7\",\n        \"title\": \"Read Chapter 5\",\n        \"dueDate\": \"2026-08-02T09:56:43.799Z\",\n        \"status\": \"DOING\",\n        \"groupId\": \"e7dcaec1-81b0-4c40-a706-cdc8ec981fdb\",\n        \"groupName\": \"Demo Circle Final\"\n      },\n      {\n        \"id\": \"9d275273-2450-498b-995d-e6845c2f0c2f\",\n        \"title\": \"Read Chapter 4\",\n        \"dueDate\": \"2026-08-15T23:59:00.000Z\",\n        \"status\": \"DOING\",\n        \"groupId\": \"a080ceaa-7837-4122-b606-a731b4d5c0f7\",\n        \"groupName\": \"New Demo Circle\"\n      },\n      {\n        \"id\": \"4848a9d5-06a4-4ecc-bb1d-d937bc2afd35\",\n        \"title\": \"Read Chapter 4\",\n        \"dueDate\": \"2026-08-15T23:59:00.000Z\",\n        \"status\": \"DOING\",\n        \"groupId\": \"b1e323cd-c059-4ff8-b56c-fa8033ce576b\",\n        \"groupName\": \"New Demo Circle\"\n      }\n    ]\n  },\n  \"error\": null\n}"
+            }
+          ]
+        },
+        {
+          "name": "Get my notifications",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/users/me/notifications"
+          },
+          "response": [
+            {
+              "name": "200 response",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": "{{baseUrl}}/users/me/notifications"
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"success\": true,\n  \"data\": {\n    \"notifications\": [\n      {\n        \"id\": \"8a6997e7-6a79-4c3d-8a11-64e69d1fb947\",\n        \"userId\": \"98dd6365-8757-4540-8e74-e3f0d3f1b42e\",\n        \"channel\": \"WEB_PUSH\",\n        \"payload\": {\n          \"type\": \"session_reminder\",\n          \"groupId\": \"ef2f4ad0-9dec-441f-b3a7-4064883d6289\",\n          \"groupName\": \"Reminder Test Circle\",\n          \"sessionId\": \"f5ceb718-500b-44e1-bb62-f1b54b2123f5\",\n          \"startTime\": \"2026-07-30T10:02:24.775Z\",\n          \"meetingLink\": null,\n          \"sessionTitle\": \"Session Starting Soon\"\n        },\n        \"bundled\": false,\n        \"read\": false,\n        \"sentAt\": null,\n        \"createdAt\": \"2026-07-30T09:52:28.277Z\"\n      }\n    ],\n    \"unreadCount\": 1\n  },\n  \"error\": null\n}"
+            }
+          ]
+        },
+        {
+          "name": "Mark all notifications read",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "url": "{{baseUrl}}/users/me/notifications/read-all"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Circles (Groups)",
+      "item": [
+        {
+          "name": "Create a circle",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/groups",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Demo Circle Final\",\n  \"courseName\": \"Verification\"\n}"
+            }
+          },
+          "response": [
+            {
+              "name": "201 response",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": "{{baseUrl}}/groups",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"Demo Circle Final\",\n  \"courseName\": \"Verification\"\n}"
+                }
+              },
+              "status": "Created",
+              "code": 201,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"success\": true,\n  \"data\": {\n    \"group\": {\n      \"id\": \"e7dcaec1-81b0-4c40-a706-cdc8ec981fdb\",\n      \"name\": \"Demo Circle Final\",\n      \"courseName\": \"Verification\",\n      \"description\": null,\n      \"icon\": null,\n      \"visibility\": \"private\",\n      \"approval\": false,\n      \"maxMembers\": null,\n      \"allowMemberInvites\": true,\n      \"requireAdminApproval\": true,\n      \"studyReminders\": true,\n      \"reminderFrequency\": \"Every day\",\n      \"reminderTime\": \"09:00 AM\",\n      \"inviteCode\": \"m6rq0bn\",\n      \"createdBy\": \"98dd6365-8757-4540-8e74-e3f0d3f1b42e\",\n      \"createdAt\": \"2026-07-30T09:56:40.154Z\",\n      \"invitations\": []\n    },\n    \"inviteLink\": \"https://studycircle-vyo1.onrender.com/invite/m6rq0bn\"\n  },\n  \"error\": null\n}"
+            }
+          ],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const data = pm.response.json();",
+                  "if (data?.data?.group) { pm.collectionVariables.set('groupId', data.data.group.id); pm.collectionVariables.set('inviteCode', data.data.group.inviteCode); }"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Preview circle by invite code (public)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/groups/invite/{{inviteCode}}",
+            "auth": {
+              "type": "noauth"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Join circle via invite code",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": "{{baseUrl}}/groups/{{inviteCode}}/join"
+          },
+          "response": []
+        },
+        {
+          "name": "Get one circle",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/groups/{{groupId}}"
+          },
+          "response": [
+            {
+              "name": "200 response",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": "{{baseUrl}}/groups/{{groupId}}"
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"success\": true,\n  \"data\": {\n    \"id\": \"e7dcaec1-81b0-4c40-a706-cdc8ec981fdb\",\n    \"name\": \"Demo Circle Final\",\n    \"courseName\": \"Verification\",\n    \"description\": null,\n    \"icon\": null,\n    \"visibility\": \"private\",\n    \"approval\": false,\n    \"maxMembers\": null,\n    \"allowMemberInvites\": true,\n    \"requireAdminApproval\": true,\n    \"studyReminders\": true,\n    \"reminderFrequency\": \"Every day\",\n    \"reminderTime\": \"09:00 AM\",\n    \"inviteCode\": \"m6rq0bn\",\n    \"createdBy\": \"98dd6365-8757-4540-8e74-e3f0d3f1b42e\",\n    \"createdAt\": \"2026-07-30T09:56:40.154Z\",\n    \"tasks\": [],\n    \"memberships\": [\n      {\n        \"id\": \"bc9cefe5-2b5d-43e5-b167-b2da9c47efd2\",\n        \"userId\": \"98dd6365-8757-4540-8e74-e3f0d3f1b42e\",\n        \"groupId\": \"e7dcaec1-81b0-4c40-a706-cdc8ec981fdb\",\n        \"role\": \"ORGANIZER\",\n        \"joinedAt\": \"2026-07-30T09:56:41.783Z\",\n        \"user\": {\n          \"id\": \"98dd6365-8757-4540-8e74-e3f0d3f1b42e\",\n          \"firebaseUid\": \"dwJqRUaxwcgoJX13SDFSO4yU8Ty2\",\n          \"name\": \"Demo Reviewer\",\n          \"email\": \"demo.reviewer@studycircle.dev\",\n          \"phone\": null,\n          \"createdAt\": \"2026-07-30T07:25:23.768Z\"\n        }\n      }\n    ]\n  },\n  \"error\": null\n}"
+            }
+          ]
+        },
+        {
+          "name": "Update circle settings (organizer only)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/groups/{{groupId}}",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"description\": \"Updated description\"\n}"
+            }
+          },
+          "response": [
+            {
+              "name": "200 response",
+              "originalRequest": {
+                "method": "PATCH",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": "{{baseUrl}}/groups/{{groupId}}",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"description\": \"Updated description\"\n}"
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"success\": true,\n  \"data\": {\n    \"id\": \"e7dcaec1-81b0-4c40-a706-cdc8ec981fdb\",\n    \"name\": \"Demo Circle Final\",\n    \"courseName\": \"Verification\",\n    \"description\": \"Updated for verification\",\n    \"icon\": null,\n    \"visibility\": \"private\",\n    \"approval\": false,\n    \"maxMembers\": null,\n    \"allowMemberInvites\": true,\n    \"requireAdminApproval\": true,\n    \"studyReminders\": true,\n    \"reminderFrequency\": \"Every day\",\n    \"reminderTime\": \"09:00 AM\",\n    \"inviteCode\": \"m6rq0bn\",\n    \"createdBy\": \"98dd6365-8757-4540-8e74-e3f0d3f1b42e\",\n    \"createdAt\": \"2026-07-30T09:56:40.154Z\"\n  },\n  \"error\": null\n}"
+            }
+          ]
+        },
+        {
+          "name": "Invite members by email",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/groups/{{groupId}}/invitations",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"emails\": [\n    \"your.real.email@example.com\"\n  ]\n}"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete circle (organizer only, Danger Zone)",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": "{{baseUrl}}/groups/{{groupId}}"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Tasks",
+      "item": [
+        {
+          "name": "Create a task",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/groups/{{groupId}}/tasks",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Read Chapter 5\",\n  \"dueDate\": \"2026-08-15T23:59:00.000Z\"\n}"
+            }
+          },
+          "response": [
+            {
+              "name": "201 response",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": "{{baseUrl}}/groups/{{groupId}}/tasks",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"title\": \"Read Chapter 5\",\n  \"dueDate\": \"2026-08-15T23:59:00.000Z\"\n}"
+                }
+              },
+              "status": "Created",
+              "code": 201,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"success\": true,\n  \"data\": {\n    \"id\": \"194f4577-0b54-4e75-8486-e8af284853c7\",\n    \"groupId\": \"e7dcaec1-81b0-4c40-a706-cdc8ec981fdb\",\n    \"title\": \"Read Chapter 5\",\n    \"dueDate\": \"2026-08-02T09:56:43.799Z\",\n    \"status\": \"TODO\",\n    \"assignedTo\": null,\n    \"reminderSentAt\": null,\n    \"createdAt\": \"2026-07-30T09:56:44.005Z\"\n  },\n  \"error\": null\n}"
+            }
+          ],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const data = pm.response.json();",
+                  "if (data?.data?.id) pm.collectionVariables.set('taskId', data.data.id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Update task status / reassign",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/groups/{{groupId}}/tasks/{{taskId}}",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"DOING\"\n}"
+            }
+          },
+          "response": [
+            {
+              "name": "200 response",
+              "originalRequest": {
+                "method": "PATCH",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": "{{baseUrl}}/groups/{{groupId}}/tasks/{{taskId}}",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"status\": \"DOING\"\n}"
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"success\": true,\n  \"data\": {\n    \"id\": \"194f4577-0b54-4e75-8486-e8af284853c7\",\n    \"groupId\": \"e7dcaec1-81b0-4c40-a706-cdc8ec981fdb\",\n    \"title\": \"Read Chapter 5\",\n    \"dueDate\": \"2026-08-02T09:56:43.799Z\",\n    \"status\": \"DOING\",\n    \"assignedTo\": null,\n    \"reminderSentAt\": null,\n    \"createdAt\": \"2026-07-30T09:56:44.005Z\"\n  },\n  \"error\": null\n}"
+            }
+          ]
+        },
+        {
+          "name": "Delete a task",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": "{{baseUrl}}/groups/{{groupId}}/tasks/{{taskId}}"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Sessions",
+      "item": [
+        {
+          "name": "Schedule a session (with meeting link + duration)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/groups/{{groupId}}/sessions",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Group Study - Chapter 5\",\n  \"description\": \"Reviewing chapter 5 together\",\n  \"startTime\": \"2026-08-01T10:00:00.000Z\",\n  \"durationMinutes\": 45,\n  \"meetingLink\": \"https://meet.google.com/abc-defg-hij\"\n}"
+            }
+          },
+          "response": [
+            {
+              "name": "201 response",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": "{{baseUrl}}/groups/{{groupId}}/sessions",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"title\": \"Group Study - Chapter 5\",\n  \"description\": \"Reviewing chapter 5 together\",\n  \"startTime\": \"2026-08-01T10:00:00.000Z\",\n  \"durationMinutes\": 45,\n  \"meetingLink\": \"https://meet.google.com/abc-defg-hij\"\n}"
+                }
+              },
+              "status": "Created",
+              "code": 201,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"success\": true,\n  \"data\": {\n    \"id\": \"0ba488a8-bb31-4c5c-9366-59d2aeec008e\",\n    \"groupId\": \"e7dcaec1-81b0-4c40-a706-cdc8ec981fdb\",\n    \"title\": \"Group Study - Chapter 5\",\n    \"description\": \"Reviewing chapter 5 together\",\n    \"startTime\": \"2026-07-30T10:56:45.024Z\",\n    \"durationMinutes\": 45,\n    \"meetingLink\": \"https://meet.google.com/abc-defg-hij\",\n    \"createdBy\": \"98dd6365-8757-4540-8e74-e3f0d3f1b42e\",\n    \"reminderSentAt\": null,\n    \"createdAt\": \"2026-07-30T09:56:45.434Z\"\n  },\n  \"error\": null\n}"
+            }
+          ]
+        },
+        {
+          "name": "List sessions for a circle",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/groups/{{groupId}}/sessions"
+          },
+          "response": [
+            {
+              "name": "200 response",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": "{{baseUrl}}/groups/{{groupId}}/sessions"
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"success\": true,\n  \"data\": {\n    \"sessions\": [\n      {\n        \"id\": \"0ba488a8-bb31-4c5c-9366-59d2aeec008e\",\n        \"groupId\": \"e7dcaec1-81b0-4c40-a706-cdc8ec981fdb\",\n        \"title\": \"Group Study - Chapter 5\",\n        \"description\": \"Reviewing chapter 5 together\",\n        \"startTime\": \"2026-07-30T10:56:45.024Z\",\n        \"durationMinutes\": 45,\n        \"meetingLink\": \"https://meet.google.com/abc-defg-hij\",\n        \"createdBy\": \"98dd6365-8757-4540-8e74-e3f0d3f1b42e\",\n        \"reminderSentAt\": null,\n        \"createdAt\": \"2026-07-30T09:56:45.434Z\"\n      }\n    ]\n  },\n  \"error\": null\n}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Check-ins",
+      "item": [
+        {
+          "name": "Daily check-in",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/groups/{{groupId}}/checkins",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"DONE\"\n}"
+            }
+          },
+          "response": [
+            {
+              "name": "200 response",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": "{{baseUrl}}/groups/{{groupId}}/checkins",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"status\": \"DONE\"\n}"
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"success\": true,\n  \"data\": {\n    \"checkIn\": {\n      \"id\": \"e6b45165-4233-4f16-8b19-549911696768\",\n      \"userId\": \"98dd6365-8757-4540-8e74-e3f0d3f1b42e\",\n      \"groupId\": \"e7dcaec1-81b0-4c40-a706-cdc8ec981fdb\",\n      \"date\": \"2026-07-29T23:00:00.000Z\",\n      \"status\": \"DONE\",\n      \"createdAt\": \"2026-07-30T09:56:48.316Z\"\n    },\n    \"streak\": {\n      \"id\": \"10cee223-5caf-458b-8d38-d5f04283bbf8\",\n      \"userId\": \"98dd6365-8757-4540-8e74-e3f0d3f1b42e\",\n      \"groupId\": \"e7dcaec1-81b0-4c40-a706-cdc8ec981fdb\",\n      \"currentStreak\": 1,\n      \"lastCheckInDate\": \"2026-07-29T23:00:00.000Z\",\n      \"updatedAt\": \"2026-07-30T09:56:49.144Z\"\n    }\n  },\n  \"error\": null\n}"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
