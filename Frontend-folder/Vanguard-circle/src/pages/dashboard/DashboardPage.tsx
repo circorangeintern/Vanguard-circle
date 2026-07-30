@@ -38,6 +38,7 @@ const DashboardPage = () => {
   const [data, setData] = useState<DashboardData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [streakGroupId, setStreakGroupId] = useState<string | null>(null);
 
   const loadDashboard = async () => {
     setLoading(true);
@@ -57,6 +58,28 @@ const DashboardPage = () => {
   useEffect(() => {
     loadDashboard();
   }, []);
+
+  // Picking the circle to show in Keep Streak fresh on every render was the
+  // real bug: "prefer a circle not checked in yet today" recomputed after
+  // every check-in, so as soon as circle A became checked-in it lost to
+  // whichever OTHER circle was still un-checked-in — the widget would
+  // silently swap to a different circle with a different (often lower)
+  // number, which read as "the streak didn't update" even though A's number
+  // was actually correct the whole time. This locks the choice in once and
+  // only re-picks if that circle stops existing (e.g. deleted).
+  useEffect(() => {
+    if (!data) return;
+    setStreakGroupId((current) => {
+      if (current && data.circles.some((c) => c.groupId === current)) return current;
+      const candidate =
+        data.circles.find((c) => !c.checkedInToday) ??
+        data.circles.reduce(
+          (best, curr) => (curr.streak > best.streak ? curr : best),
+          data.circles[0],
+        );
+      return candidate?.groupId ?? null;
+    });
+  }, [data]);
 
   // Only the first load shows the full skeleton — a check-in/circle-creation
   // refresh already has real data on screen, so re-fetching shouldn't blank
@@ -85,16 +108,7 @@ const DashboardPage = () => {
     c.upcomingTasks.map((t) => ({ ...t, circleName: c.name })),
   );
 
-  // Picking "whichever circle has the highest streak" meant checking into a
-  // low-streak circle could look like nothing happened — a different circle
-  // that already had a bigger number just kept winning the comparison. This
-  // instead prefers a circle you haven't checked into yet today (something
-  // there's actually a reason to act on), falling back to the highest streak
-  // only when every circle is already checked in.
-  const streakCircle = circles.length
-    ? circles.find((c) => !c.checkedInToday) ??
-      circles.reduce((best, current) => (current.streak > best.streak ? current : best), circles[0])
-    : null;
+  const streakCircle = circles.find((c) => c.groupId === streakGroupId) ?? null;
   const highestStreak = streakCircle?.streak ?? 0;
   const streakCircleId = streakCircle?.groupId;
   const checkedInToday = streakCircle?.checkedInToday ?? false;

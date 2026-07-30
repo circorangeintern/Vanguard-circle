@@ -10,6 +10,11 @@ router.post("/:groupId/checkins", requireAuth, async (req, res) => {
   const { groupId } = req.params;
   const userId = req.user.id;
 
+  const membership = await prisma.membership.findUnique({
+    where: { userId_groupId: { userId, groupId } },
+  });
+  if (!membership) return res.error("You're not a member of this circle.", 403);
+
   const today = new Date();
   today.setHours(0, 0, 0, 0);
 
