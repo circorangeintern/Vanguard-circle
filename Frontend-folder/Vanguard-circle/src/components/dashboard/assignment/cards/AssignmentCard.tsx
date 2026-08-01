@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { FiMoreVertical } from "react-icons/fi";
 
@@ -18,14 +19,16 @@ const AssignmentCard = ({ assignment }: AssignmentCardProps) => {
       className="
         border-b
         border-[var(--color-border)]
-        p-5
         transition-colors
         duration-200
         hover:bg-slate-50/60
         last:border-none
-        lg:p-7
       "
     >
+      <Link
+        to={`/circles/${assignment.groupId}/task-board`}
+        className="block p-5 lg:p-7"
+      >
       {/* Mobile Layout */}
       <div className="flex flex-col gap-6 lg:hidden">
         {/* Assignment */}
@@ -84,6 +87,7 @@ const AssignmentCard = ({ assignment }: AssignmentCardProps) => {
 
           <motion.button
             whileTap={{ scale: 0.92 }}
+            onClick={(e) => e.preventDefault()}
             className="
               rounded-xl
               p-2
@@ -166,6 +170,7 @@ const AssignmentCard = ({ assignment }: AssignmentCardProps) => {
         <div className="flex justify-end">
           <motion.button
             whileTap={{ scale: 0.92 }}
+            onClick={(e) => e.preventDefault()}
             className="
               rounded-xl
               p-2
@@ -178,6 +183,7 @@ const AssignmentCard = ({ assignment }: AssignmentCardProps) => {
           </motion.button>
         </div>
       </div>
+      </Link>
     </motion.div>
   );
 };

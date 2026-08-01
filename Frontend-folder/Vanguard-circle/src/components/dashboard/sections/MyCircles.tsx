@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import { HiOutlineArrowRight, HiOutlinePlus } from "react-icons/hi2";
 import CircleCard from "../cards/CircleCard";
 import CircleListItem from "../cards/CircleListItem";
@@ -49,10 +50,13 @@ const MyCircles = ({ circles, onCreateCircle }: MyCirclesProps) => {
             New Circle
           </button>
 
-          <button className="flex items-center gap-2 text-sm font-medium text-[var(--color-primary)]">
+          <Link
+            to="/my-circles"
+            className="flex items-center gap-2 text-sm font-medium text-[var(--color-primary)]"
+          >
             View All
             <HiOutlineArrowRight className="text-base" />
-          </button>
+          </Link>
         </div>
       </div>
 
@@ -61,6 +65,7 @@ const MyCircles = ({ circles, onCreateCircle }: MyCirclesProps) => {
         {circles.map((circle, index) => (
           <CircleCard
             key={circle.groupId}
+            groupId={circle.groupId}
             title={circle.name}
             subtitle={circle.courseName}
             tasks={circle.upcomingTasks.length}
@@ -77,6 +82,7 @@ const MyCircles = ({ circles, onCreateCircle }: MyCirclesProps) => {
           {circles.map((circle, index) => (
             <CircleListItem
               key={circle.groupId}
+              groupId={circle.groupId}
               title={circle.name}
               subtitle={circle.courseName}
               tasks={circle.upcomingTasks.length}

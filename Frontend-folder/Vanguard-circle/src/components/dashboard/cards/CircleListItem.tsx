@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import {
   HiOutlineCodeBracket,
   HiOutlineMegaphone,
@@ -6,6 +7,7 @@ import {
 import type { IconType } from "react-icons";
 
 interface CircleListItemProps {
+  groupId: string;
   title: string;
   subtitle?: string;
   tasks: number;
@@ -22,12 +24,12 @@ const styles: Record<
   green: { iconBg: "bg-green-100", iconColor: "text-green-600", taskColor: "text-emerald-600", Icon: HiOutlineCodeBracket },
 };
 
-const CircleListItem = ({ title, subtitle, tasks, checkedInToday, color }: CircleListItemProps) => {
+const CircleListItem = ({ groupId, title, subtitle, tasks, checkedInToday, color }: CircleListItemProps) => {
   const style = styles[color];
   const Icon = style.Icon;
 
   return (
-    <div className="flex items-start gap-4 py-4">
+    <Link to={`/circles/${groupId}`} className="flex items-start gap-4 py-4">
       <div className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl ${style.iconBg}`}>
         <Icon className={`text-xl ${style.iconColor}`} />
       </div>
@@ -46,7 +48,7 @@ const CircleListItem = ({ title, subtitle, tasks, checkedInToday, color }: Circl
           {checkedInToday ? "✓ Checked in today" : "Not checked in yet"}
         </p>
       </div>
-    </div>
+    </Link>
   );
 };
 

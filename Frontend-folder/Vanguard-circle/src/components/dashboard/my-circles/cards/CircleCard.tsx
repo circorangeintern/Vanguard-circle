@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import { FiMoreHorizontal } from "react-icons/fi";
 import { FiCalendar, FiCheckCircle } from "react-icons/fi";
 import { PiFireFill } from "react-icons/pi";
@@ -55,6 +56,7 @@ const CircleCard = ({ circle }: CircleCardProps) => {
     shadow-sm
   "
     >
+      <Link to={`/circles/${circle.id}`} className="block">
       {/* Gradient Header */}
       <div
         className={`
@@ -90,6 +92,7 @@ const CircleCard = ({ circle }: CircleCardProps) => {
         {/* Menu Button */}
         <button
           type="button"
+          onClick={(e) => e.preventDefault()}
           className="
             absolute
             right-4
@@ -272,6 +275,7 @@ const CircleCard = ({ circle }: CircleCardProps) => {
             }}
             type="button"
             aria-label="More actions"
+            onClick={(e) => e.preventDefault()}
             className="
               flex
               h-10
@@ -294,6 +298,7 @@ const CircleCard = ({ circle }: CircleCardProps) => {
           </motion.button>
         </div>
       </div>
+      </Link>
     </motion.div>
   );
 };

@@ -53,6 +53,7 @@ export function mapAssignment(raw: RawTask): Assignment {
     id: raw.id,
     title: raw.title,
     circle: raw.groupName,
+    groupId: raw.groupId,
     icon: Icon,
     iconBackground: "bg-violet-50",
     iconColor: "text-violet-600",

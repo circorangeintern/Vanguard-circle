@@ -7,6 +7,7 @@ export interface Assignment {
 
   title: string;
   circle: string;
+  groupId: string;
 
   icon: IconType;
 
