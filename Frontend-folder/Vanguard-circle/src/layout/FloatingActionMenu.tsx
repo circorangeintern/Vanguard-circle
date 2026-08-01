@@ -1,11 +1,13 @@
 import { AnimatePresence, motion } from "framer-motion";
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import {
   HiOutlineBell,
   HiOutlineQuestionMarkCircle,
   HiOutlineArrowRightOnRectangle,
 } from "react-icons/hi2";
 import { PiUserCircleMinusLight } from "react-icons/pi";
+
+import { performLogout } from "../lib/logout";
 
 interface FloatingActionMenuProps {
   open: boolean;
@@ -37,6 +39,8 @@ const actions = [
 ];
 
 const FloatingActionMenu = ({ open, onToggle }: FloatingActionMenuProps) => {
+  const navigate = useNavigate();
+
   return (
     <>
       <AnimatePresence>
@@ -97,10 +101,14 @@ const FloatingActionMenu = ({ open, onToggle }: FloatingActionMenuProps) => {
                       duration: 0.25,
                     }}
                   >
-                    <NavLink
-                      to={item.path}
-                      onClick={onToggle}
-                      className="
+                    {item.path === "/logout" ? (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          onToggle();
+                          performLogout(navigate);
+                        }}
+                        className="
           flex
           items-center
           gap-4
@@ -118,13 +126,43 @@ const FloatingActionMenu = ({ open, onToggle }: FloatingActionMenuProps) => {
           hover:-translate-y-1
           hover:shadow-2xl
         "
-                    >
-                      <Icon className="text-xl text-[var(--color-primary)]" />
+                      >
+                        <Icon className="text-xl text-[var(--color-primary)]" />
 
-                      <span className="font-body font-medium text-slate-700">
-                        {item.label}
-                      </span>
-                    </NavLink>
+                        <span className="font-body font-medium text-slate-700">
+                          {item.label}
+                        </span>
+                      </button>
+                    ) : (
+                      <NavLink
+                        to={item.path}
+                        onClick={onToggle}
+                        className="
+          flex
+          items-center
+          gap-4
+
+          rounded-full
+          bg-white
+
+          px-6
+          py-3
+
+          shadow-xl
+          transition-all
+          duration-300
+
+          hover:-translate-y-1
+          hover:shadow-2xl
+        "
+                      >
+                        <Icon className="text-xl text-[var(--color-primary)]" />
+
+                        <span className="font-body font-medium text-slate-700">
+                          {item.label}
+                        </span>
+                      </NavLink>
+                    )}
                   </motion.div>
                 );
               })}

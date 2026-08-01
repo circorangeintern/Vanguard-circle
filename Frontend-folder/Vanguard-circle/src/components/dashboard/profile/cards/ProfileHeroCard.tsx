@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { FiCalendar, FiCamera, FiEdit2, FiUsers } from "react-icons/fi";
+import { FiCalendar, FiEdit2, FiUsers } from "react-icons/fi";
 
 interface ProfileHeroCardProps {
   fullName: string;
@@ -8,7 +8,6 @@ interface ProfileHeroCardProps {
   circlesCount: number;
   avatar: string;
   onEditProfile?: () => void;
-  onEditAvatar?: () => void;
 }
 
 const ProfileHeroCard = ({
@@ -18,7 +17,6 @@ const ProfileHeroCard = ({
   circlesCount,
   avatar,
   onEditProfile,
-  onEditAvatar,
 }: ProfileHeroCardProps) => {
   return (
     <motion.section
@@ -96,35 +94,6 @@ const ProfileHeroCard = ({
                 shadow-lg
               "
             />
-
-            <motion.button
-              whileHover={{
-                scale: 1.08,
-              }}
-              whileTap={{
-                scale: 0.95,
-              }}
-              onClick={onEditAvatar}
-              className="
-                absolute
-                bottom-2
-                right-2
-                flex
-                h-11
-                w-11
-                items-center
-                justify-center
-                rounded-full
-                border
-                border-[var(--color-border)]
-                bg-white
-                shadow-md
-                transition-colors
-                hover:text-[var(--color-primary)]
-              "
-            >
-              <FiCamera className="text-lg" />
-            </motion.button>
           </div>
 
           {/* Details */}

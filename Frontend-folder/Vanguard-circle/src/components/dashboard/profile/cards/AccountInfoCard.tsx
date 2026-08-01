@@ -6,7 +6,6 @@ import ProfileInfoRow from "./ProfileInfoRow";
 interface AccountInfoCardProps {
   fullName: string;
   email: string;
-  role: string;
   memberSince: string;
 }
 

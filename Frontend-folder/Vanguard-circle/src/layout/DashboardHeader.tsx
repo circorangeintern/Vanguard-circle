@@ -1,11 +1,10 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { signOut } from "firebase/auth";
-import { toast } from "sonner";
 
 import SearchBar from "../components/dashboard/common/SearchBar";
 import NotificationButton from "../components/dashboard/common/NotificationButton";
 import { auth } from "../lib/firebase";
+import { performLogout } from "../lib/logout";
 
 const DashboardHeader = () => {
   const navigate = useNavigate();
@@ -20,14 +19,7 @@ const DashboardHeader = () => {
     .slice(0, 2)
     .toUpperCase();
 
-  const handleLogout = async () => {
-    try {
-      await signOut(auth!);
-      navigate("/login");
-    } catch {
-      toast.error("Couldn't log out. Please try again.");
-    }
-  };
+  const handleLogout = () => performLogout(navigate);
 
   return (
     <header

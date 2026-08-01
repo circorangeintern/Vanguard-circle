@@ -2,10 +2,9 @@ import { useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { HiChevronUp, HiOutlineArrowRightOnRectangle } from "react-icons/hi2";
 import { useNavigate } from "react-router-dom";
-import { signOut } from "firebase/auth";
-import { toast } from "sonner";
 
 import { auth } from "../../../lib/firebase";
+import { performLogout } from "../../../lib/logout";
 
 interface SidebarProfileProps {
   expanded: boolean;
@@ -24,14 +23,7 @@ const SidebarProfile = ({ expanded }: SidebarProfileProps) => {
     .slice(0, 2)
     .toUpperCase();
 
-  const handleLogout = async () => {
-    try {
-      await signOut(auth!);
-      navigate("/login");
-    } catch (err) {
-      toast.error("Couldn't log out. Please try again.");
-    }
-  };
+  const handleLogout = () => performLogout(navigate);
 
   return (
     <div className="relative">

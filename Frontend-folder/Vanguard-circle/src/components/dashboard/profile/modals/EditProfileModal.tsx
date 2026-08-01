@@ -1,11 +1,18 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useState } from "react";
-import { FiCamera, FiX } from "react-icons/fi";
+import { FiX } from "react-icons/fi";
 import { createPortal } from "react-dom";
+import { updateProfile } from "firebase/auth";
+import { toast } from "sonner";
+
+import { api } from "../../../../lib/api";
+import { auth } from "../../../../lib/firebase";
 
 interface EditProfileModalProps {
   open: boolean;
+  fullName: string;
   onClose: () => void;
+  onSuccess: () => void;
 }
 
 const backdropVariants = {
@@ -42,92 +49,36 @@ const modalVariants = {
   },
 };
 
-const EditProfileModal = ({ open, onClose }: EditProfileModalProps) => {
-  const [fullName, setFullName] = useState("Opeyemi");
-
-  const [email] = useState("opeyemi@example.com");
-
-  const [previewImage, setPreviewImage] = useState(
-    "https://images.unsplash.com/photo-1500648767791-00dcc994a43b?w=500&q=80",
-  );
-
-  const [selectedImage, setSelectedImage] = useState<File | null>(null);
-
-  const [errors, setErrors] = useState<{
-    fullName?: string;
-    image?: string;
-  }>({});
+const EditProfileModal = ({ open, fullName, onClose, onSuccess }: EditProfileModalProps) => {
+  const [name, setName] = useState(fullName);
+  const [error, setError] = useState<string | undefined>();
   const [isUpdating, setIsUpdating] = useState(false);
 
   useEffect(() => {
     if (!open) return;
-
-    setFullName("Opeyemi");
-    setPreviewImage(
-      "https://images.unsplash.com/photo-1500648767791-00dcc994a43b?w=500&q=80",
-    );
-    setSelectedImage(null);
-    setErrors({});
-  }, [open]);
-
-  const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-
-    if (!file) return;
-
-    if (!file.type.startsWith("image/")) {
-      setErrors((prev) => ({
-        ...prev,
-        image: "Please choose a valid image.",
-      }));
-      return;
-    }
-
-    if (file.size > 5 * 1024 * 1024) {
-      setErrors((prev) => ({
-        ...prev,
-        image: "Image must be less than 5MB.",
-      }));
-      return;
-    }
-
-    setSelectedImage(file);
-    setPreviewImage(URL.createObjectURL(file));
-
-    setErrors((prev) => ({
-      ...prev,
-      image: undefined,
-    }));
-  };
-
-  const validate = () => {
-    const newErrors: {
-      fullName?: string;
-    } = {};
-
-    if (!fullName.trim()) {
-      newErrors.fullName = "Full name is required.";
-    }
-
-    setErrors(newErrors);
-
-    return Object.keys(newErrors).length === 0;
-  };
+    setName(fullName);
+    setError(undefined);
+  }, [open, fullName]);
 
   const handleSubmit = async () => {
-    if (!validate()) return;
+    if (!name.trim()) {
+      setError("Full name is required.");
+      return;
+    }
 
     setIsUpdating(true);
-
     try {
-      // TODO: Replace with your API call
-      console.log({
-        fullName,
-        email,
-        image: selectedImage,
-      });
-
+      await api.patch("/users/me", { name: name.trim() });
+      // Keeps the sidebar/header in sync — they read displayName straight
+      // off the Firebase user object, not the backend row.
+      if (auth?.currentUser) {
+        await updateProfile(auth.currentUser, { displayName: name.trim() });
+      }
+      toast.success("Profile updated.");
+      onSuccess();
       onClose();
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Couldn't update your profile.");
     } finally {
       setIsUpdating(false);
     }
@@ -152,7 +103,7 @@ const EditProfileModal = ({ open, onClose }: EditProfileModalProps) => {
             p-4
             backdrop-blur-md
             sm:p-6
-            
+
           "
         >
           <motion.div
@@ -207,7 +158,7 @@ const EditProfileModal = ({ open, onClose }: EditProfileModalProps) => {
                     text-[var(--color-text-secondary)]
                   "
                 >
-                  Update your personal information and profile photo.
+                  Update your display name.
                 </p>
               </div>
 
@@ -250,75 +201,8 @@ const EditProfileModal = ({ open, onClose }: EditProfileModalProps) => {
                 sm:py-8
               "
             >
-              {/* Avatar */}
-              <div className="flex justify-center">
-                <div className="relative">
-                  <motion.img
-                    whileHover={{
-                      scale: 1.03,
-                    }}
-                    src={previewImage}
-                    alt="Profile"
-                    className="
-                      h-32
-                      w-32
-                      rounded-full
-                      object-cover
-                      ring-4
-                      ring-white
-                      shadow-lg
-                      sm:h-36
-                      sm:w-36
-                    "
-                  />
-                  {/* Upload Button */}
-                  <motion.label
-                    whileHover={{
-                      scale: 1.08,
-                    }}
-                    whileTap={{
-                      scale: 0.95,
-                    }}
-                    htmlFor="profile-image"
-                    className="
-                      absolute
-                      bottom-2
-                      right-2
-                      flex
-                      h-12
-                      w-12
-                      cursor-pointer
-                      items-center
-                      justify-center
-                      rounded-full
-                      border
-                      border-[var(--color-border)]
-                      bg-white
-                      shadow-lg
-                      transition-colors
-                      hover:text-[var(--color-primary)]
-                    "
-                  >
-                    <input
-                      id="profile-image"
-                      type="file"
-                      accept="image/*"
-                      onChange={handleImageChange}
-                      className="hidden"
-                    />
-
-                    <FiCamera className="text-xl" />
-                  </motion.label>
-                </div>
-                {errors.image && (
-                  <p className="mt-4 text-center text-sm text-red-500">
-                    {errors.image}
-                  </p>
-                )}
-              </div>
-
               {/* Form */}
-              <div className="mt-10 space-y-7">
+              <div className="space-y-7">
                 {/* Full Name */}
                 <div>
                   <label
@@ -337,16 +221,10 @@ const EditProfileModal = ({ open, onClose }: EditProfileModalProps) => {
                   <input
                     id="full-name"
                     type="text"
-                    value={fullName}
+                    value={name}
                     onChange={(e) => {
-                      setFullName(e.target.value);
-
-                      if (errors.fullName) {
-                        setErrors((prev) => ({
-                          ...prev,
-                          fullName: undefined,
-                        }));
-                      }
+                      setName(e.target.value);
+                      if (error) setError(undefined);
                     }}
                     placeholder="Enter your full name"
                     className="
@@ -367,9 +245,9 @@ const EditProfileModal = ({ open, onClose }: EditProfileModalProps) => {
                       focus:ring-blue-100
                     "
                   />
-                  {errors.fullName && (
+                  {error && (
                     <p className="mt-2 text-sm text-red-500">
-                      {errors.fullName}
+                      {error}
                     </p>
                   )}
                 </div>

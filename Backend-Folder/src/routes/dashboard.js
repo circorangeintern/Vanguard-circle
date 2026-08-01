@@ -6,7 +6,24 @@ const router = express.Router();
 
 // GET /users/me — current authenticated profile
 router.get("/me", requireAuth, async (req, res) => {
-  res.success(req.user);
+  const circlesCount = await prisma.membership.count({ where: { userId: req.user.id } });
+  res.success({ ...req.user, circlesCount });
+});
+
+// PATCH /users/me — update editable profile fields
+router.patch("/me", requireAuth, async (req, res) => {
+  const { name } = req.body;
+  if (name !== undefined && !name.trim()) return res.error("Name can't be empty");
+
+  const updated = await prisma.user.update({
+    where: { id: req.user.id },
+    data: {
+      ...(name !== undefined ? { name: name.trim() } : {}),
+    },
+  });
+
+  const circlesCount = await prisma.membership.count({ where: { userId: req.user.id } });
+  res.success({ ...updated, circlesCount });
 });
 
 // GET /users/me/dashboard — one overview across all circles the user belongs to
