@@ -1,30 +1,47 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { FiInfo } from "react-icons/fi";
+import { toast } from "sonner";
 
 import SettingRow from "../cards/SettingRow";
-import { INITIAL_SYNC_SETTINGS } from "../data/syncSettings";
+import { SYNC_SETTINGS_META } from "../data/syncSettings";
+import { api } from "../../../../lib/api";
 
-import type { SyncSetting } from "../types";
+import type { CalendarSyncSettings, SyncSetting } from "../types";
 
-const SyncSettingsSection = () => {
-  const [settings, setSettings] = useState<SyncSetting[]>([
-    ...INITIAL_SYNC_SETTINGS,
-  ]);
+interface SyncSettingsSectionProps {
+  settings: CalendarSyncSettings;
+  onSettingsChange: (settings: CalendarSyncSettings) => void;
+}
 
-  const handleToggle = (id: string) => {
-    setSettings((prev) =>
-      prev.map((setting) =>
-        setting.id === id
-          ? {
-              ...setting,
-              enabled: !setting.enabled,
-            }
-          : setting,
-      ),
-    );
+const SyncSettingsSection = ({ settings, onSettingsChange }: SyncSettingsSectionProps) => {
+  const [savingId, setSavingId] = useState<string | null>(null);
 
-    // TODO: Persist setting to backend
+  const rows: SyncSetting[] = SYNC_SETTINGS_META.map((meta) => ({
+    id: meta.id,
+    title: meta.title,
+    description: meta.description,
+    icon: meta.icon,
+    enabled: settings[meta.key],
+    disabled: savingId !== null,
+  }));
+
+  const handleToggle = async (id: string) => {
+    const meta = SYNC_SETTINGS_META.find((m) => m.id === id);
+    if (!meta) return;
+
+    const nextValue = !settings[meta.key];
+    setSavingId(id);
+    try {
+      const updated = await api.patch<CalendarSyncSettings>("/calendar/settings", {
+        [meta.key]: nextValue,
+      });
+      onSettingsChange(updated);
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Couldn't update this setting.");
+    } finally {
+      setSavingId(null);
+    }
   };
 
   return (
@@ -59,7 +76,7 @@ const SyncSettingsSection = () => {
 
       {/* Settings */}
       <div className="mt-8 divide-y divide-[var(--color-border)]">
-        {settings.map((setting) => (
+        {rows.map((setting) => (
           <SettingRow
             key={setting.id}
             setting={setting}

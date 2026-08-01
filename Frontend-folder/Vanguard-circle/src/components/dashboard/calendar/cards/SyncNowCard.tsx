@@ -1,18 +1,31 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { FiRefreshCw } from "react-icons/fi";
+import { toast } from "sonner";
 
-const SyncNowCard = () => {
+import { api } from "../../../../lib/api";
+
+interface SyncNowCardProps {
+  onSynced: (lastSyncedAt: string) => void;
+}
+
+const SyncNowCard = ({ onSynced }: SyncNowCardProps) => {
   const [isSyncing, setIsSyncing] = useState(false);
 
   const handleSync = async () => {
     if (isSyncing) return;
 
     setIsSyncing(true);
-
     try {
-      // TODO: Trigger Google Calendar sync API
-      await new Promise((resolve) => setTimeout(resolve, 2000));
+      const result = await api.post<{ syncedCount: number; lastSyncedAt: string }>("/calendar/sync");
+      toast.success(
+        result.syncedCount === 1
+          ? "Synced 1 event to Google Calendar."
+          : `Synced ${result.syncedCount} events to Google Calendar.`,
+      );
+      onSynced(result.lastSyncedAt);
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Couldn't sync with Google Calendar.");
     } finally {
       setIsSyncing(false);
     }

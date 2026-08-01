@@ -28,6 +28,25 @@ Has real captured example responses from a live run. Import, run "Sign In"
 first (auto-saves token), then anything else works immediately.
 
 ## What's been fixed/built this session (chronological, most recent first)
+- Built the circle activity **Feed** for real — it was the last piece of
+  100%-mock UI in the app (`FeedSection.tsx` rendered a static `posts.ts`
+  array; like/comment/post handlers were `console.log`). Added `Post`,
+  `PostLike`, `PostComment` Prisma models + migration
+  (`20260801083930_add_feed_posts`), a new `src/routes/posts.js` with the
+  same `requireMembership` authorization pattern as tasks/sessions/checkins
+  (`POST/GET /groups/:groupId/posts`, `DELETE /posts/:id` — author or
+  organizer only, `POST /posts/:id/like` — toggle, `GET/POST
+  /posts/:id/comments`), and wired the frontend (`FeedSection.tsx`,
+  `CreatePostCard.tsx` now has a title field + optional attachment
+  link/label, `FeedPostCard.tsx` now has real like/comment/delete instead
+  of no-ops). Attachments are link-only by explicit choice (paste a URL +
+  label) — no file storage was set up. New posts/comments notify other
+  circle members via the existing in-app notification system
+  (`new_post`/`post_comment` payload types added to
+  `mapNotification.ts`). Verified end-to-end against the live Neon DB with
+  the demo account: create (both post types), list, like/unlike toggle,
+  add + list comments, delete with cascade cleanup, all confirmed via curl
+  before wiring the frontend.
 - Locked down CORS (was wide open, flagged by an external review)
 - Fixed a real authorization gap: `POST/PATCH/DELETE` on tasks and `POST`
   check-ins never verified the requester was actually a member of the

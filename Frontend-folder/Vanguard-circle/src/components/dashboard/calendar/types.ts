@@ -10,3 +10,17 @@ export interface SyncSetting {
 
   disabled?: boolean;
 }
+
+export interface CalendarSyncSettings {
+  syncSessions: boolean;
+  syncAssignments: boolean;
+  syncReminders: boolean;
+}
+
+export interface CalendarStatus {
+  connected: boolean;
+  email?: string;
+  connectedAt?: string;
+  lastSyncedAt?: string | null;
+  settings?: CalendarSyncSettings;
+}

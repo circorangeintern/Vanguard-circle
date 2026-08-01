@@ -9,6 +9,8 @@ const checkInRoutes = require("./routes/checkins");
 const dashboardRoutes = require("./routes/dashboard");
 const sessionRoutes = require("./routes/sessions");
 const notificationRoutes = require("./routes/notifications");
+const postRoutes = require("./routes/posts");
+const calendarRoutes = require("./routes/calendar");
 const { startReminderScheduler } = require("./services/reminders");
 
 const app = express();
@@ -49,6 +51,9 @@ app.use("/groups", groupRoutes);
 app.use("/groups", taskRoutes);   // /groups/:groupId/tasks
 app.use("/groups", checkInRoutes); // /groups/:groupId/checkins
 app.use("/groups", sessionRoutes); // /groups/:groupId/sessions
+app.use("/groups", postRoutes); // /groups/:groupId/posts
+app.use("/posts", postRoutes); // /posts/:id/like, /posts/:id/comments
+app.use("/calendar", calendarRoutes); // /calendar/auth-url, /calendar/callback, /calendar/sync
 app.use("/users", dashboardRoutes); // /users/me/dashboard
 app.use("/users", notificationRoutes); // /users/me/notifications
 

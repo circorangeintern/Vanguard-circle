@@ -1,27 +1,35 @@
 import { FiBell, FiCalendar, FiClipboard } from "react-icons/fi";
 
-import type { SyncSetting } from "../types";
+import type { CalendarSyncSettings } from "../types";
 
-export const INITIAL_SYNC_SETTINGS: ReadonlyArray<SyncSetting> = [
+export interface SyncSettingMeta {
+  id: string;
+  key: keyof CalendarSyncSettings;
+  title: string;
+  description: string;
+  icon: typeof FiCalendar;
+}
+
+export const SYNC_SETTINGS_META: ReadonlyArray<SyncSettingMeta> = [
   {
     id: "sessions",
+    key: "syncSessions",
     title: "Study Sessions",
     description: "Sync all your study sessions and scheduled meetings.",
     icon: FiCalendar,
-    enabled: true,
   },
   {
     id: "assignments",
+    key: "syncAssignments",
     title: "Assignments & Deadlines",
     description: "Sync assignment due dates and deadlines.",
     icon: FiClipboard,
-    enabled: true,
   },
   {
     id: "reminders",
+    key: "syncReminders",
     title: "Reminders",
-    description: "Sync reminders and notifications.",
+    description: "Add a 30-minute popup reminder to synced events (otherwise uses your Google Calendar default).",
     icon: FiBell,
-    enabled: false,
   },
 ] as const;

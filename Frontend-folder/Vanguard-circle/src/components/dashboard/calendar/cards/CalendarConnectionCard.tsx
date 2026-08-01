@@ -2,7 +2,38 @@ import { motion } from "framer-motion";
 import { FiCheckCircle, FiClock, FiTrash2 } from "react-icons/fi";
 import { FcGoogle } from "react-icons/fc";
 
-const CalendarConnectionCard = () => {
+interface CalendarConnectionCardProps {
+  loading: boolean;
+  connected: boolean;
+  email?: string;
+  lastSyncedAt?: string | null;
+  connecting: boolean;
+  disconnecting: boolean;
+  onConnect: () => void;
+  onDisconnect: () => void;
+}
+
+function formatLastSynced(iso?: string | null): string {
+  if (!iso) return "Not synced yet";
+  const diffMs = Date.now() - new Date(iso).getTime();
+  const diffMinutes = Math.floor(diffMs / 60_000);
+  if (diffMinutes < 1) return "Last synced just now";
+  if (diffMinutes < 60) return `Last synced ${diffMinutes}m ago`;
+  const diffHours = Math.floor(diffMinutes / 60);
+  if (diffHours < 24) return `Last synced ${diffHours}h ago`;
+  return `Last synced ${Math.floor(diffHours / 24)}d ago`;
+}
+
+const CalendarConnectionCard = ({
+  loading,
+  connected,
+  email,
+  lastSyncedAt,
+  connecting,
+  disconnecting,
+  onConnect,
+  onDisconnect,
+}: CalendarConnectionCardProps) => {
   return (
     <motion.section
       initial={{ opacity: 0, y: 24 }}
@@ -71,84 +102,106 @@ const CalendarConnectionCard = () => {
                 Google Calendar
               </h2>
 
-              <span
-                className="
-                  inline-flex
-                  items-center
-                  gap-2
-                  rounded-full
-                  bg-green-100
-                  px-3
-                  py-1
-                  text-sm
-                  font-medium
-                  text-green-700
-                "
-              >
-                <FiCheckCircle className="text-sm" />
-                Connected
-              </span>
+              {!loading && (
+                <span
+                  className={`
+                    inline-flex
+                    items-center
+                    gap-2
+                    rounded-full
+                    px-3
+                    py-1
+                    text-sm
+                    font-medium
+                    ${
+                      connected
+                        ? "bg-green-100 text-green-700"
+                        : "bg-gray-100 text-[var(--color-text-secondary)]"
+                    }
+                  `}
+                >
+                  {connected && <FiCheckCircle className="text-sm" />}
+                  {connected ? "Connected" : "Not Connected"}
+                </span>
+              )}
             </div>
 
-            <p
-              className="
-                break-all
-                text-sm
-                text-[var(--color-text-secondary)]
-              "
-            >
-              opeyemi********@gmail.com
-            </p>
+            {loading ? (
+              <div className="h-4 w-40 animate-pulse rounded bg-gray-100" />
+            ) : connected ? (
+              <>
+                <p className="break-all text-sm text-[var(--color-text-secondary)]">{email}</p>
 
-            <div
-              className="
-                flex
-                flex-wrap
-                items-center
-                gap-3
-                text-sm
-                text-[var(--color-text-secondary)]
-              "
-            >
-              <span>•</span>
-
-              <span className="flex items-center gap-2">
-                <FiClock className="text-[15px]" />
-                Last synced 2 minutes ago
-              </span>
-            </div>
+                <div
+                  className="
+                    flex
+                    flex-wrap
+                    items-center
+                    gap-3
+                    text-sm
+                    text-[var(--color-text-secondary)]
+                  "
+                >
+                  <span className="flex items-center gap-2">
+                    <FiClock className="text-[15px]" />
+                    {formatLastSynced(lastSyncedAt)}
+                  </span>
+                </div>
+              </>
+            ) : (
+              <p className="max-w-md text-sm text-[var(--color-text-secondary)]">
+                Connect your Google account to push study sessions and assignment deadlines to
+                your calendar.
+              </p>
+            )}
           </div>
         </div>
 
         {/* Right */}
-        <motion.button
-          whileHover={{
-            scale: 1.02,
-          }}
-          whileTap={{
-            scale: 0.98,
-          }}
-          className="
-            inline-flex
-            h-12
-            items-center
-            justify-center
-            gap-2
-            rounded-2xl
-            border
-            border-red-200
-            bg-white
-            px-6
-            font-medium
-            text-red-500
-            transition-colors
-            duration-200
-            hover:bg-red-50
-          "
-        >
-          <FiTrash2 className="text-lg" />
-          Disconnect
-        </motion.button>
+        {!loading && (
+          <motion.button
+            onClick={connected ? onDisconnect : onConnect}
+            disabled={connected ? disconnecting : connecting}
+            whileHover={{
+              scale: 1.02,
+            }}
+            whileTap={{
+              scale: 0.98,
+            }}
+            className={`
+              inline-flex
+              h-12
+              items-center
+              justify-center
+              gap-2
+              rounded-2xl
+              border
+              px-6
+              font-medium
+              transition-colors
+              duration-200
+              disabled:cursor-not-allowed
+              disabled:opacity-60
+              ${
+                connected
+                  ? "border-red-200 bg-white text-red-500 hover:bg-red-50"
+                  : "border-transparent bg-[var(--color-primary)] text-white hover:bg-[var(--color-primary-dark)]"
+              }
+            `}
+          >
+            {connected ? (
+              <>
+                <FiTrash2 className="text-lg" />
+                {disconnecting ? "Disconnecting..." : "Disconnect"}
+              </>
+            ) : (
+              <>
+                <FcGoogle className="text-lg" />
+                {connecting ? "Redirecting..." : "Connect Google Calendar"}
+              </>
+            )}
+          </motion.button>
+        )}
       </div>
     </motion.section>
   );

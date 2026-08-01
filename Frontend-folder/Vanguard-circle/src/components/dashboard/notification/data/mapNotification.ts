@@ -1,4 +1,4 @@
-import { FiBell, FiUserPlus, FiVideo, FiClock } from "react-icons/fi";
+import { FiBell, FiUserPlus, FiVideo, FiClock, FiMessageSquare } from "react-icons/fi";
 
 import type { Notification } from "../types";
 
@@ -27,9 +27,9 @@ function formatTime(iso: string): string {
 
 // Maps the backend's generic { payload, read, createdAt } shape onto the
 // richer display shape (icon/colors/title/description) the notification UI
-// was originally built against with mock data. Only "member_joined" exists as
-// a real event today — anything else (future event types) falls back to a
-// generic entry rather than crashing on an unrecognized payload shape.
+// was originally built against with mock data. Any unrecognized payload
+// shape (future event types) falls back to a generic entry rather than
+// crashing.
 export function mapNotification(raw: RawNotification): Notification {
   const payload = raw.payload as {
     type?: string;
@@ -37,6 +37,9 @@ export function mapNotification(raw: RawNotification): Notification {
     groupName?: string;
     sessionTitle?: string;
     taskTitle?: string;
+    authorName?: string;
+    title?: string;
+    commenterName?: string;
   };
 
   if (payload?.type === "member_joined") {
@@ -73,6 +76,32 @@ export function mapNotification(raw: RawNotification): Notification {
       icon: FiClock,
       iconBackground: "bg-amber-50",
       iconColor: "text-amber-600",
+      time: formatTime(raw.createdAt),
+      read: raw.read,
+    };
+  }
+
+  if (payload?.type === "new_post") {
+    return {
+      id: raw.id,
+      title: "New circle post",
+      description: `${payload.authorName} posted "${payload.title}"`,
+      icon: FiMessageSquare,
+      iconBackground: "bg-violet-50",
+      iconColor: "text-violet-600",
+      time: formatTime(raw.createdAt),
+      read: raw.read,
+    };
+  }
+
+  if (payload?.type === "post_comment") {
+    return {
+      id: raw.id,
+      title: "New comment on your post",
+      description: `${payload.commenterName} commented on "${payload.title}"`,
+      icon: FiMessageSquare,
+      iconBackground: "bg-violet-50",
+      iconColor: "text-violet-600",
       time: formatTime(raw.createdAt),
       read: raw.read,
     };

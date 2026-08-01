@@ -43,6 +43,16 @@ enum InvitationStatus {
   DECLINED
 }
 
+enum PostType {
+  ANNOUNCEMENT
+  RESOURCE
+}
+
+enum CalendarSourceType {
+  SESSION
+  TASK
+}
+
 model User {
   id         String   @id @default(uuid())
   firebaseUid String  @unique
@@ -56,6 +66,11 @@ model User {
   checkIns      CheckIn[]
   streaks       Streak[]
   notifications Notification[]
+  postsAuthored Post[]        @relation("PostAuthor")
+  postLikes     PostLike[]
+  postComments  PostComment[]
+  calendarConnection CalendarConnection?
+  calendarSyncedEvents CalendarSyncedEvent[]
 }
 
 model Group {
@@ -82,6 +97,7 @@ model Group {
   streaks       Streak[]
   invitations   Invitation[]
   studySessions StudySession[]
+  posts         Post[]
 }
 
 // Join table — a User can belong to many Groups (supports the cross-circle dashboard)
@@ -164,6 +180,81 @@ model Notification {
   createdAt DateTime            @default(now())
 
   user User @relation(fields: [userId], references: [id])
+}
+
+// A circle's activity feed post — announcement or shared resource.
+// Attachment is link-only for now (a pasted URL + label), no file storage.
+model Post {
+  id             String   @id @default(uuid())
+  groupId        String
+  authorId       String
+  type           PostType @default(ANNOUNCEMENT)
+  title          String
+  content        String
+  attachmentName String?
+  attachmentUrl  String?
+  createdAt      DateTime @default(now())
+
+  group    Group         @relation(fields: [groupId], references: [id])
+  author   User          @relation("PostAuthor", fields: [authorId], references: [id])
+  likes    PostLike[]
+  comments PostComment[]
+}
+
+model PostLike {
+  id        String   @id @default(uuid())
+  postId    String
+  userId    String
+  createdAt DateTime @default(now())
+
+  post Post @relation(fields: [postId], references: [id])
+  user User @relation(fields: [userId], references: [id])
+
+  @@unique([postId, userId])
+}
+
+model PostComment {
+  id        String   @id @default(uuid())
+  postId    String
+  userId    String
+  content   String
+  createdAt DateTime @default(now())
+
+  post Post @relation(fields: [postId], references: [id])
+  user User @relation(fields: [userId], references: [id])
+}
+
+// One Google account connected per user — a one-way (StudyCircle -> Google)
+// push sync, not a full two-way calendar integration.
+model CalendarConnection {
+  id               String    @id @default(uuid())
+  userId           String    @unique
+  googleEmail      String
+  accessToken      String
+  refreshToken     String
+  tokenExpiresAt   DateTime
+  syncSessions     Boolean   @default(true)
+  syncAssignments  Boolean   @default(true)
+  syncReminders    Boolean   @default(false)
+  lastSyncedAt     DateTime?
+  connectedAt      DateTime  @default(now())
+
+  user User @relation(fields: [userId], references: [id])
+}
+
+// Maps a StudyCircle session/task to the Google Calendar event it was
+// pushed to, so re-syncing updates the existing event instead of duplicating it.
+model CalendarSyncedEvent {
+  id            String             @id @default(uuid())
+  userId        String
+  sourceType    CalendarSourceType
+  sourceId      String
+  googleEventId String
+  updatedAt     DateTime           @updatedAt
+
+  user User @relation(fields: [userId], references: [id])
+
+  @@unique([userId, sourceType, sourceId])
 }
 
 // A scheduled study session or group check-in for a circle — powers the
