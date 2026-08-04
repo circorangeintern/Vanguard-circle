@@ -37,6 +37,18 @@ enum NotificationChannel {
   EMAIL
 }
 
+// A circle's preferred delivery channel for study reminders — separate from
+// NotificationChannel (which is per-notification, used by the existing
+// in-app notification system). Only IN_APP and EMAIL are actually delivered
+// today; WHATSAPP/SMS are selectable and tracked but not yet wired to a
+// real provider (would need Twilio or similar).
+enum ReminderChannel {
+  IN_APP
+  EMAIL
+  WHATSAPP
+  SMS
+}
+
 enum InvitationStatus {
   PENDING
   ACCEPTED
@@ -87,6 +99,7 @@ model Group {
   studyReminders      Boolean @default(true)
   reminderFrequency   String   @default("Every day")
   reminderTime        String   @default("09:00 AM")
+  reminderChannel     ReminderChannel @default(IN_APP)
   inviteCode          String   @unique
   createdBy           String
   createdAt           DateTime @default(now())
@@ -132,6 +145,7 @@ model Task {
   dueDate        DateTime
   status         TaskStatus @default(TODO)
   assignedTo     String?    // ownership field — nullable until assigned
+  reminderDaysBefore Int?   // user-configured "remind me N days before due"; null = default 24h window
   reminderSentAt DateTime?  // set once a "due soon" notification has fired, so it never repeats
   createdAt      DateTime   @default(now())
 

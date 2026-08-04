@@ -53,6 +53,7 @@ const CreateCircleModal = ({
     studyReminders: true,
     reminderFrequency: "Every day",
     reminderTime: "09:00 AM",
+    reminderChannel: "IN_APP",
   });
 
   const [members, setMembers] = useState<Member[]>([]);
@@ -162,6 +163,7 @@ const CreateCircleModal = ({
         studyReminders: formData.studyReminders,
         reminderFrequency: formData.reminderFrequency,
         reminderTime: formData.reminderTime,
+        reminderChannel: formData.reminderChannel,
       });
 
       setCreatedGroup(result.group);
@@ -175,6 +177,7 @@ const CreateCircleModal = ({
         circleName: formData.name,
         category: formData.category,
         visibility: formData.visibility,
+        circleSize: formData.maxMembers,
       });
 
       return true;
@@ -222,6 +225,7 @@ const CreateCircleModal = ({
         studyReminders: formData.studyReminders,
         reminderFrequency: formData.reminderFrequency,
         reminderTime: formData.reminderTime,
+        reminderChannel: formData.reminderChannel,
       });
 
       if (members.length > 0) {
@@ -259,6 +263,7 @@ const CreateCircleModal = ({
         studyReminders: true,
         reminderFrequency: "Every day",
         reminderTime: "09:00 AM",
+        reminderChannel: "IN_APP",
       });
 
       setMembers([]);

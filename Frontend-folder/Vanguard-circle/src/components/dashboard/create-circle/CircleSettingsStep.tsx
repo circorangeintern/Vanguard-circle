@@ -81,6 +81,7 @@ const CircleSettingsStep = ({
             studyReminders={formData.studyReminders}
             reminderFrequency={formData.reminderFrequency}
             reminderTime={formData.reminderTime}
+            reminderChannel={formData.reminderChannel}
             onChange={updateForm}
           />
         </div>

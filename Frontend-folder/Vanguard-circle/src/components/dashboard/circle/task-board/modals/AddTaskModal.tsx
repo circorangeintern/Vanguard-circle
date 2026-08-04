@@ -5,6 +5,7 @@ import { createPortal } from "react-dom";
 import { toast } from "sonner";
 
 import { api } from "../../../../../lib/api";
+import { trackDeadlineReminderSet, trackTaskAdded } from "../../../../../services/analytics";
 
 interface AddTaskModalProps {
   open: boolean;
@@ -13,15 +14,28 @@ interface AddTaskModalProps {
   onSuccess?: () => void;
 }
 
+// "No reminder" means the task falls back to the app's default 24h-before
+// window (see Backend-Folder/src/services/reminders.js) — it's not literally
+// "never remind," just "don't ask the student to pick a custom number."
+const REMINDER_OPTIONS = [
+  { label: "Default (1 day before)", value: "" },
+  { label: "1 day before", value: "1" },
+  { label: "2 days before", value: "2" },
+  { label: "3 days before", value: "3" },
+  { label: "1 week before", value: "7" },
+];
+
 const AddTaskModal = ({ open, groupId, onClose, onSuccess }: AddTaskModalProps) => {
   const modalRef = useRef<HTMLDivElement>(null);
   const [title, setTitle] = useState("");
   const [dueDate, setDueDate] = useState("");
+  const [reminderDaysBefore, setReminderDaysBefore] = useState("");
   const [submitting, setSubmitting] = useState(false);
 
   const handleClose = () => {
     setTitle("");
     setDueDate("");
+    setReminderDaysBefore("");
     onClose();
   };
 
@@ -41,7 +55,12 @@ const AddTaskModal = ({ open, groupId, onClose, onSuccess }: AddTaskModalProps) 
       await api.post(`/groups/${groupId}/tasks`, {
         title,
         dueDate: new Date(dueDate).toISOString(),
+        reminderDaysBefore: reminderDaysBefore ? Number(reminderDaysBefore) : undefined,
       });
+      trackTaskAdded({ circleId: groupId });
+      if (reminderDaysBefore) {
+        trackDeadlineReminderSet({ daysBeforeDue: Number(reminderDaysBefore) });
+      }
       toast.success("Task created!");
       onSuccess?.();
       handleClose();
@@ -204,6 +223,40 @@ const AddTaskModal = ({ open, groupId, onClose, onSuccess }: AddTaskModalProps) 
                         focus:ring-[var(--color-primary)]/10
                      "
                   />
+                </div>
+
+                {/* Reminder */}
+
+                <div>
+                  <label className="mb-2 block text-sm font-medium text-[var(--color-text-primary)]">
+                    Remind Me Before Due
+                  </label>
+
+                  <select
+                    value={reminderDaysBefore}
+                    onChange={(e) => setReminderDaysBefore(e.target.value)}
+                    className="
+                        w-full
+                        rounded-xl
+                        border
+                        border-[var(--color-border)]
+                        bg-white
+                        px-4
+                        py-3
+                        text-sm
+                        outline-none
+                        transition
+                        focus:border-[var(--color-primary)]
+                        focus:ring-2
+                        focus:ring-[var(--color-primary)]/10
+                     "
+                  >
+                    {REMINDER_OPTIONS.map((opt) => (
+                      <option key={opt.value} value={opt.value}>
+                        {opt.label}
+                      </option>
+                    ))}
+                  </select>
                 </div>
 
                 {/* Footer */}

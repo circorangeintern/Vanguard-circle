@@ -2,22 +2,36 @@ import { HiOutlineClock } from "react-icons/hi2";
 import SettingsToggle from "./SettingsToggle";
 
 import type { CircleFormData } from "../types";
+import { trackReminderChannelSelected } from "../../../../services/analytics";
 
 interface StudyRemindersCardProps {
   studyReminders: boolean;
   reminderFrequency: CircleFormData["reminderFrequency"];
   reminderTime: string;
+  reminderChannel: CircleFormData["reminderChannel"];
 
   onChange: (
-    key: "studyReminders" | "reminderFrequency" | "reminderTime",
-    value: CircleFormData["studyReminders"] | CircleFormData["reminderFrequency"] | CircleFormData["reminderTime"],
+    key: "studyReminders" | "reminderFrequency" | "reminderTime" | "reminderChannel",
+    value:
+      | CircleFormData["studyReminders"]
+      | CircleFormData["reminderFrequency"]
+      | CircleFormData["reminderTime"]
+      | CircleFormData["reminderChannel"],
   ) => void;
 }
+
+const CHANNEL_LABELS: Record<CircleFormData["reminderChannel"], string> = {
+  IN_APP: "In-App",
+  EMAIL: "Email",
+  WHATSAPP: "WhatsApp",
+  SMS: "SMS",
+};
 
 const StudyRemindersCard = ({
   studyReminders,
   reminderFrequency,
   reminderTime,
+  reminderChannel,
   onChange,
 }: StudyRemindersCardProps) => {
   return (
@@ -137,6 +151,49 @@ const StudyRemindersCard = ({
             <option>08:00 PM</option>
             <option>09:00 PM</option>
           </select>
+        </div>
+
+        {/* Channel */}
+
+        <div>
+          <label className="mb-2 block text-sm font-medium text-slate-700">
+            Reminder Channel
+          </label>
+
+          <select
+            value={reminderChannel}
+            onChange={(e) => {
+              const value = e.target.value as CircleFormData["reminderChannel"];
+              onChange("reminderChannel", value);
+              trackReminderChannelSelected({ channel: value });
+            }}
+            className="
+              w-full
+              rounded-xl
+              border
+              border-slate-200
+              px-4
+              py-3
+              text-sm
+              outline-none
+
+              focus:border-[var(--color-primary)]
+            "
+          >
+            {(Object.keys(CHANNEL_LABELS) as CircleFormData["reminderChannel"][]).map((key) => (
+              <option key={key} value={key}>
+                {CHANNEL_LABELS[key]}
+              </option>
+            ))}
+          </select>
+
+          {(reminderChannel === "WHATSAPP" || reminderChannel === "SMS") && (
+            <p className="mt-2 text-xs text-slate-500">
+              {CHANNEL_LABELS[reminderChannel]} delivery isn't connected yet —
+              your preference is saved, but reminders will still arrive in-app
+              until it is.
+            </p>
+          )}
         </div>
       </div>
     </div>

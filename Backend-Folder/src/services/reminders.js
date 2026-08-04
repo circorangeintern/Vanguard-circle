@@ -40,18 +40,35 @@ async function scanSessionReminders() {
 }
 
 // Same idea for tasks — notifies the assigned member (or every circle member
-// if the task is unassigned) once a non-DONE task is within 24h of its due date.
+// if the task is unassigned) once a non-DONE task enters its reminder
+// window. A task can set its own `reminderDaysBefore` (from the "remind me
+// before due" picker on the Add Task modal) — the default 24h window only
+// applies when a task didn't set one. Since the window size varies per task,
+// this can't be a single DB-level date range, so the upper bound is
+// deliberately generous (7 days — the longest option the picker offers) and
+// the real per-task window check happens in JS below.
+const MAX_REMINDER_WINDOW_DAYS = 7;
+
 async function scanTaskReminders() {
   const now = new Date();
-  const windowEnd = new Date(now.getTime() + TASK_REMINDER_WINDOW_HOURS * 60 * 60 * 1000);
+  const windowEnd = new Date(now.getTime() + MAX_REMINDER_WINDOW_DAYS * 24 * 60 * 60 * 1000);
 
-  const dueTasks = await prisma.task.findMany({
+  const candidateTasks = await prisma.task.findMany({
     where: {
       dueDate: { gte: now, lte: windowEnd },
       status: { not: "DONE" },
       reminderSentAt: null,
     },
     include: { group: { include: { memberships: true } } },
+  });
+
+  const dueTasks = candidateTasks.filter((task) => {
+    const windowHours =
+      task.reminderDaysBefore != null
+        ? task.reminderDaysBefore * 24
+        : TASK_REMINDER_WINDOW_HOURS;
+    const windowStart = new Date(task.dueDate.getTime() - windowHours * 60 * 60 * 1000);
+    return now >= windowStart;
   });
 
   for (const task of dueTasks) {

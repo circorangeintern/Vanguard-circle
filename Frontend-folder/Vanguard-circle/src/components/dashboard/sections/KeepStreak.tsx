@@ -49,7 +49,7 @@ const KeepStreak = ({
       );
       const newStreak = result.streak.currentStreak;
 
-      trackDailyCheckin({ streak: newStreak });
+      trackDailyCheckin({ streakCount: newStreak });
 
       setCurrentStreak(newStreak);
       setHasCheckedInToday(true);

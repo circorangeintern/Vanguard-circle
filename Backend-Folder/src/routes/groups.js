@@ -22,6 +22,7 @@ router.post("/", requireAuth, async (req, res) => {
     studyReminders,
     reminderFrequency,
     reminderTime,
+    reminderChannel,
     members,
   } = req.body;
 
@@ -53,6 +54,7 @@ router.post("/", requireAuth, async (req, res) => {
       studyReminders,
       reminderFrequency,
       reminderTime,
+      reminderChannel,
       inviteCode,
       createdBy: req.user.id,
       invitations: invitations.length > 0 ? { create: invitations } : undefined,
@@ -186,6 +188,7 @@ router.patch("/:id", requireAuth, async (req, res) => {
     studyReminders,
     reminderFrequency,
     reminderTime,
+    reminderChannel,
   } = req.body;
 
   const updated = await prisma.group.update({
@@ -202,6 +205,7 @@ router.patch("/:id", requireAuth, async (req, res) => {
       ...(studyReminders !== undefined ? { studyReminders } : {}),
       ...(reminderFrequency !== undefined ? { reminderFrequency } : {}),
       ...(reminderTime !== undefined ? { reminderTime } : {}),
+      ...(reminderChannel !== undefined ? { reminderChannel } : {}),
     },
   });
 

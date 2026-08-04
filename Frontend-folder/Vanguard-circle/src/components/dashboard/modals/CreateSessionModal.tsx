@@ -35,6 +35,7 @@ const CreateSessionModal = ({
   const [groupId, setGroupId] = useState("");
   const [title, setTitle] = useState("Study Session");
   const [startTime, setStartTime] = useState(toDatetimeLocalDefault());
+  const [method, setMethod] = useState<"virtual" | "in_person">("virtual");
   const [submitting, setSubmitting] = useState(false);
 
   const selectedGroupId = groupId || circles[0]?.groupId || "";
@@ -55,11 +56,12 @@ const CreateSessionModal = ({
         title,
         startTime: new Date(startTime).toISOString(),
       });
-      trackSessionScheduled({ circleId: selectedGroupId, title });
+      trackSessionScheduled({ circleId: selectedGroupId, title, methodUsed: method });
       toast.success("Session scheduled!");
       setTitle("Study Session");
       setStartTime(toDatetimeLocalDefault());
       setGroupId("");
+      setMethod("virtual");
       onSuccess?.();
       onClose();
     } catch (err) {
@@ -149,6 +151,36 @@ const CreateSessionModal = ({
                     onChange={(e) => setStartTime(e.target.value)}
                     className="h-11 w-full rounded-xl border border-slate-200 px-3 text-sm outline-none focus:border-[var(--color-primary)] focus:ring-4 focus:ring-blue-100"
                   />
+                </div>
+
+                <div>
+                  <label className="mb-1.5 block text-sm font-medium text-slate-700">
+                    How will you meet?
+                  </label>
+                  <div className="flex gap-2">
+                    <button
+                      type="button"
+                      onClick={() => setMethod("virtual")}
+                      className={`flex-1 rounded-xl border px-3 py-2.5 text-sm font-medium transition ${
+                        method === "virtual"
+                          ? "border-[var(--color-primary)] bg-[var(--color-primary)]/10 text-[var(--color-primary)]"
+                          : "border-slate-200 text-slate-600 hover:border-[var(--color-primary)]"
+                      }`}
+                    >
+                      Virtual
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setMethod("in_person")}
+                      className={`flex-1 rounded-xl border px-3 py-2.5 text-sm font-medium transition ${
+                        method === "in_person"
+                          ? "border-[var(--color-primary)] bg-[var(--color-primary)]/10 text-[var(--color-primary)]"
+                          : "border-slate-200 text-slate-600 hover:border-[var(--color-primary)]"
+                      }`}
+                    >
+                      In-Person
+                    </button>
+                  </div>
                 </div>
               </div>
 

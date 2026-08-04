@@ -6,6 +6,7 @@ import { createPortal } from "react-dom";
 import { toast } from "sonner";
 
 import { api } from "../../../../../lib/api";
+import { trackSessionScheduled } from "../../../../../services/analytics";
 
 interface ScheduleSessionModalProps {
   open: boolean;
@@ -64,6 +65,11 @@ const ScheduleSessionModal = ({ open, groupId, onClose, onSuccess }: ScheduleSes
         startTime: startTime.toISOString(),
         durationMinutes,
         meetingLink: meetingLink || undefined,
+      });
+      trackSessionScheduled({
+        circleId: groupId,
+        title,
+        methodUsed: meetingLink ? "virtual" : "in_person",
       });
       toast.success("Session scheduled!");
       onSuccess();

@@ -1,12 +1,14 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import { FiCalendar, FiClock } from "react-icons/fi";
 
 import SessionStatusBadge from "./SessionStatusBadge";
 import type { Session, SessionStatus } from "../types";
+import { trackSessionMissed } from "../../../../../services/analytics";
 
 interface SessionCardProps {
   session: Session;
+  groupId: string;
 }
 
 function formatCountdown(startTime: Date, endTime: Date, now: Date): string {
@@ -25,8 +27,9 @@ function formatCountdown(startTime: Date, endTime: Date, now: Date): string {
   return `Starts in ${mins}m`;
 }
 
-const SessionCard = ({ session }: SessionCardProps) => {
+const SessionCard = ({ session, groupId }: SessionCardProps) => {
   const [now, setNow] = useState(() => new Date());
+  const hasTrackedMissed = useRef(false);
 
   useEffect(() => {
     // Every 30s is plenty for a countdown measured in minutes/hours — no
@@ -40,6 +43,16 @@ const SessionCard = ({ session }: SessionCardProps) => {
   const isLive = now >= startTime && now < endTime;
   const status: SessionStatus = now >= endTime ? "missed" : "scheduled";
   const countdown = formatCountdown(startTime, endTime, now);
+
+  // Fires once per card instance the moment a session's end time passes —
+  // guarded by a ref (not state) so it doesn't re-fire on every 30s tick
+  // while status stays "missed".
+  useEffect(() => {
+    if (status === "missed" && !hasTrackedMissed.current) {
+      hasTrackedMissed.current = true;
+      trackSessionMissed({ circleId: groupId });
+    }
+  }, [status, groupId]);
 
   const dateLabel = startTime.toLocaleDateString([], { month: "short", day: "numeric", year: "numeric" });
   const timeLabel = startTime.toLocaleTimeString([], { hour: "numeric", minute: "2-digit" });
