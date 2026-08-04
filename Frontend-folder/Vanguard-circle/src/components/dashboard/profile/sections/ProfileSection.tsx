@@ -37,7 +37,6 @@ const ProfileSection = () => {
         email={profile.email}
         joinedDate={profile.joinedDate}
         circlesCount={profile.circlesCount}
-        avatar={profile.avatar}
         onEditProfile={() => setIsEditModalOpen(true)}
       />
 

@@ -6,6 +6,7 @@ import { toast } from "sonner";
 import { auth } from "../lib/firebase";
 import { api } from "../lib/api";
 import { trackCircleJoined } from "../services/analytics";
+import { resolveCircleIcon } from "../lib/circleIcon";
 
 interface CirclePreview {
   id: string;
@@ -146,7 +147,7 @@ const InvitePage = () => {
         {!loading && !error && circle && (
           <>
             <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-blue-50 text-3xl">
-              {circle.icon || "📚"}
+              {resolveCircleIcon(circle.icon)}
             </div>
 
             <h1 className="font-heading mt-4 text-xl font-bold text-slate-900">

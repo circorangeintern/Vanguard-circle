@@ -1,9 +1,15 @@
 import { motion } from "framer-motion";
-import { useEffect, useRef } from "react";
-import { FiVolume2, FiFileText, FiLink } from "react-icons/fi";
+import { useEffect, useRef, useState, type ChangeEvent } from "react";
+import { FiVolume2, FiFileText, FiLink, FiUpload, FiCheck } from "react-icons/fi";
+import { toast } from "sonner";
+
+import { Avatar } from "../../../ui";
+import { api } from "../../../../lib/api";
+
+const MAX_UPLOAD_BYTES = 25 * 1024 * 1024;
 
 interface CreatePostCardProps {
-  avatar: string;
+  authorName: string;
   title: string;
   value: string;
   selectedType: "announcement" | "resource";
@@ -19,7 +25,7 @@ interface CreatePostCardProps {
 }
 
 const CreatePostCard = ({
-  avatar,
+  authorName,
   title,
   value,
   selectedType,
@@ -34,12 +40,38 @@ const CreatePostCard = ({
   onPost,
 }: CreatePostCardProps) => {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [uploading, setUploading] = useState(false);
+
   useEffect(() => {
     if (!textareaRef.current) return;
 
     textareaRef.current.style.height = "0px";
     textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px`;
   }, [value]);
+
+  const handleFileSelected = async (e: ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    e.target.value = "";
+    if (!file) return;
+
+    if (file.size > MAX_UPLOAD_BYTES) {
+      toast.error("That file is too large — max 25MB.");
+      return;
+    }
+
+    setUploading(true);
+    try {
+      const result = await api.upload<{ url: string; name: string }>("/uploads", file);
+      onAttachmentNameChange(result.name);
+      onAttachmentUrlChange(result.url);
+      toast.success("File uploaded.");
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Couldn't upload that file.");
+    } finally {
+      setUploading(false);
+    }
+  };
 
   return (
     <motion.div
@@ -51,11 +83,7 @@ const CreatePostCard = ({
       {/* Top */}
 
       <div className="flex flex-col gap-4 md:flex-row md:items-start">
-        <img
-          src={avatar}
-          alt="User"
-          className="h-11 w-11 rounded-full object-cover"
-        />
+        <Avatar name={authorName} size={44} />
 
         <div className="flex-1 space-y-3">
           <input
@@ -162,25 +190,55 @@ const CreatePostCard = ({
         </button>
       </div>
 
-      {/* Attachment link (resource posts only) */}
+      {/* Attachment: upload a file or paste a link (resource posts only) */}
 
       {selectedType === "resource" && (
-        <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2">
+        <div className="mt-4 space-y-3">
           <input
-            value={attachmentName}
-            onChange={(e) => onAttachmentNameChange(e.target.value)}
-            placeholder="Link label (e.g. Auto Layout Guide.pdf)"
-            className="w-full rounded-xl border border-[var(--color-border)] px-4 py-2.5 text-sm outline-none transition focus:border-[var(--color-primary)]"
+            ref={fileInputRef}
+            type="file"
+            onChange={handleFileSelected}
+            className="hidden"
           />
-          <div className="relative">
-            <FiLink className="absolute left-4 top-1/2 -translate-y-1/2 text-[var(--color-text-secondary)]" />
+
+          <button
+            type="button"
+            onClick={() => fileInputRef.current?.click()}
+            disabled={uploading}
+            className="flex items-center gap-2 rounded-xl border border-dashed border-[var(--color-border)] px-4 py-2.5 text-sm font-medium text-[var(--color-text-secondary)] transition hover:border-emerald-500 hover:text-emerald-600 disabled:cursor-not-allowed disabled:opacity-60"
+          >
+            {uploading ? (
+              "Uploading..."
+            ) : attachmentUrl ? (
+              <>
+                <FiCheck className="h-4 w-4 text-emerald-500" />
+                {attachmentName || "File attached"} — change file
+              </>
+            ) : (
+              <>
+                <FiUpload className="h-4 w-4" />
+                Upload a file
+              </>
+            )}
+          </button>
+
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
             <input
-              type="url"
-              value={attachmentUrl}
-              onChange={(e) => onAttachmentUrlChange(e.target.value)}
-              placeholder="https://..."
-              className="w-full rounded-xl border border-[var(--color-border)] py-2.5 pl-11 pr-4 text-sm outline-none transition focus:border-[var(--color-primary)]"
+              value={attachmentName}
+              onChange={(e) => onAttachmentNameChange(e.target.value)}
+              placeholder="Link label (e.g. Auto Layout Guide.pdf)"
+              className="w-full rounded-xl border border-[var(--color-border)] px-4 py-2.5 text-sm outline-none transition focus:border-[var(--color-primary)]"
             />
+            <div className="relative">
+              <FiLink className="absolute left-4 top-1/2 -translate-y-1/2 text-[var(--color-text-secondary)]" />
+              <input
+                type="url"
+                value={attachmentUrl}
+                onChange={(e) => onAttachmentUrlChange(e.target.value)}
+                placeholder="Or paste a link instead — https://..."
+                className="w-full rounded-xl border border-[var(--color-border)] py-2.5 pl-11 pr-4 text-sm outline-none transition focus:border-[var(--color-primary)]"
+              />
+            </div>
           </div>
         </div>
       )}

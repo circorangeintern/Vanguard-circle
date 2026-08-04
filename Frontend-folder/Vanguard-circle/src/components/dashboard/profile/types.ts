@@ -4,8 +4,6 @@ export interface Profile {
   fullName: string;
   email: string;
 
-  avatar: string;
-
   joinedDate: string;
   memberSince: string;
 

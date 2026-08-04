@@ -19,7 +19,6 @@ export function mapProfile(raw: RawUser): Profile {
     id: raw.id,
     fullName: raw.name,
     email: raw.email,
-    avatar: `https://i.pravatar.cc/300?u=${raw.id}`,
     joinedDate: joined,
     memberSince: joined,
     circlesCount: raw.circlesCount,

@@ -174,7 +174,7 @@ const FeedSection = ({ groupId, currentUserId, isOrganizer }: FeedSectionProps) 
   return (
     <section className="space-y-6">
       <CreatePostCard
-        avatar={`https://i.pravatar.cc/150?u=${currentUserId || auth?.currentUser?.uid || "me"}`}
+        authorName={auth?.currentUser?.displayName || auth?.currentUser?.email?.split("@")[0] || "You"}
         title={title}
         value={content}
         selectedType={type}

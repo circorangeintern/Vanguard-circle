@@ -10,6 +10,8 @@ import {
   FiSend,
 } from "react-icons/fi";
 
+import { Avatar } from "../../../ui";
+
 export interface FeedComment {
   id: string;
   content: string;
@@ -22,7 +24,6 @@ export interface FeedPost {
   author: {
     id: string;
     name: string;
-    avatar: string;
     role?: string;
   };
   type: "announcement" | "resource";
@@ -81,11 +82,7 @@ const FeedPostCard = ({
       {/* Header */}
       <div className="flex items-start justify-between gap-4">
         <div className="flex items-start gap-3">
-          <img
-            src={post.author.avatar}
-            alt={post.author.name}
-            className="h-12 w-12 rounded-full object-cover"
-          />
+          <Avatar name={post.author.name} size={48} />
 
           <div>
             <div className="flex flex-wrap items-center gap-2">

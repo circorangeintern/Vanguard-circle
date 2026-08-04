@@ -1,4 +1,5 @@
 import type { Circle } from "../types";
+import { resolveCircleIcon } from "../../../../lib/circleIcon";
 
 export interface RawDashboardCircle {
   groupId: string;
@@ -57,7 +58,7 @@ export function mapCircle(raw: RawDashboardCircle): Circle {
     lastActive: formatLastActive(raw.lastActive),
     lastActiveAt: raw.lastActive,
     createdAt: raw.createdAt,
-    icon: raw.icon || "📚",
+    icon: resolveCircleIcon(raw.icon),
     gradient: pickGradient(raw.groupId),
   };
 }

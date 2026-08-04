@@ -18,6 +18,9 @@ build/
 # Prisma
 prisma/migrations/dev.db
 
+# User-uploaded files (Resource post attachments) — stored on disk, not in git
+Backend-Folder/uploads/
+
 # Logs
 *.log
 npm-debug.log*

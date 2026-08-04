@@ -4,6 +4,7 @@ import { FiArrowRight, FiPlus } from "react-icons/fi";
 
 import Button from "../../../ui/Button";
 import CreateCircleModal from "../../modals/CreateCircleModal";
+import JoinCircleModal from "../../modals/JoinCircleModal";
 
 // import studyTogetherImage from "../../../../images/dashboard/study-together.webp";
 
@@ -13,6 +14,7 @@ interface MyCirclesEmptyProps {
 
 const MyCirclesEmpty = ({ onSuccess }: MyCirclesEmptyProps) => {
   const [openCreateModal, setOpenCreateModal] = useState(false);
+  const [openJoinModal, setOpenJoinModal] = useState(false);
 
   return (
     <>
@@ -86,6 +88,17 @@ const MyCirclesEmpty = ({ onSuccess }: MyCirclesEmptyProps) => {
             <Button className="mt-8" onClick={() => setOpenCreateModal(true)}>
               Create Circle
             </Button>
+
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                setOpenJoinModal(true);
+              }}
+              className="mt-4 text-sm font-medium text-[var(--color-primary)] hover:underline"
+            >
+              Have an invite link? Join a Circle
+            </button>
           </motion.div>
 
           {/* Right Card */}
@@ -153,6 +166,11 @@ const MyCirclesEmpty = ({ onSuccess }: MyCirclesEmptyProps) => {
       <CreateCircleModal
         open={openCreateModal}
         onClose={() => setOpenCreateModal(false)}
+        onSuccess={onSuccess}
+      />
+      <JoinCircleModal
+        open={openJoinModal}
+        onClose={() => setOpenJoinModal(false)}
         onSuccess={onSuccess}
       />
     </>

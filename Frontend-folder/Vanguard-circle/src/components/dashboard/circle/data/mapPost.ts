@@ -36,7 +36,6 @@ export function mapPost(raw: RawPost): FeedPost {
     author: {
       id: raw.author.id,
       name: raw.author.name,
-      avatar: `https://i.pravatar.cc/150?u=${raw.author.id}`,
     },
     type: raw.type === "RESOURCE" ? "resource" : "announcement",
     title: raw.title,

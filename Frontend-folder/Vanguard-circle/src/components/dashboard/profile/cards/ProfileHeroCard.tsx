@@ -1,12 +1,13 @@
 import { motion } from "framer-motion";
 import { FiCalendar, FiEdit2, FiUsers } from "react-icons/fi";
 
+import { Avatar } from "../../../ui";
+
 interface ProfileHeroCardProps {
   fullName: string;
   email: string;
   joinedDate: string;
   circlesCount: number;
-  avatar: string;
   onEditProfile?: () => void;
 }
 
@@ -15,7 +16,6 @@ const ProfileHeroCard = ({
   email,
   joinedDate,
   circlesCount,
-  avatar,
   onEditProfile,
 }: ProfileHeroCardProps) => {
   return (
@@ -81,18 +81,10 @@ const ProfileHeroCard = ({
         >
           {/* Avatar */}
           <div className="relative shrink-0">
-            <img
-              src={avatar}
-              alt={fullName}
-              className="
-                h-32
-                w-32
-                rounded-full
-                object-cover
-                ring-4
-                ring-white
-                shadow-lg
-              "
+            <Avatar
+              name={fullName}
+              size={128}
+              className="ring-4 ring-white shadow-lg"
             />
           </div>
 
