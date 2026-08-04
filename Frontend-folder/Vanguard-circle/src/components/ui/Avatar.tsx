@@ -1,5 +1,6 @@
 interface AvatarProps {
   name: string;
+  src?: string | null;
   size?: number;
   className?: string;
 }
@@ -34,16 +35,29 @@ function colorOf(name: string) {
   return PALETTE[Math.abs(hash) % PALETTE.length];
 }
 
-// No account photo storage exists yet, so every user is shown as their
-// initials on a deterministic color — never a fake stock photo standing in
-// for a real profile picture.
-const Avatar = ({ name, size = 40, className = "" }: AvatarProps) => (
-  <div
-    className={`flex shrink-0 items-center justify-center rounded-full font-semibold text-white ${colorOf(name)} ${className}`}
-    style={{ width: size, height: size, fontSize: size * 0.38 }}
-  >
-    {initialsOf(name)}
-  </div>
-);
+// Renders the user's real uploaded photo when they have one; falls back to
+// initials on a deterministic color otherwise — never a fake stock photo
+// standing in for a real profile picture.
+const Avatar = ({ name, src, size = 40, className = "" }: AvatarProps) => {
+  if (src) {
+    return (
+      <img
+        src={src}
+        alt={name}
+        className={`shrink-0 rounded-full object-cover ${className}`}
+        style={{ width: size, height: size }}
+      />
+    );
+  }
+
+  return (
+    <div
+      className={`flex shrink-0 items-center justify-center rounded-full font-semibold text-white ${colorOf(name)} ${className}`}
+      style={{ width: size, height: size, fontSize: size * 0.38 }}
+    >
+      {initialsOf(name)}
+    </div>
+  );
+};
 
 export default Avatar;

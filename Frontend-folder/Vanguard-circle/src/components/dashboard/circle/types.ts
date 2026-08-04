@@ -3,6 +3,7 @@ export type PostType = "announcement" | "resource";
 export interface PostAuthor {
   id: string;
   name: string;
+  avatarUrl: string | null;
   role?: string;
 }
 

@@ -175,6 +175,7 @@ const FeedSection = ({ groupId, currentUserId, isOrganizer }: FeedSectionProps) 
     <section className="space-y-6">
       <CreatePostCard
         authorName={auth?.currentUser?.displayName || auth?.currentUser?.email?.split("@")[0] || "You"}
+        authorAvatarUrl={auth?.currentUser?.photoURL}
         title={title}
         value={content}
         selectedType={type}

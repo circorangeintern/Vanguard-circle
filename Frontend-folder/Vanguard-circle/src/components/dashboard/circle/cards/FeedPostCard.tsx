@@ -24,6 +24,7 @@ export interface FeedPost {
   author: {
     id: string;
     name: string;
+    avatarUrl: string | null;
     role?: string;
   };
   type: "announcement" | "resource";
@@ -82,7 +83,7 @@ const FeedPostCard = ({
       {/* Header */}
       <div className="flex items-start justify-between gap-4">
         <div className="flex items-start gap-3">
-          <Avatar name={post.author.name} size={48} />
+          <Avatar name={post.author.name} src={post.author.avatarUrl} size={48} />
 
           <div>
             <div className="flex flex-wrap items-center gap-2">

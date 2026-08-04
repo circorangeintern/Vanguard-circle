@@ -10,6 +10,7 @@ const MAX_UPLOAD_BYTES = 25 * 1024 * 1024;
 
 interface CreatePostCardProps {
   authorName: string;
+  authorAvatarUrl?: string | null;
   title: string;
   value: string;
   selectedType: "announcement" | "resource";
@@ -26,6 +27,7 @@ interface CreatePostCardProps {
 
 const CreatePostCard = ({
   authorName,
+  authorAvatarUrl,
   title,
   value,
   selectedType,
@@ -83,7 +85,7 @@ const CreatePostCard = ({
       {/* Top */}
 
       <div className="flex flex-col gap-4 md:flex-row md:items-start">
-        <Avatar name={authorName} size={44} />
+        <Avatar name={authorName} src={authorAvatarUrl} size={44} />
 
         <div className="flex-1 space-y-3">
           <input

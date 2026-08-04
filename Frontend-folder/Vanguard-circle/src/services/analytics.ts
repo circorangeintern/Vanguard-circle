@@ -28,9 +28,11 @@ export interface LoginPayload {
   userId?: string;
 }
 
+// "sign_in_completed" — matches the sign_up_completed naming convention
+// (was "Login", inconsistent with every other event in the plan).
 export const trackLogin = (payload: LoginPayload) => {
   if (payload.userId) mixpanel.identify(payload.userId);
-  mixpanel.track("Login", { method: payload.method });
+  mixpanel.track("sign_in_completed", { method: payload.method });
 };
 
 // "study_group_joined" — fires when a student joins an existing circle.
@@ -111,10 +113,14 @@ export const trackSessionMissed = (payload: { circleId: string; reason?: string 
   });
 };
 
-// "task_board_item_added" — fires when a student adds an item to the shared task board.
-export const trackTaskAdded = (payload: { circleId: string }) => {
+// "task_board_item_added" — fires when a student adds an item to the shared
+// task board. due_date wasn't in the original plan's property list but was
+// missing entirely from the event, which made it useless for anyone looking
+// at deadline patterns on the task board.
+export const trackTaskAdded = (payload: { circleId: string; dueDate: string }) => {
   mixpanel.track("task_board_item_added", {
     circle_id: payload.circleId,
+    due_date: payload.dueDate,
   });
 };
 

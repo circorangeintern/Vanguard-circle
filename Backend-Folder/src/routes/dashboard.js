@@ -12,13 +12,14 @@ router.get("/me", requireAuth, async (req, res) => {
 
 // PATCH /users/me — update editable profile fields
 router.patch("/me", requireAuth, async (req, res) => {
-  const { name } = req.body;
+  const { name, avatarUrl } = req.body;
   if (name !== undefined && !name.trim()) return res.error("Name can't be empty");
 
   const updated = await prisma.user.update({
     where: { id: req.user.id },
     data: {
       ...(name !== undefined ? { name: name.trim() } : {}),
+      ...(avatarUrl !== undefined ? { avatarUrl } : {}),
     },
   });
 

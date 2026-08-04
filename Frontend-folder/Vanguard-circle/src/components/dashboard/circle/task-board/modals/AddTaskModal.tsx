@@ -57,7 +57,7 @@ const AddTaskModal = ({ open, groupId, onClose, onSuccess }: AddTaskModalProps) 
         dueDate: new Date(dueDate).toISOString(),
         reminderDaysBefore: reminderDaysBefore ? Number(reminderDaysBefore) : undefined,
       });
-      trackTaskAdded({ circleId: groupId });
+      trackTaskAdded({ circleId: groupId, dueDate: new Date(dueDate).toISOString() });
       if (reminderDaysBefore) {
         trackDeadlineReminderSet({ daysBeforeDue: Number(reminderDaysBefore) });
       }

@@ -7,7 +7,7 @@ export interface RawPost {
   title: string;
   content: string;
   createdAt: string;
-  author: { id: string; name: string };
+  author: { id: string; name: string; avatarUrl: string | null };
   attachment: { name: string; url: string } | null;
   likes: number;
   comments: number;
@@ -36,6 +36,7 @@ export function mapPost(raw: RawPost): FeedPost {
     author: {
       id: raw.author.id,
       name: raw.author.name,
+      avatarUrl: raw.author.avatarUrl,
     },
     type: raw.type === "RESOURCE" ? "resource" : "announcement",
     title: raw.title,
