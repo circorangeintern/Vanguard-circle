@@ -239,6 +239,51 @@ router.delete("/:id", requireAuth, async (req, res) => {
   res.success({ deleted: true });
 });
 
+// POST /groups/:id/leave — a member removes themselves from a circle.
+// Organizers can't leave a circle that still has other members (there's no
+// ownership-transfer feature to hand the role to someone else first) — they
+// have to delete the circle instead. An organizer who is the only member
+// can "leave," which is equivalent to deleting the circle.
+router.post("/:id/leave", requireAuth, async (req, res) => {
+  const group = await prisma.group.findUnique({
+    where: { id: req.params.id },
+    include: { memberships: true },
+  });
+  if (!group) return res.error("Circle not found", 404);
+
+  const membership = group.memberships.find((m) => m.userId === req.user.id);
+  if (!membership) return res.error("You're not a member of this circle.", 403);
+
+  if (membership.role === "ORGANIZER" && group.memberships.length > 1) {
+    return res.error(
+      "As the organizer, you can't leave while other members are still in this circle. Delete the circle instead.",
+      400,
+    );
+  }
+
+  if (membership.role === "ORGANIZER") {
+    // Sole member leaving is the same as deleting the circle outright.
+    await prisma.$transaction([
+      prisma.checkIn.deleteMany({ where: { groupId: group.id } }),
+      prisma.streak.deleteMany({ where: { groupId: group.id } }),
+      prisma.task.deleteMany({ where: { groupId: group.id } }),
+      prisma.studySession.deleteMany({ where: { groupId: group.id } }),
+      prisma.invitation.deleteMany({ where: { groupId: group.id } }),
+      prisma.membership.deleteMany({ where: { groupId: group.id } }),
+      prisma.group.delete({ where: { id: group.id } }),
+    ]);
+    return res.success({ left: true, circleDeleted: true });
+  }
+
+  await prisma.$transaction([
+    prisma.checkIn.deleteMany({ where: { userId: req.user.id, groupId: group.id } }),
+    prisma.streak.deleteMany({ where: { userId: req.user.id, groupId: group.id } }),
+    prisma.membership.delete({ where: { id: membership.id } }),
+  ]);
+
+  res.success({ left: true, circleDeleted: false });
+});
+
 // POST /groups/:id/invitations — invite more members to an existing circle.
 router.post("/:id/invitations", requireAuth, async (req, res) => {
   const group = await prisma.group.findUnique({ where: { id: req.params.id } });

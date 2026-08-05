@@ -66,6 +66,7 @@ router.get("/me/dashboard", requireAuth, async (req, res) => {
 
   const circles = memberships.map((m) => ({
     groupId: m.group.id,
+    role: m.role,
     name: m.group.name,
     courseName: m.group.courseName,
     description: m.group.description,
