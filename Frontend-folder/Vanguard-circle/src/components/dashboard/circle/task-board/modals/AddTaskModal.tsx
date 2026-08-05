@@ -58,9 +58,13 @@ const AddTaskModal = ({ open, groupId, onClose, onSuccess }: AddTaskModalProps) 
         reminderDaysBefore: reminderDaysBefore ? Number(reminderDaysBefore) : undefined,
       });
       trackTaskAdded({ circleId: groupId, dueDate: new Date(dueDate).toISOString() });
-      if (reminderDaysBefore) {
-        trackDeadlineReminderSet({ daysBeforeDue: Number(reminderDaysBefore) });
-      }
+      // Every task gets a reminder — either the picked value or the
+      // "Default (1 day before)" option, which is a real 1-day reminder,
+      // not "no reminder." Firing only on a non-empty select value meant
+      // this never fired for anyone who left the default in place.
+      trackDeadlineReminderSet({
+        daysBeforeDue: reminderDaysBefore ? Number(reminderDaysBefore) : 1,
+      });
       toast.success("Task created!");
       onSuccess?.();
       handleClose();

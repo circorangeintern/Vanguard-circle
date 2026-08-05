@@ -1,5 +1,6 @@
 const prisma = require("../config/prisma");
 const { notify } = require("./notify");
+const { trackServerEvent } = require("./mixpanelServer");
 
 const SESSION_REMINDER_WINDOW_MINUTES = 30;
 const TASK_REMINDER_WINDOW_HOURS = 24;
@@ -35,6 +36,36 @@ async function scanSessionReminders() {
     await prisma.studySession.update({
       where: { id: session.id },
       data: { reminderSentAt: now },
+    });
+  }
+}
+
+// Fires the "session_missed" analytics event once per session whose end
+// time has passed with nothing marking it attended — server-side, so it
+// fires reliably regardless of whether anyone has the app open. Replaces
+// an earlier frontend-only version that only counted a miss if a browser
+// happened to have that session's card rendered at the right moment.
+async function scanMissedSessions() {
+  const now = new Date();
+
+  const missedSessions = await prisma.studySession.findMany({
+    where: {
+      missedTrackedAt: null,
+      startTime: { lt: now }, // cheap pre-filter; durationMinutes narrows further below
+    },
+    select: { id: true, groupId: true, createdBy: true, startTime: true, durationMinutes: true },
+  });
+
+  for (const session of missedSessions) {
+    const endTime = new Date(session.startTime.getTime() + session.durationMinutes * 60_000);
+    if (now < endTime) continue;
+
+    await trackServerEvent("session_missed", session.createdBy, {
+      circle_id: session.groupId,
+    });
+    await prisma.studySession.update({
+      where: { id: session.id },
+      data: { missedTrackedAt: now },
     });
   }
 }
@@ -99,6 +130,7 @@ async function scanOnce() {
   try {
     await scanSessionReminders();
     await scanTaskReminders();
+    await scanMissedSessions();
   } catch (err) {
     console.error("Reminder scan failed:", err);
   }
@@ -112,4 +144,9 @@ function startReminderScheduler() {
   setInterval(scanOnce, SCAN_INTERVAL_MS);
 }
 
-module.exports = { startReminderScheduler, scanSessionReminders, scanTaskReminders };
+module.exports = {
+  startReminderScheduler,
+  scanSessionReminders,
+  scanTaskReminders,
+  scanMissedSessions,
+};

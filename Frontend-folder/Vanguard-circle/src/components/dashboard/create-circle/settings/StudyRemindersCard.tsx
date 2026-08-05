@@ -2,7 +2,6 @@ import { HiOutlineClock } from "react-icons/hi2";
 import SettingsToggle from "./SettingsToggle";
 
 import type { CircleFormData } from "../types";
-import { trackReminderChannelSelected } from "../../../../services/analytics";
 
 interface StudyRemindersCardProps {
   studyReminders: boolean;
@@ -165,7 +164,6 @@ const StudyRemindersCard = ({
             onChange={(e) => {
               const value = e.target.value as CircleFormData["reminderChannel"];
               onChange("reminderChannel", value);
-              trackReminderChannelSelected({ channel: value });
             }}
             className="
               w-full

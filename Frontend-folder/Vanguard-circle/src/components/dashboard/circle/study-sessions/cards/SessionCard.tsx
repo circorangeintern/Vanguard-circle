@@ -1,10 +1,9 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { FiCalendar, FiClock } from "react-icons/fi";
 
 import SessionStatusBadge from "./SessionStatusBadge";
 import type { Session, SessionStatus } from "../types";
-import { trackSessionMissed } from "../../../../../services/analytics";
 
 interface SessionCardProps {
   session: Session;
@@ -27,9 +26,8 @@ function formatCountdown(startTime: Date, endTime: Date, now: Date): string {
   return `Starts in ${mins}m`;
 }
 
-const SessionCard = ({ session, groupId }: SessionCardProps) => {
+const SessionCard = ({ session }: SessionCardProps) => {
   const [now, setNow] = useState(() => new Date());
-  const hasTrackedMissed = useRef(false);
 
   useEffect(() => {
     // Every 30s is plenty for a countdown measured in minutes/hours — no
@@ -44,15 +42,10 @@ const SessionCard = ({ session, groupId }: SessionCardProps) => {
   const status: SessionStatus = now >= endTime ? "missed" : "scheduled";
   const countdown = formatCountdown(startTime, endTime, now);
 
-  // Fires once per card instance the moment a session's end time passes —
-  // guarded by a ref (not state) so it doesn't re-fire on every 30s tick
-  // while status stays "missed".
-  useEffect(() => {
-    if (status === "missed" && !hasTrackedMissed.current) {
-      hasTrackedMissed.current = true;
-      trackSessionMissed({ circleId: groupId });
-    }
-  }, [status, groupId]);
+  // session_missed analytics fires from the backend's reminder scanner
+  // (services/reminders.js), not here — firing it from this card only
+  // counts a miss if someone happened to have the page open at the right
+  // moment, which undercounts almost every real miss.
 
   const dateLabel = startTime.toLocaleDateString([], { month: "short", day: "numeric", year: "numeric" });
   const timeLabel = startTime.toLocaleTimeString([], { hour: "numeric", minute: "2-digit" });

@@ -284,6 +284,7 @@ model StudySession {
   meetingLink     String?
   createdBy       String
   reminderSentAt  DateTime? // set once a "starting soon" notification has fired
+  missedTrackedAt DateTime? // set once the session_missed analytics event has fired, so it never double-fires
   createdAt       DateTime  @default(now())
 
   group Group @relation(fields: [groupId], references: [id])

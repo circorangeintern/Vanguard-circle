@@ -15,7 +15,11 @@ import type {
   NotificationSettings,
   PendingInvite,
 } from "../create-circle/types";
-import { trackCircleCreated, trackMemberInvited } from "../../../services/analytics";
+import {
+  trackCircleCreated,
+  trackMemberInvited,
+  trackReminderChannelSelected,
+} from "../../../services/analytics";
 
 interface CreatedGroup {
   id: string;
@@ -179,6 +183,12 @@ const CreateCircleModal = ({
         visibility: formData.visibility,
         circleSize: formData.maxMembers,
       });
+
+      // Fire here too, not only from the Step 3 dropdown's onChange — most
+      // circles are created without ever visiting Step 3, so gating this on
+      // a manual dropdown interaction meant it almost never fired. The
+      // default ("IN_APP") IS the selection if nobody changes it.
+      trackReminderChannelSelected({ channel: formData.reminderChannel });
 
       return true;
     } catch (err) {

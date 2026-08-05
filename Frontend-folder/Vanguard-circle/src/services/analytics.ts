@@ -103,15 +103,12 @@ export const trackSessionScheduled = (payload: {
   });
 };
 
-// "session_missed" — fires once when a scheduled session's end time passes
-// with nothing marking it as attended. `reason` is optional per the plan —
-// there's no UI to collect one, so it's always omitted for now.
-export const trackSessionMissed = (payload: { circleId: string; reason?: string }) => {
-  mixpanel.track("session_missed", {
-    circle_id: payload.circleId,
-    ...(payload.reason ? { reason: payload.reason } : {}),
-  });
-};
+// "session_missed" is NOT fired from here — it fires from the backend's
+// reminder scanner (Backend-Folder/src/services/reminders.js /
+// mixpanelServer.js) instead. Firing it from a session card only counted a
+// miss if a browser happened to have that card open at the moment it
+// crossed into "missed," which undercounted almost every real one; the
+// backend's 60s poll catches every session regardless of who's online.
 
 // "task_board_item_added" — fires when a student adds an item to the shared
 // task board. due_date wasn't in the original plan's property list but was
