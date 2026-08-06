@@ -35,9 +35,11 @@ export const trackLogin = (payload: LoginPayload) => {
   mixpanel.track("sign_in_completed", { method: payload.method });
 };
 
-// "study_group_joined" — fires when a student joins an existing circle.
+// "circle_joined" — fires when a student joins an existing circle. Was
+// "study_group_joined" — renamed to match the naming convention actually
+// agreed on with the team (circle_*, not study_group_*).
 export const trackCircleJoined = (payload: { circleId: string; circleName: string }) => {
-  mixpanel.track("study_group_joined", {
+  mixpanel.track("circle_joined", {
     circle_id: payload.circleId,
     circle_name: payload.circleName,
   });
@@ -50,9 +52,11 @@ export interface CircleCreatedPayload {
   circleSize: number;
 }
 
-// "study_group_created" — fires when a student starts a new circle.
+// "circle_created" — fires when a student starts a new circle. Was
+// "study_group_created" — renamed to match the naming convention actually
+// agreed on with the team (circle_*, not study_group_*).
 export const trackCircleCreated = (payload: CircleCreatedPayload) => {
-  mixpanel.track("study_group_created", {
+  mixpanel.track("circle_created", {
     circle_name: payload.circleName,
     course: payload.category,
     visibility: payload.visibility,
