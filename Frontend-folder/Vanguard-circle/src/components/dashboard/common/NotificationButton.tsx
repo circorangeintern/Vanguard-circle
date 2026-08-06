@@ -145,7 +145,12 @@ const NotificationButton = () => {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 8 }}
             transition={{ duration: 0.15 }}
-            className="absolute right-0 top-full mt-2 w-80 max-w-[90vw] rounded-2xl border border-slate-200 bg-white p-2 shadow-lg"
+            className="
+              fixed inset-x-4 top-20 z-50 max-h-[75vh] overflow-y-auto
+              rounded-2xl border border-slate-200 bg-white p-2 shadow-lg
+              sm:absolute sm:inset-x-auto sm:right-0 sm:top-full sm:z-auto
+              sm:mt-2 sm:w-80 sm:max-h-none sm:max-w-[90vw]
+            "
           >
             <p className="px-3 py-2 text-sm font-semibold text-slate-900">
               Notifications
