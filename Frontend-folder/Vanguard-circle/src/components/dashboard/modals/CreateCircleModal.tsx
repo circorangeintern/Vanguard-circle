@@ -184,12 +184,6 @@ const CreateCircleModal = ({
         circleSize: formData.maxMembers,
       });
 
-      // Fire here too, not only from the Step 3 dropdown's onChange — most
-      // circles are created without ever visiting Step 3, so gating this on
-      // a manual dropdown interaction meant it almost never fired. The
-      // default ("IN_APP") IS the selection if nobody changes it.
-      trackReminderChannelSelected({ channel: formData.reminderChannel });
-
       return true;
     } catch (err) {
       toast.error(
@@ -203,9 +197,15 @@ const CreateCircleModal = ({
 
   // Closing the modal after the circle already exists in the database (i.e.
   // past Step 1) should still refresh the dashboard — otherwise the circle
-  // is real but invisible until the user manually reloads.
+  // is real but invisible until the user manually reloads. Also the exit
+  // point for reminder_channel_selected when someone abandons before
+  // reaching Step 3 or Finish Setup — the circle's channel is whatever
+  // formData holds at this moment (the default if they never touched it).
   const handleClose = () => {
-    if (createdGroup) onSuccess?.();
+    if (createdGroup) {
+      onSuccess?.();
+      trackReminderChannelSelected({ channel: formData.reminderChannel });
+    }
     onClose();
   };
 
@@ -237,6 +237,12 @@ const CreateCircleModal = ({
         reminderTime: formData.reminderTime,
         reminderChannel: formData.reminderChannel,
       });
+
+      // Fires here (not in ensureCircleCreated) so it reflects whatever the
+      // user actually settled on in Step 3, not the default captured back
+      // when the circle was first created in Step 1. handleClose covers the
+      // case where someone abandons before reaching this point.
+      trackReminderChannelSelected({ channel: formData.reminderChannel });
 
       if (members.length > 0) {
         try {

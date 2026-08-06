@@ -71,7 +71,10 @@ export const trackCircleCreated = (payload: CircleCreatedPayload) => {
 // actually send those.
 export const trackReminderChannelSelected = (payload: { channel: string }) => {
   mixpanel.track("reminder_channel_selected", {
-    channel: payload.channel,
+    // The stored value is the backend enum (IN_APP/EMAIL/WHATSAPP/SMS,
+    // uppercase to match Prisma's ReminderChannel) — lowercased here so it
+    // matches every other event's snake_case property convention.
+    channel: payload.channel.toLowerCase(),
   });
 };
 
