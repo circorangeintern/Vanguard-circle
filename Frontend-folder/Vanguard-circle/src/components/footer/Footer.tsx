@@ -7,7 +7,7 @@ import { motion } from "framer-motion";
 import { Container } from "../ui";
 
 import { quickLinks, supportLinks } from "./FooterLinks";
-import { NavLink } from "react-router-dom";
+import { Link, NavLink } from "react-router-dom";
 
 import { useNavigate } from "react-router-dom";
 
@@ -55,11 +55,13 @@ const Footer = () => {
           {/* Brand */}
 
           <div className="max-w-sm">
-            <img
-              src="/logo.png"
-              alt="StudyCircle"
-              className="h-20 w-auto cursor-pointer"
-            />
+            <Link to="/">
+              <img
+                src="/logo.png"
+                alt="StudyCircle"
+                className="h-20 w-auto cursor-pointer"
+              />
+            </Link>
 
             <p className="mt-6 leading-8 text-[var(--color-text-secondary)]">
               Helping university students stay organized through smarter study

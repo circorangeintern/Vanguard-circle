@@ -13,17 +13,17 @@ export const quickLinks = [
   },
   {
     label: "Why StudyCircle",
-    to: "/#why-studycircle",
+    to: "/#why-us",
   },
   {
     label: "FAQs",
-    to: "/#faqs",
+    to: "/#faq",
   },
 ];
 
 export const supportLinks = [
-  { label: "Contact", to: "/contact" },
-  { label: "Help Center", to: "/help-center" },
+  { label: "Contact", to: "/help" },
+  { label: "Help Center", to: "/help" },
   { label: "Privacy Policy", to: "/privacy-policy" },
   { label: "Terms & Conditions", to: "/terms-and-conditions" },
 ];
