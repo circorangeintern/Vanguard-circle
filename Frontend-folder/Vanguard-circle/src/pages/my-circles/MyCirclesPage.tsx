@@ -117,7 +117,7 @@ const MyCirclesPage = () => {
             onSortChange={setSort}
           />
 
-          <CirclesGrid view={view} circles={visibleCircles} />
+          <CirclesGrid view={view} circles={visibleCircles} onChanged={loadCircles} />
           <CreateCircleCard onSuccess={loadCircles} />
         </>
       )}

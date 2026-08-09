@@ -5,6 +5,7 @@ import SearchBar from "../components/dashboard/common/SearchBar";
 import NotificationButton from "../components/dashboard/common/NotificationButton";
 import { auth } from "../lib/firebase";
 import { performLogout } from "../lib/logout";
+import { Avatar } from "../components/ui";
 
 const DashboardHeader = () => {
   const navigate = useNavigate();
@@ -12,12 +13,6 @@ const DashboardHeader = () => {
 
   const user = auth?.currentUser;
   const displayName = user?.displayName || user?.email?.split("@")[0] || "User";
-  const initials = displayName
-    .split(" ")
-    .map((part) => part[0])
-    .join("")
-    .slice(0, 2)
-    .toUpperCase();
 
   const handleLogout = () => performLogout(navigate);
 
@@ -57,24 +52,9 @@ const DashboardHeader = () => {
           <div className="relative">
             <button
               onClick={() => setMenuOpen((prev) => !prev)}
-              className="
-                flex
-                h-12
-                w-12
-                items-center
-                justify-center
-                rounded-full
-                bg-[var(--color-primary)]
-                font-heading
-                text-sm
-                font-semibold
-                text-white
-                transition-transform
-                duration-300
-                hover:scale-105
-              "
+              className="block transition-transform duration-300 hover:scale-105"
             >
-              {initials}
+              <Avatar name={displayName} src={user?.photoURL} size={48} />
             </button>
 
             {menuOpen && (

@@ -6,6 +6,7 @@ import CircleHeroCard from "../../../components/dashboard/circle/cards/CircleHer
 import CircleTabs from "../../../components/dashboard/circle/sections/CircleTabs";
 import { api } from "../../../lib/api";
 import { auth } from "../../../lib/firebase";
+import { resolveCircleIcon } from "../../../lib/circleIcon";
 
 export interface CircleMember {
   id: string;
@@ -104,7 +105,7 @@ const CircleLayout = () => {
         category={group.courseName}
         description={group.description || "No description yet."}
         members={group.memberships.length}
-        icon={group.icon || "📚"}
+        icon={resolveCircleIcon(group.icon)}
         inviteCode={inviteLink}
         onInvite={() => toast.success("Invite link copied!")}
         onSettings={() => navigate("settings")}

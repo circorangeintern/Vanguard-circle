@@ -16,6 +16,7 @@ export interface CircleFormData {
   studyReminders: boolean;
   reminderFrequency: "Every day" | "Weekdays" | "Weekends";
   reminderTime: string;
+  reminderChannel: "IN_APP" | "EMAIL" | "WHATSAPP" | "SMS";
 }
 
 export interface Member {

@@ -1,7 +1,9 @@
 import type { Circle } from "../types";
+import { resolveCircleIcon } from "../../../../lib/circleIcon";
 
 export interface RawDashboardCircle {
   groupId: string;
+  role: "ORGANIZER" | "MEMBER";
   name: string;
   courseName?: string;
   description?: string | null;
@@ -46,6 +48,7 @@ function formatLastActive(iso: string): string {
 export function mapCircle(raw: RawDashboardCircle): Circle {
   return {
     id: raw.groupId,
+    role: raw.role,
     name: raw.name,
     category: raw.courseName || "General",
     description: raw.description || "No description yet.",
@@ -57,7 +60,7 @@ export function mapCircle(raw: RawDashboardCircle): Circle {
     lastActive: formatLastActive(raw.lastActive),
     lastActiveAt: raw.lastActive,
     createdAt: raw.createdAt,
-    icon: raw.icon || "📚",
+    icon: resolveCircleIcon(raw.icon),
     gradient: pickGradient(raw.groupId),
   };
 }

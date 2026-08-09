@@ -11,9 +11,17 @@ const sessionRoutes = require("./routes/sessions");
 const notificationRoutes = require("./routes/notifications");
 const postRoutes = require("./routes/posts");
 const calendarRoutes = require("./routes/calendar");
+const uploadRoutes = require("./routes/uploads");
+const { UPLOAD_DIR } = require("./middleware/upload");
 const { startReminderScheduler } = require("./services/reminders");
 
 const app = express();
+
+// Needed so req.protocol reflects the real scheme (https) from the
+// X-Forwarded-Proto header set by whatever reverse proxy sits in front of
+// this process in production — otherwise uploaded file URLs would be built
+// as http:// and get blocked as mixed content on the https frontend.
+app.set("trust proxy", 1);
 
 // Locked to known frontend origins instead of `cors()`'s "allow any site"
 // default — that was fine while this was a single throwaway Render deploy,
@@ -56,6 +64,8 @@ app.use("/posts", postRoutes); // /posts/:id/like, /posts/:id/comments
 app.use("/calendar", calendarRoutes); // /calendar/auth-url, /calendar/callback, /calendar/sync
 app.use("/users", dashboardRoutes); // /users/me/dashboard
 app.use("/users", notificationRoutes); // /users/me/notifications
+app.use("/uploads", uploadRoutes); // POST /uploads — Resource post attachments
+app.use("/uploads", express.static(UPLOAD_DIR)); // GET /uploads/<filename> — serves them back
 
 // Unmatched routes — without this Express falls through to its default
 // "Cannot GET /x" plain-text page, which the frontend's JSON parser then

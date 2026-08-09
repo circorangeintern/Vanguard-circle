@@ -4,6 +4,7 @@ import { FiTrash2 } from "react-icons/fi";
 import { toast } from "sonner";
 
 import { api } from "../../../../../lib/api";
+import { ConfirmModal } from "../../../../ui";
 import type { CircleGroup } from "../../../../../pages/dashboard/circle/CircleLayout";
 
 interface CircleSettingsSectionProps {
@@ -19,6 +20,7 @@ const CircleSettingsSection = ({ group, onChange, isOrganizer }: CircleSettingsS
   const [savingName, setSavingName] = useState(false);
   const [savingDescription, setSavingDescription] = useState(false);
   const [deleting, setDeleting] = useState(false);
+  const [confirmOpen, setConfirmOpen] = useState(false);
 
   const isNameChanged = name.trim() !== group.name;
   const isDescriptionChanged = description.trim() !== (group.description || "");
@@ -38,8 +40,6 @@ const CircleSettingsSection = ({ group, onChange, isOrganizer }: CircleSettingsS
   };
 
   const handleDelete = async () => {
-    if (!window.confirm(`Permanently delete "${group.name}"? This cannot be undone.`)) return;
-
     setDeleting(true);
     try {
       await api.delete(`/groups/${group.id}`);
@@ -240,7 +240,7 @@ const CircleSettingsSection = ({ group, onChange, isOrganizer }: CircleSettingsS
 
             <div className="flex justify-start lg:justify-end">
               <button
-                onClick={handleDelete}
+                onClick={() => setConfirmOpen(true)}
                 disabled={deleting}
                 className="
                   inline-flex
@@ -268,6 +268,16 @@ const CircleSettingsSection = ({ group, onChange, isOrganizer }: CircleSettingsS
           </div>
         </div>
       )}
+
+      <ConfirmModal
+        open={confirmOpen}
+        title="Delete this circle?"
+        message={`Permanently delete "${group.name}"? This removes all its tasks, sessions, and posts for every member — this cannot be undone.`}
+        confirmLabel="Delete Circle"
+        loading={deleting}
+        onConfirm={handleDelete}
+        onCancel={() => setConfirmOpen(false)}
+      />
     </section>
   );
 };

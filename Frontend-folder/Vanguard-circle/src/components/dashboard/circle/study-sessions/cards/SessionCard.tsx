@@ -7,6 +7,7 @@ import type { Session, SessionStatus } from "../types";
 
 interface SessionCardProps {
   session: Session;
+  groupId: string;
 }
 
 function formatCountdown(startTime: Date, endTime: Date, now: Date): string {
@@ -40,6 +41,11 @@ const SessionCard = ({ session }: SessionCardProps) => {
   const isLive = now >= startTime && now < endTime;
   const status: SessionStatus = now >= endTime ? "missed" : "scheduled";
   const countdown = formatCountdown(startTime, endTime, now);
+
+  // session_missed analytics fires from the backend's reminder scanner
+  // (services/reminders.js), not here — firing it from this card only
+  // counts a miss if someone happened to have the page open at the right
+  // moment, which undercounts almost every real miss.
 
   const dateLabel = startTime.toLocaleDateString([], { month: "short", day: "numeric", year: "numeric" });
   const timeLabel = startTime.toLocaleTimeString([], { hour: "numeric", minute: "2-digit" });

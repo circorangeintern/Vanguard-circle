@@ -1,6 +1,8 @@
 export interface Circle {
   id: string;
 
+  role: "ORGANIZER" | "MEMBER";
+
   name: string;
 
   category: string;

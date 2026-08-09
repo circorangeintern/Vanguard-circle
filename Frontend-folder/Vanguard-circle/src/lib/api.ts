@@ -54,6 +54,45 @@ async function request<T>(
   return json.data as T;
 }
 
+// Separate from `request` because it must NOT send a JSON Content-Type —
+// the browser needs to set its own multipart boundary for FormData.
+async function upload<T>(path: string, file: File): Promise<T> {
+  await auth!.authStateReady();
+  const user = auth!.currentUser;
+  const token = user ? await user.getIdToken() : null;
+
+  const formData = new FormData();
+  formData.append("file", file);
+
+  let res: Response;
+  try {
+    res = await fetch(`${BASE_URL}${path}`, {
+      method: "POST",
+      headers: token ? { Authorization: `Bearer ${token}` } : undefined,
+      body: formData,
+    });
+  } catch {
+    throw new Error("Network error — check your connection and try again.");
+  }
+
+  let json: ApiResponse<T>;
+  try {
+    json = await res.json();
+  } catch {
+    throw new Error(
+      res.ok
+        ? "Something went wrong. Please try again."
+        : `Request failed (${res.status}). Please try again.`,
+    );
+  }
+
+  if (!json.success) {
+    throw new Error(json.error || "Something went wrong");
+  }
+
+  return json.data as T;
+}
+
 export const api = {
   get: <T>(path: string) => request<T>(path, { method: "GET" }),
   post: <T>(path: string, body?: unknown) =>
@@ -61,4 +100,5 @@ export const api = {
   patch: <T>(path: string, body?: unknown) =>
     request<T>(path, { method: "PATCH", body: body ? JSON.stringify(body) : undefined }),
   delete: <T>(path: string) => request<T>(path, { method: "DELETE" }),
+  upload: <T>(path: string, file: File) => upload<T>(path, file),
 };

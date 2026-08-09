@@ -7,6 +7,7 @@ import type { Circle, ViewMode } from "../types";
 interface CirclesGridProps {
   view: ViewMode;
   circles: Circle[];
+  onChanged?: () => void;
 }
 
 const containerVariants = {
@@ -18,7 +19,7 @@ const containerVariants = {
   },
 };
 
-const CirclesGrid = ({ view, circles }: CirclesGridProps) => {
+const CirclesGrid = ({ view, circles, onChanged }: CirclesGridProps) => {
   if (circles.length === 0) {
     return (
       <div className="mt-16 flex flex-col items-center justify-center rounded-3xl border border-[var(--color-border)] bg-white px-6 py-16 text-center">
@@ -54,7 +55,7 @@ const CirclesGrid = ({ view, circles }: CirclesGridProps) => {
       }
     >
       {circles.map((circle) => (
-        <CircleCard key={circle.id} circle={circle} />
+        <CircleCard key={circle.id} circle={circle} onChanged={onChanged} />
       ))}
     </motion.section>
   );

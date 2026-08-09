@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 
 import { auth } from "../../../lib/firebase";
 import { performLogout } from "../../../lib/logout";
+import { Avatar } from "../../ui";
 
 interface SidebarProfileProps {
   expanded: boolean;
@@ -16,12 +17,6 @@ const SidebarProfile = ({ expanded }: SidebarProfileProps) => {
 
   const user = auth!.currentUser;
   const displayName = user?.displayName || user?.email?.split("@")[0] || "User";
-  const initials = displayName
-    .split(" ")
-    .map((part: string) => part[0])
-    .join("")
-    .slice(0, 2)
-    .toUpperCase();
 
   const handleLogout = () => performLogout(navigate);
 
@@ -45,25 +40,7 @@ const SidebarProfile = ({ expanded }: SidebarProfileProps) => {
           }
         `}
       >
-        <div
-          className="
-            flex
-            h-12
-            w-12
-            shrink-0
-            items-center
-            justify-center
-            rounded-xl
-            bg-[var(--color-primary)]
-
-            font-heading
-            text-sm
-            font-semibold
-            text-white
-          "
-        >
-          {initials}
-        </div>
+        <Avatar name={displayName} src={user?.photoURL} size={48} />
 
         <AnimatePresence>
           {expanded && (

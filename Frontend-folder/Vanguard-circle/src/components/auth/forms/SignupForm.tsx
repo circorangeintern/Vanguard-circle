@@ -21,13 +21,15 @@ const SignupForm = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [institutionType, setInstitutionType] = useState("");
+  const [level, setLevel] = useState("");
   const [agree, setAgree] = useState(false);
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    if (!fullName || !email || !password || !confirmPassword) {
+    if (!fullName || !email || !password || !confirmPassword || !institutionType || !level) {
       toast.error("Please fill in all fields.");
       return;
     }
@@ -53,7 +55,13 @@ const SignupForm = () => {
       );
       await updateProfile(credential.user, { displayName: fullName });
 
-      trackSignup({ method: "email", userId: credential.user.uid, email });
+      trackSignup({
+        method: "email",
+        userId: credential.user.uid,
+        email,
+        institutionType,
+        level,
+      });
 
       // Fire-and-forget: don't block getting the user into the app on the
       // verification email actually sending.
@@ -126,6 +134,35 @@ const SignupForm = () => {
           value={confirmPassword}
           onChange={(e) => setConfirmPassword(e.target.value)}
         />
+      </div>
+
+      <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
+        <select
+          value={institutionType}
+          onChange={(e) => setInstitutionType(e.target.value)}
+          className="h-12 w-full rounded-xl border border-[var(--color-border)] px-4 text-sm text-[var(--color-text-primary)] outline-none transition focus:border-[var(--color-primary)]"
+        >
+          <option value="">Institution Type</option>
+          <option value="University">University</option>
+          <option value="Polytechnic">Polytechnic</option>
+          <option value="College of Education">College of Education</option>
+          <option value="Other">Other</option>
+        </select>
+
+        <select
+          value={level}
+          onChange={(e) => setLevel(e.target.value)}
+          className="h-12 w-full rounded-xl border border-[var(--color-border)] px-4 text-sm text-[var(--color-text-primary)] outline-none transition focus:border-[var(--color-primary)]"
+        >
+          <option value="">Level</option>
+          <option value="100L">100L</option>
+          <option value="200L">200L</option>
+          <option value="300L">300L</option>
+          <option value="400L">400L</option>
+          <option value="500L">500L</option>
+          <option value="Graduate">Graduate</option>
+          <option value="Postgraduate">Postgraduate</option>
+        </select>
       </div>
 
       <div className="mt-7 flex items-start gap-3">

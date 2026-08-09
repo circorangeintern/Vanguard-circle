@@ -22,6 +22,7 @@ function serializePost(post, currentUserId) {
     author: {
       id: post.author.id,
       name: post.author.name,
+      avatarUrl: post.author.avatarUrl,
     },
     attachment:
       post.attachmentUrl || post.attachmentName

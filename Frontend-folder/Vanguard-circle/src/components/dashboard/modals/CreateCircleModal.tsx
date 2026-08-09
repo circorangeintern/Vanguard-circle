@@ -15,7 +15,11 @@ import type {
   NotificationSettings,
   PendingInvite,
 } from "../create-circle/types";
-import { trackCircleCreated, trackMemberInvited } from "../../../services/analytics";
+import {
+  trackCircleCreated,
+  trackMemberInvited,
+  trackReminderChannelSelected,
+} from "../../../services/analytics";
 
 interface CreatedGroup {
   id: string;
@@ -53,6 +57,7 @@ const CreateCircleModal = ({
     studyReminders: true,
     reminderFrequency: "Every day",
     reminderTime: "09:00 AM",
+    reminderChannel: "IN_APP",
   });
 
   const [members, setMembers] = useState<Member[]>([]);
@@ -162,6 +167,7 @@ const CreateCircleModal = ({
         studyReminders: formData.studyReminders,
         reminderFrequency: formData.reminderFrequency,
         reminderTime: formData.reminderTime,
+        reminderChannel: formData.reminderChannel,
       });
 
       setCreatedGroup(result.group);
@@ -175,6 +181,7 @@ const CreateCircleModal = ({
         circleName: formData.name,
         category: formData.category,
         visibility: formData.visibility,
+        circleSize: formData.maxMembers,
       });
 
       return true;
@@ -190,9 +197,15 @@ const CreateCircleModal = ({
 
   // Closing the modal after the circle already exists in the database (i.e.
   // past Step 1) should still refresh the dashboard — otherwise the circle
-  // is real but invisible until the user manually reloads.
+  // is real but invisible until the user manually reloads. Also the exit
+  // point for reminder_channel_selected when someone abandons before
+  // reaching Step 3 or Finish Setup — the circle's channel is whatever
+  // formData holds at this moment (the default if they never touched it).
   const handleClose = () => {
-    if (createdGroup) onSuccess?.();
+    if (createdGroup) {
+      onSuccess?.();
+      trackReminderChannelSelected({ channel: formData.reminderChannel });
+    }
     onClose();
   };
 
@@ -222,7 +235,14 @@ const CreateCircleModal = ({
         studyReminders: formData.studyReminders,
         reminderFrequency: formData.reminderFrequency,
         reminderTime: formData.reminderTime,
+        reminderChannel: formData.reminderChannel,
       });
+
+      // Fires here (not in ensureCircleCreated) so it reflects whatever the
+      // user actually settled on in Step 3, not the default captured back
+      // when the circle was first created in Step 1. handleClose covers the
+      // case where someone abandons before reaching this point.
+      trackReminderChannelSelected({ channel: formData.reminderChannel });
 
       if (members.length > 0) {
         try {
@@ -259,6 +279,7 @@ const CreateCircleModal = ({
         studyReminders: true,
         reminderFrequency: "Every day",
         reminderTime: "09:00 AM",
+        reminderChannel: "IN_APP",
       });
 
       setMembers([]);

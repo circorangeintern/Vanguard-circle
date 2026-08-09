@@ -4,6 +4,7 @@ export interface RawUser {
   id: string;
   name: string;
   email: string;
+  avatarUrl: string | null;
   createdAt: string;
   circlesCount: number;
 }
@@ -19,7 +20,7 @@ export function mapProfile(raw: RawUser): Profile {
     id: raw.id,
     fullName: raw.name,
     email: raw.email,
-    avatar: `https://i.pravatar.cc/300?u=${raw.id}`,
+    avatarUrl: raw.avatarUrl,
     joinedDate: joined,
     memberSince: joined,
     circlesCount: raw.circlesCount,

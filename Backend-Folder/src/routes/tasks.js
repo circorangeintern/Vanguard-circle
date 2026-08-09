@@ -13,14 +13,20 @@ async function requireMembership(userId, groupId) {
 // POST /groups/:groupId/tasks — add a task, optionally assigned to a member
 router.post("/:groupId/tasks", requireAuth, async (req, res) => {
   const { groupId } = req.params;
-  const { title, dueDate, assignedTo } = req.body;
+  const { title, dueDate, assignedTo, reminderDaysBefore } = req.body;
   if (!title || !dueDate) return res.error("title and dueDate are required");
 
   const membership = await requireMembership(req.user.id, groupId);
   if (!membership) return res.error("You're not a member of this circle.", 403);
 
   const task = await prisma.task.create({
-    data: { groupId, title, dueDate: new Date(dueDate), assignedTo: assignedTo || null },
+    data: {
+      groupId,
+      title,
+      dueDate: new Date(dueDate),
+      assignedTo: assignedTo || null,
+      reminderDaysBefore: reminderDaysBefore != null ? Number(reminderDaysBefore) : null,
+    },
   });
 
   res.success(task, 201);

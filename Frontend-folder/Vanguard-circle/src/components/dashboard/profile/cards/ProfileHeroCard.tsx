@@ -1,23 +1,31 @@
 import { motion } from "framer-motion";
-import { FiCalendar, FiEdit2, FiUsers } from "react-icons/fi";
+import { useRef } from "react";
+import { FiCalendar, FiCamera, FiEdit2, FiUsers } from "react-icons/fi";
+
+import { Avatar } from "../../../ui";
 
 interface ProfileHeroCardProps {
   fullName: string;
   email: string;
+  avatarUrl?: string | null;
   joinedDate: string;
   circlesCount: number;
-  avatar: string;
   onEditProfile?: () => void;
+  onAvatarUpload?: (file: File) => void;
+  uploadingAvatar?: boolean;
 }
 
 const ProfileHeroCard = ({
   fullName,
   email,
+  avatarUrl,
   joinedDate,
   circlesCount,
-  avatar,
   onEditProfile,
+  onAvatarUpload,
+  uploadingAvatar,
 }: ProfileHeroCardProps) => {
+  const fileInputRef = useRef<HTMLInputElement>(null);
   return (
     <motion.section
       initial={{
@@ -81,19 +89,59 @@ const ProfileHeroCard = ({
         >
           {/* Avatar */}
           <div className="relative shrink-0">
-            <img
-              src={avatar}
-              alt={fullName}
-              className="
-                h-32
-                w-32
-                rounded-full
-                object-cover
-                ring-4
-                ring-white
-                shadow-lg
-              "
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/*"
+              onChange={(e) => {
+                const file = e.target.files?.[0];
+                e.target.value = "";
+                if (file) onAvatarUpload?.(file);
+              }}
+              className="hidden"
             />
+
+            <button
+              type="button"
+              onClick={() => fileInputRef.current?.click()}
+              disabled={uploadingAvatar}
+              className="group relative block rounded-full disabled:cursor-wait"
+              aria-label="Upload profile photo"
+            >
+              <Avatar
+                name={fullName}
+                src={avatarUrl}
+                size={128}
+                className="ring-4 ring-white shadow-lg"
+              />
+
+              <span
+                className="
+                  absolute
+                  bottom-0
+                  right-0
+                  flex
+                  h-10
+                  w-10
+                  items-center
+                  justify-center
+                  rounded-full
+                  border-2
+                  border-white
+                  bg-[var(--color-primary)]
+                  text-white
+                  shadow-md
+                  transition
+                  group-hover:bg-[var(--color-primary-dark)]
+                "
+              >
+                {uploadingAvatar ? (
+                  <div className="h-4 w-4 animate-spin rounded-full border-2 border-white/40 border-t-white" />
+                ) : (
+                  <FiCamera className="text-base" />
+                )}
+              </span>
+            </button>
           </div>
 
           {/* Details */}

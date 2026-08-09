@@ -1,13 +1,18 @@
+import { useState } from "react";
 import { Link } from "react-router-dom";
-import { FiMoreHorizontal } from "react-icons/fi";
+import { FiMoreHorizontal, FiTrash2, FiLogOut } from "react-icons/fi";
 import { FiCalendar, FiCheckCircle } from "react-icons/fi";
 import { PiFireFill } from "react-icons/pi";
+import { toast } from "sonner";
+import { AnimatePresence, motion } from "framer-motion";
 
 import type { Circle } from "../types";
-import { motion } from "framer-motion";
+import { api } from "../../../../lib/api";
+import { ConfirmModal } from "../../../ui";
 
 interface CircleCardProps {
   circle: Circle;
+  onChanged?: () => void;
 }
 
 const cardVariants = {
@@ -34,7 +39,37 @@ function initialsOf(name: string) {
     .toUpperCase();
 }
 
-const CircleCard = ({ circle }: CircleCardProps) => {
+const CircleCard = ({ circle, onChanged }: CircleCardProps) => {
+  const isOrganizer = circle.role === "ORGANIZER";
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [confirmOpen, setConfirmOpen] = useState(false);
+  const [working, setWorking] = useState(false);
+
+  const handleConfirm = async () => {
+    setWorking(true);
+    try {
+      if (isOrganizer) {
+        await api.delete(`/groups/${circle.id}`);
+        toast.success(`${circle.name} deleted.`);
+      } else {
+        await api.post(`/groups/${circle.id}/leave`, {});
+        toast.success(`You left ${circle.name}.`);
+      }
+      setConfirmOpen(false);
+      onChanged?.();
+    } catch (err) {
+      toast.error(
+        err instanceof Error
+          ? err.message
+          : isOrganizer
+            ? "Couldn't delete this circle."
+            : "Couldn't leave this circle.",
+      );
+    } finally {
+      setWorking(false);
+    }
+  };
+
   return (
     <motion.div
       variants={cardVariants}
@@ -266,39 +301,118 @@ const CircleCard = ({ circle }: CircleCardProps) => {
             Last active: {circle.lastActive}
           </p>
 
-          <motion.button
-            whileHover={{
-              rotate: 90,
-            }}
-            whileTap={{
-              scale: 0.9,
-            }}
-            type="button"
-            aria-label="More actions"
-            onClick={(e) => e.preventDefault()}
-            className="
-              flex
-              h-10
-              w-10
-              items-center
-              justify-center
-              rounded-xl
-              border
-              border-[var(--color-border)]
-              bg-white
-              text-[var(--color-text-secondary)]
-              transition-all
-              duration-200
-              hover:border-[var(--color-primary)]
-              hover:bg-blue-50
-              hover:text-[var(--color-primary)]
-            "
-          >
-            <FiMoreHorizontal className="text-lg" />
-          </motion.button>
+          <div className="relative">
+            <motion.button
+              whileHover={{
+                rotate: 90,
+              }}
+              whileTap={{
+                scale: 0.9,
+              }}
+              type="button"
+              aria-label="More actions"
+              onClick={(e) => {
+                e.preventDefault();
+                setMenuOpen((prev) => !prev);
+              }}
+              className="
+                flex
+                h-10
+                w-10
+                items-center
+                justify-center
+                rounded-xl
+                border
+                border-[var(--color-border)]
+                bg-white
+                text-[var(--color-text-secondary)]
+                transition-all
+                duration-200
+                hover:border-[var(--color-primary)]
+                hover:bg-blue-50
+                hover:text-[var(--color-primary)]
+              "
+            >
+              <FiMoreHorizontal className="text-lg" />
+            </motion.button>
+
+            <AnimatePresence>
+              {menuOpen && (
+                <motion.div
+                  initial={{ opacity: 0, y: 4 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: 4 }}
+                  transition={{ duration: 0.15 }}
+                  className="
+                    absolute
+                    bottom-full
+                    right-0
+                    z-20
+                    mb-2
+                    w-44
+                    overflow-hidden
+                    rounded-xl
+                    border
+                    border-[var(--color-border)]
+                    bg-white
+                    shadow-lg
+                  "
+                >
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      setMenuOpen(false);
+                      setConfirmOpen(true);
+                    }}
+                    className="
+                      flex
+                      w-full
+                      items-center
+                      gap-2
+                      px-4
+                      py-3
+                      text-left
+                      text-sm
+                      font-medium
+                      text-red-600
+                      transition
+                      hover:bg-red-50
+                    "
+                  >
+                    {isOrganizer ? (
+                      <>
+                        <FiTrash2 className="text-base" />
+                        Delete Circle
+                      </>
+                    ) : (
+                      <>
+                        <FiLogOut className="text-base" />
+                        Leave Circle
+                      </>
+                    )}
+                  </button>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
         </div>
       </div>
       </Link>
+
+      <ConfirmModal
+        open={confirmOpen}
+        title={isOrganizer ? "Delete this circle?" : "Leave this circle?"}
+        message={
+          isOrganizer
+            ? `Permanently delete "${circle.name}"? This removes all its tasks, sessions, and posts for every member — this cannot be undone.`
+            : `You'll lose access to "${circle.name}" and your check-in streak here. You can rejoin later with an invite.`
+        }
+        confirmLabel={isOrganizer ? "Delete Circle" : "Leave Circle"}
+        loading={working}
+        onConfirm={handleConfirm}
+        onCancel={() => setConfirmOpen(false)}
+      />
     </motion.div>
   );
 };

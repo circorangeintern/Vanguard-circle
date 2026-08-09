@@ -146,7 +146,7 @@ const StudySessionsSection = ({ groupId }: StudySessionsSectionProps) => {
 
           <div className="space-y-4">
             {upcomingSessions.map((session) => (
-              <SessionCard key={session.id} session={session} />
+              <SessionCard key={session.id} session={session} groupId={groupId} />
             ))}
           </div>
         </div>
@@ -168,7 +168,7 @@ const StudySessionsSection = ({ groupId }: StudySessionsSectionProps) => {
 
           <div className="space-y-4">
             {missedSessions.map((session) => (
-              <SessionCard key={session.id} session={session} />
+              <SessionCard key={session.id} session={session} groupId={groupId} />
             ))}
           </div>
         </div>

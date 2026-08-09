@@ -3,8 +3,7 @@ export interface Profile {
 
   fullName: string;
   email: string;
-
-  avatar: string;
+  avatarUrl: string | null;
 
   joinedDate: string;
   memberSince: string;

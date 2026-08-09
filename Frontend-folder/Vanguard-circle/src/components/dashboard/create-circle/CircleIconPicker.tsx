@@ -7,11 +7,17 @@ import {
   HiOutlineEllipsisHorizontal,
 } from "react-icons/hi2";
 
+import { CIRCLE_ICON_EMOJI } from "../../../lib/circleIcon";
+
 interface CircleIconPickerProps {
   value: string;
   onChange: (value: string) => void;
 }
 
+// The button grid shows a crisp react-icon for pickability, but the value
+// stored (and sent to the backend) is the matching emoji from
+// CIRCLE_ICON_EMOJI — that's what every circle card/header actually renders,
+// so picker and display always agree on what a circle's icon looks like.
 const icons = [
   {
     id: "group",
@@ -61,14 +67,15 @@ const CircleIconPicker = ({ value, onChange }: CircleIconPickerProps) => {
       <div className="flex flex-wrap gap-4">
         {icons.map((item) => {
           const Icon = item.icon;
+          const emoji = CIRCLE_ICON_EMOJI[item.id];
 
-          const active = value === item.id;
+          const active = value === emoji;
 
           return (
             <button
               key={item.id}
               type="button"
-              onClick={() => onChange(item.id)}
+              onClick={() => onChange(emoji)}
               className={`
                 flex
                 h-16
