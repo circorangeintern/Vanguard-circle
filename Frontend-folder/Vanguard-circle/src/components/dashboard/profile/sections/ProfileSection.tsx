@@ -9,6 +9,7 @@ import ProfileLoading from "../states/ProfileLoading";
 
 import { api } from "../../../../lib/api";
 import { auth } from "../../../../lib/firebase";
+import { PROFILE_UPDATED_EVENT } from "../../../../hooks/useCurrentUser";
 import { mapProfile, type RawUser } from "../data/mapProfile";
 import type { Profile } from "../types";
 
@@ -36,11 +37,13 @@ const ProfileSection = () => {
     try {
       const uploaded = await api.upload<{ url: string }>("/uploads", file);
       await api.patch("/users/me", { avatarUrl: uploaded.url });
-      // Keeps the sidebar/header/feed composer in sync — they read
-      // photoURL straight off the Firebase user object, same pattern as
-      // EditProfileModal already uses for displayName.
       if (auth?.currentUser) {
         await updateProfile(auth.currentUser, { photoURL: uploaded.url });
+        // updateProfile() mutates auth.currentUser in place — it does NOT
+        // fire onAuthStateChanged, so the sidebar/header avatars (which
+        // read auth.currentUser directly) wouldn't otherwise re-render
+        // until something unrelated caused them to. This tells them to.
+        window.dispatchEvent(new Event(PROFILE_UPDATED_EVENT));
       }
       toast.success("Profile photo updated.");
       loadProfile();

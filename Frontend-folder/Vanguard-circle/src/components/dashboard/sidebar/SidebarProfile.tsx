@@ -3,8 +3,8 @@ import { AnimatePresence, motion } from "framer-motion";
 import { HiChevronUp, HiOutlineArrowRightOnRectangle } from "react-icons/hi2";
 import { useNavigate } from "react-router-dom";
 
-import { auth } from "../../../lib/firebase";
 import { performLogout } from "../../../lib/logout";
+import { useCurrentUser } from "../../../hooks/useCurrentUser";
 import { Avatar } from "../../ui";
 
 interface SidebarProfileProps {
@@ -15,7 +15,7 @@ const SidebarProfile = ({ expanded }: SidebarProfileProps) => {
   const navigate = useNavigate();
   const [menuOpen, setMenuOpen] = useState(false);
 
-  const user = auth!.currentUser;
+  const user = useCurrentUser();
   const displayName = user?.displayName || user?.email?.split("@")[0] || "User";
 
   const handleLogout = () => performLogout(navigate);

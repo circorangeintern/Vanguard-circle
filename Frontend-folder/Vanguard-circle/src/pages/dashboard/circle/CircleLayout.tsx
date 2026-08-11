@@ -57,20 +57,36 @@ const CircleLayout = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const loadGroup = useCallback(() => {
-    if (!circleId) return;
-    setLoading(true);
-    api
-      .get<CircleGroup>(`/groups/${circleId}`)
-      .then(setGroup)
-      .catch((err) => {
-        setError(err instanceof Error ? err.message : "Couldn't load this circle.");
-      })
-      .finally(() => setLoading(false));
-  }, [circleId]);
+  const loadGroup = useCallback(
+    (showLoading = true) => {
+      if (!circleId) return;
+      if (showLoading) setLoading(true);
+      api
+        .get<CircleGroup>(`/groups/${circleId}`)
+        .then(setGroup)
+        .catch((err) => {
+          if (showLoading) {
+            setError(err instanceof Error ? err.message : "Couldn't load this circle.");
+          }
+          // Silent on background polls — a transient network blip shouldn't
+          // knock the whole circle view into an error state while it's
+          // already showing good data.
+        })
+        .finally(() => {
+          if (showLoading) setLoading(false);
+        });
+    },
+    [circleId],
+  );
 
   useEffect(() => {
     loadGroup();
+    // 30s poll — same reasoning as the notification bell: new members,
+    // tasks, etc. from other people shouldn't require a manual refresh to
+    // show up. Silent (no loading flicker) so it doesn't interrupt whatever
+    // tab the user is on.
+    const interval = setInterval(() => loadGroup(false), 30_000);
+    return () => clearInterval(interval);
   }, [loadGroup]);
 
   if (loading) {

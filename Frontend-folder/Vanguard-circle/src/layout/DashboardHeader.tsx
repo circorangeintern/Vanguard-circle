@@ -3,15 +3,15 @@ import { useNavigate } from "react-router-dom";
 
 import SearchBar from "../components/dashboard/common/SearchBar";
 import NotificationButton from "../components/dashboard/common/NotificationButton";
-import { auth } from "../lib/firebase";
 import { performLogout } from "../lib/logout";
+import { useCurrentUser } from "../hooks/useCurrentUser";
 import { Avatar } from "../components/ui";
 
 const DashboardHeader = () => {
   const navigate = useNavigate();
   const [menuOpen, setMenuOpen] = useState(false);
 
-  const user = auth?.currentUser;
+  const user = useCurrentUser();
   const displayName = user?.displayName || user?.email?.split("@")[0] || "User";
 
   const handleLogout = () => performLogout(navigate);

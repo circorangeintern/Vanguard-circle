@@ -6,7 +6,7 @@ const router = express.Router();
 
 // POST /groups/:groupId/checkins — daily check-in, scoped to this circle only
 router.post("/:groupId/checkins", requireAuth, async (req, res) => {
-  const { status } = req.body; // DONE | IN_PROGRESS | SKIPPED
+  const { status, localDate } = req.body; // status: DONE | IN_PROGRESS | SKIPPED
   const { groupId } = req.params;
   const userId = req.user.id;
 
@@ -15,7 +15,14 @@ router.post("/:groupId/checkins", requireAuth, async (req, res) => {
   });
   if (!membership) return res.error("You're not a member of this circle.", 403);
 
-  const today = new Date();
+  // "today" is the CLIENT's local calendar day (e.g. "2026-08-11"), not the
+  // server's — the server's clock (typically UTC) can disagree with a
+  // user's actual day near midnight in their own timezone, which silently
+  // breaks streak consecutiveness for anyone not in the server's timezone.
+  // Falls back to server time only if an older client doesn't send it.
+  const today = /^\d{4}-\d{2}-\d{2}$/.test(localDate || "")
+    ? new Date(`${localDate}T00:00:00`)
+    : new Date();
   today.setHours(0, 0, 0, 0);
 
   const checkIn = await prisma.checkIn.upsert({

@@ -7,6 +7,7 @@ import { toast } from "sonner";
 
 import { api } from "../../../../lib/api";
 import { auth } from "../../../../lib/firebase";
+import { PROFILE_UPDATED_EVENT } from "../../../../hooks/useCurrentUser";
 
 interface EditProfileModalProps {
   open: boolean;
@@ -69,10 +70,11 @@ const EditProfileModal = ({ open, fullName, onClose, onSuccess }: EditProfileMod
     setIsUpdating(true);
     try {
       await api.patch("/users/me", { name: name.trim() });
-      // Keeps the sidebar/header in sync — they read displayName straight
-      // off the Firebase user object, not the backend row.
       if (auth?.currentUser) {
         await updateProfile(auth.currentUser, { displayName: name.trim() });
+        // See useCurrentUser.ts — updateProfile() doesn't trigger a
+        // re-render on its own in components reading auth.currentUser directly.
+        window.dispatchEvent(new Event(PROFILE_UPDATED_EVENT));
       }
       toast.success("Profile updated.");
       onSuccess();

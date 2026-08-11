@@ -43,9 +43,14 @@ const KeepStreak = ({
       // Use the server's computed streak, not a client-side "+1" guess — the
       // backend resets the streak to 1 if yesterday wasn't checked in, which
       // a naive increment would get wrong and silently show the wrong number.
+      // localDate is THIS user's calendar day, not the server's clock — the
+      // server may run in a different timezone, which can silently break
+      // streak consecutiveness for anyone checking in near midnight local time.
+      const now = new Date();
+      const localDate = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
       const result = await api.post<CheckInResponse>(
         `/groups/${groupId}/checkins`,
-        { status: "DONE" },
+        { status: "DONE", localDate },
       );
       const newStreak = result.streak.currentStreak;
 
