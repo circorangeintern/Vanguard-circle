@@ -33,6 +33,7 @@ import TaskBoardPage from "./pages/dashboard/circle/TaskBoardPage";
 import StudySessionsPage from "./pages/dashboard/circle/StudySessionsPage";
 import MembersPage from "./pages/dashboard/circle/MembersPage";
 import SettingsPage from "./pages/dashboard/circle/SettingsPage";
+import ScrollToHash from "./components/common/ScrollToHash";
 
 const App = () => {
   const { pathname } = useLocation();
@@ -58,6 +59,7 @@ const App = () => {
   return (
     <>
       <ScrollToTop />
+      <ScrollToHash />
       {!hideLayout && <Navbar />}
 
       <Routes>
