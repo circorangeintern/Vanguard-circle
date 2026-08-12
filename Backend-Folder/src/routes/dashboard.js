@@ -1,6 +1,7 @@
 const express = require("express");
 const prisma = require("../config/prisma");
 const { requireAuth } = require("../middleware/auth");
+const { auth: firebaseAuth } = require("../config/firebase");
 
 const router = express.Router();
 
@@ -25,6 +26,90 @@ router.patch("/me", requireAuth, async (req, res) => {
 
   const circlesCount = await prisma.membership.count({ where: { userId: req.user.id } });
   res.success({ ...updated, circlesCount });
+});
+
+// DELETE /users/me — permanently deletes the account and everything tied to
+// it. Circles this user organizes are fully cascade-deleted (there's no
+// "transfer ownership" feature, and a circle with no organizer would be
+// broken for everyone left in it) — circles they're just a member of are
+// left intact for everyone else, with only this user's own data in them
+// removed. FKs are RESTRICT (not CASCADE), so every dependent row has to be
+// cleaned up explicitly, in dependency order, inside one transaction.
+router.delete("/me", requireAuth, async (req, res) => {
+  const userId = req.user.id;
+
+  const memberships = await prisma.membership.findMany({ where: { userId } });
+  const organizerGroupIds = memberships.filter((m) => m.role === "ORGANIZER").map((m) => m.groupId);
+  const memberGroupIds = memberships.filter((m) => m.role !== "ORGANIZER").map((m) => m.groupId);
+
+  await prisma.$transaction(async (tx) => {
+    // Unassign this user from any task anywhere first — cheap and avoids
+    // having to special-case it per group below.
+    await tx.task.updateMany({ where: { assignedTo: userId }, data: { assignedTo: null } });
+
+    if (organizerGroupIds.length) {
+      const orgPosts = await tx.post.findMany({
+        where: { groupId: { in: organizerGroupIds } },
+        select: { id: true },
+      });
+      const orgPostIds = orgPosts.map((p) => p.id);
+
+      await tx.postLike.deleteMany({ where: { postId: { in: orgPostIds } } });
+      await tx.postComment.deleteMany({ where: { postId: { in: orgPostIds } } });
+      await tx.post.deleteMany({ where: { groupId: { in: organizerGroupIds } } });
+      await tx.checkIn.deleteMany({ where: { groupId: { in: organizerGroupIds } } });
+      await tx.streak.deleteMany({ where: { groupId: { in: organizerGroupIds } } });
+      await tx.task.deleteMany({ where: { groupId: { in: organizerGroupIds } } });
+      await tx.studySession.deleteMany({ where: { groupId: { in: organizerGroupIds } } });
+      await tx.invitation.deleteMany({ where: { groupId: { in: organizerGroupIds } } });
+      await tx.membership.deleteMany({ where: { groupId: { in: organizerGroupIds } } });
+      await tx.group.deleteMany({ where: { id: { in: organizerGroupIds } } });
+    }
+
+    if (memberGroupIds.length) {
+      await tx.checkIn.deleteMany({ where: { userId, groupId: { in: memberGroupIds } } });
+      await tx.streak.deleteMany({ where: { userId, groupId: { in: memberGroupIds } } });
+
+      const ownPosts = await tx.post.findMany({
+        where: { authorId: userId, groupId: { in: memberGroupIds } },
+        select: { id: true },
+      });
+      const ownPostIds = ownPosts.map((p) => p.id);
+      await tx.postLike.deleteMany({ where: { postId: { in: ownPostIds } } });
+      await tx.postComment.deleteMany({ where: { postId: { in: ownPostIds } } });
+      await tx.post.deleteMany({ where: { id: { in: ownPostIds } } });
+
+      await tx.membership.deleteMany({ where: { userId, groupId: { in: memberGroupIds } } });
+    }
+
+    // Anything left referencing this user directly — likes/comments on
+    // OTHER people's posts in circles they're leaving, notifications,
+    // calendar sync state. Must run last so nothing still references the
+    // User row when it's deleted below.
+    await tx.postLike.deleteMany({ where: { userId } });
+    await tx.postComment.deleteMany({ where: { userId } });
+    await tx.notification.deleteMany({ where: { userId } });
+    await tx.calendarSyncedEvent.deleteMany({ where: { userId } });
+    await tx.calendarConnection.deleteMany({ where: { userId } });
+
+    await tx.user.delete({ where: { id: userId } });
+  }, { timeout: 20_000 }); // default 5s isn't enough for this many sequential
+  // deletes plus Neon's network latency, especially with several organized
+  // circles — verified locally: this exact transaction blew the default
+  // timeout on a single organized circle with only a handful of rows in it.
+
+  // Delete the Firebase Auth account too — otherwise they could just log
+  // back into the same account and it'd silently get recreated (the auth
+  // middleware auto-creates a User row on first authenticated request).
+  try {
+    await firebaseAuth.deleteUser(req.user.firebaseUid);
+  } catch (err) {
+    // The app-side data is already gone, which is the part that actually
+    // matters for "delete my account" — don't fail the request over this.
+    console.error("Failed to delete Firebase auth user:", err.message);
+  }
+
+  res.success({ deleted: true });
 });
 
 // GET /users/me/dashboard — one overview across all circles the user belongs to

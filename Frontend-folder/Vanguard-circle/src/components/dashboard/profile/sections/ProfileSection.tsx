@@ -4,7 +4,9 @@ import { toast } from "sonner";
 
 import ProfileHeroCard from "../cards/ProfileHeroCard";
 import AccountInfoCard from "../cards/AccountInfoCard";
+import DangerZoneCard from "../cards/DangerZoneCard";
 import EditProfileModal from "../modals/EditProfileModal";
+import DeleteAccountModal from "../modals/DeleteAccountModal";
 import ProfileLoading from "../states/ProfileLoading";
 
 import { api } from "../../../../lib/api";
@@ -15,6 +17,7 @@ import type { Profile } from "../types";
 
 const ProfileSection = () => {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [profile, setProfile] = useState<Profile | null>(null);
   const [loading, setLoading] = useState(true);
   const [uploadingAvatar, setUploadingAvatar] = useState(false);
@@ -74,11 +77,19 @@ const ProfileSection = () => {
         email={profile.email}
         memberSince={profile.memberSince}
       />
+
+      <DangerZoneCard onDeleteAccount={() => setIsDeleteModalOpen(true)} />
+
       <EditProfileModal
         open={isEditModalOpen}
         fullName={profile.fullName}
         onClose={() => setIsEditModalOpen(false)}
         onSuccess={loadProfile}
+      />
+      <DeleteAccountModal
+        open={isDeleteModalOpen}
+        email={profile.email}
+        onClose={() => setIsDeleteModalOpen(false)}
       />
     </section>
   );
