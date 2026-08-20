@@ -4,7 +4,7 @@ const { trackServerEvent } = require("./mixpanelServer");
 
 const SESSION_REMINDER_WINDOW_MINUTES = 30;
 const TASK_REMINDER_WINDOW_HOURS = 24;
-const SCAN_INTERVAL_MS = 60 * 1000;
+const SCAN_INTERVAL_MS = 5 * 60 * 1000;
 
 // Notifies every member of a circle once a scheduled session is starting
 // soon. `reminderSentAt` is set right after so a session already reminded
@@ -136,9 +136,13 @@ async function scanOnce() {
   }
 }
 
-// Started once from server.js. A 60s poll interval is "near real-time" for
-// this app's needs (session/deadline reminders, not sub-second alerts) —
-// true push would need a job queue or websocket infra this app doesn't have.
+// Started once from server.js. A 5-minute poll is still "near real-time"
+// enough for this app's needs (session/deadline reminders, not sub-second
+// alerts) — true push would need a job queue or websocket infra this app
+// doesn't have. Was 60s, but that never let Neon's serverless compute idle
+// for more than a minute at a time, which (combined with two live backend
+// deployments both running this same poll independently) was the dominant
+// driver of burning through the free-tier monthly compute-hour cap.
 function startReminderScheduler() {
   scanOnce();
   setInterval(scanOnce, SCAN_INTERVAL_MS);
