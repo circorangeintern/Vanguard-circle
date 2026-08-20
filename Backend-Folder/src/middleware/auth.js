@@ -30,6 +30,11 @@ async function requireAuth(req, res, next) {
     req.user = user;
     next();
   } catch (err) {
+    // Logged because the client-facing message is deliberately generic
+    // ("Invalid or expired token" covers wrong-project, expired, revoked,
+    // and cert-fetch-network-failure alike) — without this, a genuine
+    // config problem is indistinguishable from a stale token from the logs.
+    console.error("Token verification failed:", err.code || err.name, "-", err.message);
     return res.status(401).json({ success: false, data: null, error: "Invalid or expired token" });
   }
 }
